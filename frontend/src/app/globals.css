@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --gold: #d4901a;
+  --gold-light: #f5d98d;
+  --cream: #faf7f2;
+  --charcoal: #2c2c2c;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-inter);
+  background-color: #fff;
+  color: var(--charcoal);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-playfair);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #d4901a; border-radius: 3px; }
+
+/* Product card hover */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Shimmer skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Announcement bar */
+.announcement-bar {
+  background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+}
+
+/* Badge */
+.badge-sale {
+  background: linear-gradient(135deg, #e53e3e, #c53030);
+}
+.badge-new {
+  background: linear-gradient(135deg, #38a169, #276749);
+}
+
+/* Gold button */
+.btn-gold {
+  background: linear-gradient(135deg, #d4901a, #b97014);
+  color: white;
+  transition: all 0.2s;
+}
+.btn-gold:hover {
+  background: linear-gradient(135deg, #e8a827, #d4901a);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(212, 144, 26, 0.4);
+}
+
+/* Category card */
+.category-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.category-card:hover { transform: scale(1.02); }
+.category-card img { transition: transform 0.5s ease; }
+.category-card:hover img { transform: scale(1.08); }
+
+/* Search panel slide-in from right */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
