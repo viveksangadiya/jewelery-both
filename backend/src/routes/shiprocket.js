@@ -490,7 +490,7 @@ router.post('/returns/:returnId/awb', authenticate, isAdmin, async (req, res) =>
     if (!couriers.length)
       return res.status(400).json({ success: false, message: 'No couriers available for this pincode' });
 
-    const cheapest = couriers.sort((a: any, b: any) => a.rate - b.rate)[0];
+    const cheapest = couriers.sort((a, b) => a.rate - b.rate)[0];
     const awbData = await shiprocket.generateAWB(ret.return_shipment_id, cheapest.courier_company_id);
 
     const awb = awbData?.response?.data?.awb_code || null;
