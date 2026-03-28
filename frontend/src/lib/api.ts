@@ -129,12 +129,28 @@ export const ordersApi = {
     api.get('/orders/admin/all', { params }),
   updateStatus: (id: number, status: string): Promise<AxiosResponse<ApiResponse<Order>>> =>
     api.put(`/orders/admin/${id}/status`, { status }),
+  validateCoupon: (code: string, subtotal: number) =>
+    api.post('/orders/validate-coupon', { code, subtotal }),
+};
+
+// ── Coupons (Admin) ───────────────────────────────────────
+export const couponsApi = {
+  getAll: () => api.get('/coupons'),
+  create: (data: {
+    code: string; type: 'percentage' | 'fixed'; value: number;
+    min_order_value?: number; max_discount?: number;
+    expires_at?: string; usage_limit?: number;
+  }) => api.post('/coupons', data),
+  update: (id: number, data: any) => api.put(`/coupons/${id}`, data),
+  delete: (id: number) => api.delete(`/coupons/${id}`),
 };
 
 // ── Wishlist ──────────────────────────────────────────────
 export const wishlistApi = {
   get: (): Promise<AxiosResponse<ApiResponse<Product[]>>> =>
     api.get('/wishlist'),
+  getIds: (): Promise<AxiosResponse<ApiResponse<number[]>>> =>
+    api.get('/wishlist/ids'),
   toggle: (product_id: number): Promise<AxiosResponse<ApiResponse<{ wishlisted: boolean }>>> =>
     api.post('/wishlist/toggle', { product_id }),
 };

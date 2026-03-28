@@ -57,22 +57,55 @@ router.get('/', authenticate, async (req, res) => {
 router.post('/validate-coupon', authenticate, async (req, res) => {
   try {
     const { code, subtotal } = req.body;
+    if (!code) return res.status(400).json({ success: false, message: 'Coupon code is required' });
+
     const couponResult = await pool.query(
-      `SELECT * FROM coupons WHERE code=$1 AND is_active=true AND (expires_at IS NULL OR expires_at > NOW())`,
+      `SELECT * FROM coupons WHERE UPPER(code)=UPPER($1) AND is_active=true AND (expires_at IS NULL OR expires_at > NOW())`,
       [code]
     );
     if (couponResult.rows.length === 0) {
       return res.status(400).json({ success: false, message: 'Invalid or expired coupon' });
     }
     const coupon = couponResult.rows[0];
-    if (subtotal < coupon.min_order_value) {
-      return res.status(400).json({ success: false, message: `Minimum order value ₹${coupon.min_order_value} required` });
+
+    // Check usage limit
+    if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
+      return res.status(400).json({ success: false, message: 'Coupon usage limit reached' });
     }
+
+    // Check per-user usage (one use per user)
+    const userUsage = await pool.query(
+      'SELECT id FROM coupon_usages WHERE coupon_id=$1 AND user_id=$2',
+      [coupon.id, req.user.id]
+    );
+    if (userUsage.rows.length > 0) {
+      return res.status(400).json({ success: false, message: 'You have already used this coupon' });
+    }
+
+    // Check minimum order value
+    if (parseFloat(subtotal) < parseFloat(coupon.min_order_value)) {
+      return res.status(400).json({
+        success: false,
+        message: `Minimum order value ₹${coupon.min_order_value} required for this coupon`
+      });
+    }
+
     const discount = coupon.type === 'percentage'
-      ? Math.min(subtotal * coupon.value / 100, coupon.max_discount || Infinity)
-      : coupon.value;
-    res.json({ success: true, data: { discount: Math.round(discount), coupon_id: coupon.id } });
+      ? Math.min(parseFloat(subtotal) * coupon.value / 100, coupon.max_discount || Infinity)
+      : parseFloat(coupon.value);
+
+    res.json({
+      success: true,
+      data: {
+        discount: Math.round(discount),
+        coupon_id: coupon.id,
+        code: coupon.code,
+        type: coupon.type,
+        value: coupon.value,
+      }
+    });
   } catch (err) {
+    console.error('Coupon validation error:', err.message);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

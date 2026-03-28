@@ -78,7 +78,7 @@ export default function Footer() {
       {/* ── Main footer — dark bg ─────────────────────── */}
       <div className="bg-charcoal text-white">
         {/* Newsletter */}
-        <div className="bg-yellow-700 py-10 px-4">
+        {/* <div className="bg-yellow-700 py-10 px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h3 className="font-display text-2xl font-bold mb-2">Join the Lumière Circle</h3>
             <p className="text-yellow-100 text-sm mb-6">Get exclusive offers, new arrivals, and jewelry care tips in your inbox.</p>
@@ -93,7 +93,7 @@ export default function Footer() {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Links grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 grid grid-cols-2 md:grid-cols-4 gap-10">

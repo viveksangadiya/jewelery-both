@@ -36,54 +36,73 @@ export const useAuthStore = create<AuthState>()(
 );
 
 // ── Cart Store ────────────────────────────────────────────
+// NOTE: Cart is fully server-driven when logged in.
+// setItems() accepts the raw API response shape:
+//   { items: [...], subtotal: N }  OR  just an array directly
+// Each item from API has: id, product_id, name, image, effective_price, quantity, slug
+
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
-  setItems: (items: CartItem[]) => void;
-  addItem: (product: Product, quantity?: number) => void;
-  removeItem: (id: number) => void;
+  setItems: (data: any) => void;        // accepts API response or plain array
+  addItem: (product: any, quantity?: number) => void; // optimistic add for ProductCard
+  removeItem: (id: number) => void;     // removes by cart_item id
   updateQuantity: (id: number, quantity: number) => void;
   clearCart: () => void;
-  toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
-  getTotal: () => number;
   getCount: () => number;
+  getTotal: () => number;
 }
+
+// Helper: extract items array from any response shape
+const toItemsArray = (data: any): CartItem[] => {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.items)) return data.items;
+  return [];
+};
+
+// Helper: get price from item (handles both field names)
+export const itemPrice = (item: any): number =>
+  parseFloat(String(item.effective_price ?? item.price ?? 0));
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
       isOpen: false,
-      setItems: (items: CartItem[]) => set({ items }),
-      addItem: (product: Product, quantity = 1) => {
-        const items = get().items;
-        const existing = items.find((i) => i.product_id === product.id);
+
+      setItems: (data: any) => set({ items: toItemsArray(data) }),
+
+      // Optimistic add — used by ProductCard "Add to Cart" button
+      // CartDrawer re-fetches from server on open to get real server state
+      addItem: (product: any, quantity = 1) => {
+        const items = Array.isArray(get().items) ? get().items : [];
+        const existing = items.find((i) => i.product_id === product.id || i.id === product.id);
         if (existing) {
-          set({
-            items: items.map((i) =>
-              i.product_id === product.id ? { ...i, quantity: i.quantity + quantity } : i
-            ),
-          });
+          set({ items: items.map((i) =>
+            (i.product_id === product.id || i.id === product.id)
+              ? { ...i, quantity: i.quantity + quantity }
+              : i
+          )});
         } else {
-          set({
-            items: [
-              ...items,
-              {
-                id: Date.now(),
-                product_id: product.id,
-                name: product.name,
-                image: product.primary_image,
-                price: parseFloat(String(product.sale_price || product.base_price)),
-                quantity,
-                slug: product.slug,
-              },
-            ],
-          });
+          set({ items: [...items, {
+            id: Date.now(),
+            product_id: product.id,
+            name: product.name,
+            image: product.primary_image,
+            effective_price: parseFloat(String(product.sale_price || product.base_price)),
+            price: parseFloat(String(product.sale_price || product.base_price)),
+            quantity,
+            slug: product.slug,
+          }]});
         }
       },
-      removeItem: (id: number) => set({ items: get().items.filter((i) => i.id !== id) }),
+
+      removeItem: (id: number) =>
+        set({ items: get().items.filter((i) => i.id !== id) }),
+
       updateQuantity: (id: number, quantity: number) => {
         if (quantity <= 0) {
           set({ items: get().items.filter((i) => i.id !== id) });
@@ -91,26 +110,39 @@ export const useCartStore = create<CartState>()(
           set({ items: get().items.map((i) => (i.id === id ? { ...i, quantity } : i)) });
         }
       },
+
       clearCart: () => set({ items: [] }),
-      toggleCart: () => set({ isOpen: !get().isOpen }),
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
-      getTotal: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
-      getCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
+
+      getCount: () => {
+        const items = get().items;
+        if (!Array.isArray(items)) return 0;
+        return items.reduce((sum, i) => sum + (i.quantity || 0), 0);
+      },
+
+      getTotal: () => {
+        const items = get().items;
+        if (!Array.isArray(items)) return 0;
+        return items.reduce((sum, i) => sum + itemPrice(i) * (i.quantity || 0), 0);
+      },
     }),
-    { name: 'cart-storage' }
+    {
+      name: 'cart-storage',
+      // Sanitize on rehydration — in case old bad data was persisted
+      onRehydrateStorage: () => (state) => {
+        if (state && !Array.isArray(state.items)) {
+          state.items = [];
+        }
+      },
+    }
   )
 );
 
-// ── Wishlist Store  ───────────────────────────────────────
-// Strategy:
-//   • Logged in  → reads/writes from DB, keeps local copy in sync
-//   • Logged out → falls back to localStorage only
-//   • On login   → call syncFromDB() to hydrate from server
-//   • On logout  → call clear() to wipe local state
+// ── Wishlist Store ────────────────────────────────────────
 interface WishlistState {
-  items: number[];           // product IDs
-  synced: boolean;           // has DB been loaded yet?
+  items: number[];
+  synced: boolean;
   syncFromDB: () => Promise<void>;
   toggle: (productId: number) => Promise<void>;
   isWishlisted: (productId: number) => boolean;
@@ -124,44 +156,29 @@ export const useWishlistStore = create<WishlistState>()(
       items: [],
       synced: false,
 
-      // Call once after login to load wishlist from DB
       syncFromDB: async () => {
         try {
           const res = await wishlistApi.getIds();
           set({ items: res.data.data, synced: true });
         } catch {
-          // Not logged in or network error — keep localStorage state
           set({ synced: false });
         }
       },
 
-      // Toggle — updates DB if logged in, always updates local state immediately
       toggle: async (productId: number) => {
         const items = get().items;
         const isIn = items.includes(productId);
-
-        // Optimistic update — instant UI response
-        set({ items: isIn ? items.filter(id => id !== productId) : [...items, productId] });
-
-        // Sync to DB (will fail silently if not logged in)
+        set({ items: isIn ? items.filter((id) => id !== productId) : [...items, productId] });
         try {
           await wishlistApi.toggle(productId);
         } catch {
-          // If logged out or error, revert optimistic update
           const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-          if (token) {
-            // Was logged in but got an error — revert
-            set({ items });
-          }
-          // If not logged in — keep the local-only toggle (localStorage persistence handles it)
+          if (token) set({ items });
         }
       },
 
       isWishlisted: (productId: number) => get().items.includes(productId),
-
-      // Call on logout
       clear: () => set({ items: [], synced: false }),
-
       getCount: () => get().items.length,
     }),
     { name: 'wishlist-storage' }
