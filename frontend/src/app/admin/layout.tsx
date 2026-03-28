@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Package, ShoppingBag, Tag, Users, LogOut, ChevronRight, Store } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, Tag, Users, LogOut, ChevronRight, Store, Percent, RotateCcw } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 
 interface NavItem {
@@ -16,6 +16,7 @@ const navItems: NavItem[] = [
   { label: 'Products',   href: '/admin/products',   icon: Package },
   { label: 'Orders',     href: '/admin/orders',     icon: ShoppingBag },
   { label: 'Categories', href: '/admin/categories', icon: Tag },
+  { label: 'Coupons',    href: '/admin/coupons',    icon: Percent },
   { label: 'Customers',  href: '/admin/customers',  icon: Users },
 ];
 

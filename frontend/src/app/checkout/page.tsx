@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, Truck, CreditCard, Banknote, ChevronRight, Tag, MapPin, User, Phone } from 'lucide-react';
-import { useCartStore, useAuthStore } from '@/lib/store';
+import { useCartStore, useAuthStore, itemPrice } from '@/lib/store';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -46,7 +46,8 @@ export default function CheckoutPage(): JSX.Element {
   const [eta, setEta] = useState('');
   const [pincodeOk, setPincodeOk] = useState<boolean | null>(null);
 
-  const subtotal = getTotal();
+  const safeItems = Array.isArray(items) ? items : [];
+  const subtotal = safeItems.reduce((sum, i) => sum + itemPrice(i) * i.quantity, 0);
   const shipping = subtotal >= 999 ? 0 : 99;
   const total = Math.round(subtotal - discount + shipping);
 
@@ -62,7 +63,7 @@ export default function CheckoutPage(): JSX.Element {
 
   useEffect(() => {
     if (mounted && !user) router.push('/account/login?redirect=/checkout');
-    if (mounted && items.length === 0) router.push('/shop');
+    if (mounted && safeItems.length === 0) router.push('/shop');
   }, [mounted, user, items]);
 
   const set = (k: keyof Address, v: string) => setAddress((p) => ({ ...p, [k]: v }));
@@ -321,7 +322,7 @@ export default function CheckoutPage(): JSX.Element {
             <div className="bg-white rounded-2xl p-5 border border-gray-100 sticky top-24">
               <h3 className="font-semibold text-gray-900 mb-4">Order Summary</h3>
               <div className="space-y-3 mb-4 max-h-52 overflow-y-auto">
-                {items.map((item) => (
+                {safeItems.map((item) => (
                   <div key={item.id} className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                       {item.image && <img src={item.image} alt={item.name} className="w-full h-full object-cover" />}
@@ -330,7 +331,7 @@ export default function CheckoutPage(): JSX.Element {
                       <p className="text-xs font-medium text-gray-800 truncate">{item.name}</p>
                       <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
                     </div>
-                    <p className="text-sm font-semibold">₹{(item.price * item.quantity).toLocaleString()}</p>
+                    <p className="text-sm font-semibold">₹{(itemPrice(item) * item.quantity).toLocaleString()}</p>
                   </div>
                 ))}
               </div>

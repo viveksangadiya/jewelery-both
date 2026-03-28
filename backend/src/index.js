@@ -33,6 +33,7 @@ app.use('/api/wishlist',   require('./routes/wishlist'));
 app.use('/api/shiprocket', require('./routes/shiprocket'));
 app.use('/api/reviews',   require('./routes/reviews'));
 app.use('/api/returns',   require('./routes/returns'));
+app.use('/api/coupons',   require('./routes/coupons'));
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
