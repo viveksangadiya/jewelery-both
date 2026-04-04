@@ -8,37 +8,32 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gold: {
-          50: '#fdf8ec',
-          100: '#faeec8',
-          200: '#f5d98d',
-          300: '#efc050',
-          400: '#e8a827',
-          500: '#d4901a',
-          600: '#b97014',
-          700: '#974f13',
-          800: '#7d3f15',
-          900: '#693515',
+        craft: {
+          50:  '#FAF9EE', // Ivory — main background
+          100: '#EBEBCA', // Beige — secondary panels
+          200: '#d9d4a0',
+          300: '#B68868', // Chamoisee — warm accent
+          400: '#a07252',
+          500: '#8a5535',
+          600: '#903E1D', // Brown — primary brand
+          700: '#7a3318',
+          800: '#642308', // Seal Brown — dark headings / footer
+          900: '#3e1505', // Very dark brown
         },
-        rose: {
-          gold: '#b76e79',
-        },
-        cream: '#faf7f2',
-        charcoal: '#2c2c2c',
       },
       fontFamily: {
         display: ['var(--font-playfair)', 'Georgia', 'serif'],
-        body: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        body:    ['var(--font-inter)', 'system-ui', 'sans-serif'],
       },
       animation: {
-        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'fade-in':  'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.4s ease-out',
-        'shimmer': 'shimmer 2s infinite linear',
+        'shimmer':  'shimmer 2s infinite linear',
       },
       keyframes: {
-        fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
-        slideUp: { '0%': { transform: 'translateY(20px)', opacity: 0 }, '100%': { transform: 'translateY(0)', opacity: 1 } },
-        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+        fadeIn:  { '0%': { opacity: 0 },                                          '100%': { opacity: 1 } },
+        slideUp: { '0%': { transform: 'translateY(20px)', opacity: 0 },           '100%': { transform: 'translateY(0)', opacity: 1 } },
+        shimmer: { '0%': { backgroundPosition: '-200% 0' },                       '100%': { backgroundPosition: '200% 0' } },
       },
     },
   },

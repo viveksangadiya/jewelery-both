@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 const announcements: string[] = [
-  '✨ Free shipping on orders above ₹999 | Use code FIRST10 for 10% off your first order',
-  '💍 New arrivals: Diamond Ring Collection — Shop now!',
-  '🎁 Buy 2 get 1 free on all earrings | Limited time offer',
+  '🌸 Free shipping on orders above ₹499 | Handcrafted with love across India',
+  '🎊 New Arrival: Diwali Festival Torans — Limited Stock! Shop Now',
+  '🪢 Buy any 2 Torans, get 15% off | Use code TORAN15 at checkout',
 ];
 
 export default function AnnouncementBar(): JSX.Element | null {
@@ -22,11 +22,11 @@ export default function AnnouncementBar(): JSX.Element | null {
   if (!visible) return null;
 
   return (
-    <div className="announcement-bar text-white text-xs sm:text-sm py-2 px-4 flex items-center justify-between">
-      <div className="flex-1 text-center animate-fade-in" key={current}>
+    <div className="announcement-bar text-[#FAF9EE] text-xs sm:text-sm py-2.5 px-4 flex items-center justify-between">
+      <div className="flex-1 text-center animate-fade-in font-medium tracking-wide" key={current}>
         {announcements[current]}
       </div>
-      <button onClick={() => setVisible(false)} className="ml-4 hover:opacity-70 transition-opacity">
+      <button onClick={() => setVisible(false)} className="ml-4 hover:opacity-70 transition-opacity flex-shrink-0">
         <X size={14} />
       </button>
     </div>

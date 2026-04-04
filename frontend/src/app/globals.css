@@ -7,10 +7,13 @@
 :root {
   --font-playfair: 'Playfair Display', Georgia, serif;
   --font-inter: 'Inter', system-ui, sans-serif;
-  --gold: #d4901a;
-  --gold-light: #f5d98d;
-  --cream: #faf7f2;
-  --charcoal: #2c2c2c;
+
+  /* Craft palette */
+  --ivory:      #FAF9EE;
+  --beige:      #EBEBCA;
+  --chamoisee:  #B68868;
+  --brown:      #903E1D;
+  --seal-brown: #642308;
 }
 
 * {
@@ -19,78 +22,64 @@
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-inter);
-  background-color: #fff;
-  color: var(--charcoal);
+  background-color: var(--ivory);
+  color: var(--seal-brown);
   -webkit-font-smoothing: antialiased;
 }
 
-.font-display {
-  font-family: var(--font-playfair);
-}
+.font-display { font-family: var(--font-playfair); }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #d4901a; border-radius: 3px; }
+::-webkit-scrollbar        { width: 6px; }
+::-webkit-scrollbar-track  { background: var(--beige); }
+::-webkit-scrollbar-thumb  { background: var(--brown); border-radius: 3px; }
 
 /* Product card hover */
-.product-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+.product-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(100, 35, 8, 0.12);
 }
 
 /* Shimmer skeleton */
 .skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #ede9db 25%, #e0dac9 50%, #ede9db 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
 /* Announcement bar */
 .announcement-bar {
-  background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+  background: linear-gradient(135deg, var(--seal-brown), #4e1b05);
 }
 
-/* Badge */
-.badge-sale {
-  background: linear-gradient(135deg, #e53e3e, #c53030);
-}
-.badge-new {
-  background: linear-gradient(135deg, #38a169, #276749);
-}
-
-/* Gold button */
-.btn-gold {
-  background: linear-gradient(135deg, #d4901a, #b97014);
-  color: white;
+/* Craft button — primary */
+.btn-craft {
+  background: linear-gradient(135deg, var(--brown), #7a3318);
+  color: #FAF9EE;
   transition: all 0.2s;
 }
-.btn-gold:hover {
-  background: linear-gradient(135deg, #e8a827, #d4901a);
+.btn-craft:hover {
+  background: linear-gradient(135deg, #a04820, var(--brown));
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(212, 144, 26, 0.4);
+  box-shadow: 0 4px 15px rgba(144, 62, 29, 0.35);
 }
 
 /* Category card */
 .category-card {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 12px;
   cursor: pointer;
   transition: transform 0.3s ease;
 }
-.category-card:hover { transform: scale(1.02); }
-.category-card img { transition: transform 0.5s ease; }
-.category-card:hover img { transform: scale(1.08); }
+.category-card:hover         { transform: scale(1.02); }
+.category-card img           { transition: transform 0.5s ease; }
+.category-card:hover img     { transform: scale(1.08); }
 
 /* Search panel slide-in from right */
 @keyframes slide-in-right {
@@ -107,4 +96,11 @@ body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Decorative divider — hand-drawn feel */
+.craft-divider {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--chamoisee), transparent);
 }
