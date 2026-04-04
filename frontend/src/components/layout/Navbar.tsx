@@ -1,73 +1,68 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Heart, User, Search, Menu, X, MapPin } from 'lucide-react';
+import { ShoppingBag, Heart, User, Search, Menu, X } from 'lucide-react';
 import SearchPanel from '@/components/layout/SearchPanel';
 import { useCartStore, useAuthStore, useWishlistStore } from '@/lib/store';
 
-// ── ORIGINAL CONTENT — unchanged ─────────────────────────
-const navLinks = [
+const NAV = [
   {
-    label: 'Rings',
-    href: '/shop?category=rings',
-    submenu: [
+    label: 'Rings', href: '/shop?category=rings',
+    sub: [
       { label: 'Engagement Rings', href: '/shop?category=rings&tag=engagement' },
-      { label: 'Wedding Bands', href: '/shop?category=rings&tag=wedding' },
-      { label: 'Statement Rings', href: '/shop?category=rings&tag=statement' },
-      { label: 'Stackable Rings', href: '/shop?category=rings&tag=stackable' },
+      { label: 'Wedding Bands',    href: '/shop?category=rings&tag=wedding' },
+      { label: 'Statement Rings',  href: '/shop?category=rings&tag=statement' },
+      { label: 'Stackable Rings',  href: '/shop?category=rings&tag=stackable' },
     ],
   },
   {
-    label: 'Necklaces',
-    href: '/shop?category=necklaces',
-    submenu: [
-      { label: 'Pendants', href: '/shop?category=necklaces&tag=pendant' },
-      { label: 'Chains', href: '/shop?category=necklaces&tag=chain' },
-      { label: 'Chokers', href: '/shop?category=necklaces&tag=choker' },
+    label: 'Necklaces', href: '/shop?category=necklaces',
+    sub: [
+      { label: 'Pendants',     href: '/shop?category=necklaces&tag=pendant' },
+      { label: 'Chains',       href: '/shop?category=necklaces&tag=chain' },
+      { label: 'Chokers',      href: '/shop?category=necklaces&tag=choker' },
       { label: 'Layered Sets', href: '/shop?category=necklaces&tag=layered' },
     ],
   },
   {
-    label: 'Earrings',
-    href: '/shop?category=earrings',
-    submenu: [
-      { label: 'Studs', href: '/shop?category=earrings&tag=studs' },
-      { label: 'Hoops', href: '/shop?category=earrings&tag=hoops' },
+    label: 'Earrings', href: '/shop?category=earrings',
+    sub: [
+      { label: 'Studs',        href: '/shop?category=earrings&tag=studs' },
+      { label: 'Hoops',        href: '/shop?category=earrings&tag=hoops' },
       { label: 'Drop & Dangle', href: '/shop?category=earrings&tag=drop' },
-      { label: 'Chandeliers', href: '/shop?category=earrings&tag=chandelier' },
+      { label: 'Jhumkas',      href: '/shop?category=earrings&tag=jhumka' },
     ],
   },
   {
-    label: 'Bracelets',
-    href: '/shop?category=bracelets',
-    submenu: [
-      { label: 'Tennis Bracelets', href: '/shop?category=bracelets&tag=tennis' },
-      { label: 'Bangles', href: '/shop?category=bracelets&tag=bangles' },
-      { label: 'Charm Bracelets', href: '/shop?category=bracelets&tag=charm' },
+    label: 'Bracelets', href: '/shop?category=bracelets',
+    sub: [
+      { label: 'Tennis',    href: '/shop?category=bracelets&tag=tennis' },
+      { label: 'Bangles',   href: '/shop?category=bracelets&tag=bangles' },
+      { label: 'Charms',    href: '/shop?category=bracelets&tag=charm' },
     ],
   },
-  { label: 'Sets', href: '/shop?category=sets' },
-  { label: 'Sale', href: '/shop?sale=true', highlight: true },
+  { label: 'Sets', href: '/shop?category=sets', sub: [] },
+  { label: 'Sale 🔥', href: '/shop?sale=true', sub: [], sale: true },
 ];
 
 export default function Navbar() {
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted]       = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState(null);
-  const [scrolled, setScrolled] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
-  const leaveTimer = useRef(null);
+  const [scrolled, setScrolled]     = useState(false);
+  const leaveTimer = useRef<any>(null);
 
-  const cartCount = useCartStore(s => s.getCount());
-  const openCart = useCartStore(s => s.openCart);
-  const user = useAuthStore(s => s.user);
+  const cartCount     = useCartStore(s => s.getCount());
+  const openCart      = useCartStore(s => s.openCart);
+  const user          = useAuthStore(s => s.user);
   const wishlistCount = useWishlistStore(s => s.getCount());
 
   useEffect(() => {
     setMounted(true);
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
@@ -75,57 +70,45 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  const handleMenuEnter = (label) => {
+  const enter = (label: string) => {
     if (leaveTimer.current) clearTimeout(leaveTimer.current);
     setActiveMenu(label);
   };
-  const handleMenuLeave = () => {
-    leaveTimer.current = setTimeout(() => setActiveMenu(null), 150);
-  };
-  const handleMenuKeep = () => {
-    if (leaveTimer.current) clearTimeout(leaveTimer.current);
-  };
+  const leave = () => { leaveTimer.current = setTimeout(() => setActiveMenu(null), 150); };
+  const keep  = () => { if (leaveTimer.current) clearTimeout(leaveTimer.current); };
+
+  const activeSub = NAV.find(n => n.label === activeMenu)?.sub || [];
 
   return (
     <>
-      {/* ── Mobile Drawer ─────────────────────────────── */}
+      <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
-          <div className="absolute left-0 top-0 bottom-0 w-[280px] bg-white shadow-2xl flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <span className="font-display text-xl font-bold tracking-tight text-charcoal">
-                Lumière<span className="text-yellow-600">✦</span>
-              </span>
-              <button onClick={() => setMobileOpen(false)} className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
-                <X size={20} className="text-gray-600" />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="absolute left-0 inset-y-0 w-[300px] bg-white flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#E8E8E8]">
+              <Link href="/" onClick={() => setMobileOpen(false)} className="font-sans font-800 text-xl tracking-tight text-jet">
+                Lumière
+              </Link>
+              <button onClick={() => setMobileOpen(false)} className="text-[#666] hover:text-jet p-1 transition-colors">
+                <X size={20} />
               </button>
             </div>
-
-            {/* Nav links */}
             <div className="flex-1 overflow-y-auto py-3">
-              {navLinks.map((link) => (
-                <div key={link.label}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={`block px-5 py-3.5 text-sm font-semibold tracking-wide border-b border-gray-50 transition-colors ${
-                      link.highlight ? 'text-red-600' : 'text-gray-800 hover:text-yellow-700 hover:bg-yellow-50'
-                    }`}
-                  >
-                    {link.label}
+              {NAV.map(item => (
+                <div key={item.label}>
+                  <Link href={item.href} onClick={() => setMobileOpen(false)}
+                    className={`flex items-center justify-between px-5 py-3.5 text-sm font-semibold border-b border-[#F5F5F5] transition-colors ${item.sale ? 'text-[#FF4D4D]' : 'text-jet hover:text-[#FF4D4D]'}`}>
+                    {item.label}
                   </Link>
-                  {link.submenu && (
-                    <div className="bg-gray-50">
-                      {link.submenu.map((sub) => (
-                        <Link
-                          key={sub.label}
-                          href={sub.href}
-                          onClick={() => setMobileOpen(false)}
-                          className="block px-8 py-2.5 text-sm text-gray-500 hover:text-yellow-700 transition-colors border-b border-gray-100 last:border-0"
-                        >
-                          {sub.label}
+                  {item.sub?.length > 0 && (
+                    <div className="bg-[#FAFAFA]">
+                      {item.sub.map(s => (
+                        <Link key={s.label} href={s.href} onClick={() => setMobileOpen(false)}
+                          className="block px-9 py-2.5 text-sm text-[#666] hover:text-jet transition-colors">
+                          {s.label}
                         </Link>
                       ))}
                     </div>
@@ -133,165 +116,104 @@ export default function Navbar() {
                 </div>
               ))}
             </div>
-
-            {/* Bottom: Sign in if not logged in */}
-            {mounted && !user && (
-              <div className="p-4 border-t border-gray-100">
-                <Link
-                  href="/account/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="block w-full text-center btn-gold py-3 rounded-xl font-semibold text-sm"
-                >
-                  Sign In / Register
-                </Link>
-              </div>
-            )}
+            <div className="p-5 border-t border-[#E8E8E8] space-y-2">
+              {mounted && user ? (
+                <Link href="/account" onClick={() => setMobileOpen(false)}
+                  className="btn-primary w-full py-3 text-sm">My Account</Link>
+              ) : (
+                <Link href="/account/login" onClick={() => setMobileOpen(false)}
+                  className="btn-primary w-full py-3 text-sm text-center block">Sign In</Link>
+              )}
+            </div>
           </div>
         </div>
       )}
 
-      {/* ── Main Header ───────────────────────────────── */}
-      <header className={`sticky top-0 z-40 bg-white transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
+      {/* Main nav */}
+      <header className={`sticky top-0 z-40 bg-white transition-shadow duration-200 ${scrolled ? 'shadow-[0_2px_12px_rgba(0,0,0,0.08)]' : 'border-b border-[#F0F0F0]'}`}>
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
 
-        {/* ── ROW 1: Pincode | Logo | Icons (Kisna layout) ── */}
-        <div className="border-b border-gray-100">
-          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 flex items-center h-[68px]">
+          {/* Left: hamburger + logo */}
+          <div className="flex items-center gap-4">
+            <button onClick={() => setMobileOpen(true)} className="lg:hidden text-jet hover:text-[#FF4D4D] transition-colors">
+              <Menu size={22} />
+            </button>
+            <Link href="/" className="font-sans font-extrabold text-xl tracking-tight text-jet hover:text-[#FF4D4D] transition-colors">
+              Lumière ✦
+            </Link>
+          </div>
 
-            {/* Left: Pincode (desktop) / Hamburger (mobile) */}
-            <div className="w-1/3 flex items-center">
-              {/* Mobile hamburger */}
-              <button
-                className="lg:hidden p-2 -ml-1 hover:bg-gray-100 rounded-lg transition-colors"
-                onClick={() => setMobileOpen(true)}
-              >
-                <Menu size={22} className="text-gray-700" />
-              </button>
-              {/* Desktop pincode — like Kisna top-left */}
-              <button className="hidden lg:flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors font-medium tracking-wide uppercase">
-                <MapPin size={13} />
-                Enter Pincode
-              </button>
-            </div>
+          {/* Center: nav links */}
+          <nav className="hidden lg:flex items-center gap-0.5" onMouseLeave={leave}>
+            {NAV.map(item => (
+              <div key={item.label} className="relative"
+                onMouseEnter={() => item.sub?.length ? enter(item.label) : setActiveMenu(null)}>
+                <Link href={item.href}
+                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
+                    item.sale
+                      ? 'text-[#FF4D4D] hover:bg-[#FFE8E8]'
+                      : activeMenu === item.label
+                        ? 'bg-[#F5F5F5] text-jet'
+                        : 'text-jet hover:bg-[#F5F5F5]'
+                  }`}>
+                  {item.label}
+                </Link>
+              </div>
+            ))}
+          </nav>
 
-            {/* Center: Logo */}
-            <div className="flex-1 flex justify-center">
-              <Link href="/">
-                <span className="font-display text-2xl sm:text-[26px] font-bold tracking-tight text-charcoal whitespace-nowrap">
-                  Lumière<span className="text-yellow-600">✦</span>
+          {/* Right: icons */}
+          <div className="flex items-center gap-0.5">
+            <button onClick={() => setSearchOpen(true)}
+              className="p-2 text-jet hover:text-[#FF4D4D] transition-colors rounded-full hover:bg-[#F5F5F5]">
+              <Search size={19} strokeWidth={2} />
+            </button>
+            <Link href="/account"
+              className="relative p-2 text-jet hover:text-[#FF4D4D] transition-colors rounded-full hover:bg-[#F5F5F5]">
+              <Heart size={19} strokeWidth={2} />
+              {mounted && wishlistCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-[#FF4D4D] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  {wishlistCount > 9 ? '9+' : wishlistCount}
                 </span>
-              </Link>
-            </div>
-
-            {/* Right: Icons */}
-            <div className="w-1/3 flex items-center justify-end gap-0.5">
-              <button onClick={() => setSearchOpen(true)} className="p-2.5 hover:bg-gray-100 rounded-lg transition-colors">
-                <Search size={20} className="text-gray-700" />
-              </button>
-
-              <Link href="/account" className="relative p-2.5 hover:bg-gray-100 rounded-lg transition-colors">
-                <Heart size={20} className="text-gray-700" />
-                {mounted && wishlistCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center font-bold leading-none">
-                    {wishlistCount > 9 ? '9+' : wishlistCount}
-                  </span>
-                )}
-              </Link>
-
-              <Link
-                href={mounted && user ? '/account' : '/account/login'}
-                className="p-2.5 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <User size={20} className="text-gray-700" />
-              </Link>
-
-              <button onClick={openCart} className="relative p-2.5 hover:bg-gray-100 rounded-lg transition-colors">
-                <ShoppingBag size={20} className="text-gray-700" />
-                {mounted && cartCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-yellow-600 text-white text-[8px] rounded-full flex items-center justify-center font-bold leading-none">
-                    {cartCount > 9 ? '9+' : cartCount}
-                  </span>
-                )}
-              </button>
-            </div>
+              )}
+            </Link>
+            <Link href={mounted && user ? '/account' : '/account/login'}
+              className="hidden sm:flex p-2 text-jet hover:text-[#FF4D4D] transition-colors rounded-full hover:bg-[#F5F5F5]">
+              <User size={19} strokeWidth={2} />
+            </Link>
+            <button onClick={openCart}
+              className="relative flex items-center gap-2 ml-1 bg-jet hover:bg-[#333] text-white pl-3 pr-4 py-2 rounded-full text-sm font-semibold transition-colors">
+              <ShoppingBag size={16} strokeWidth={2} />
+              <span>{mounted && cartCount > 0 ? cartCount : 'Bag'}</span>
+            </button>
           </div>
         </div>
 
-        {/* ── ROW 2: Nav links bar (Kisna style) ── */}
-        <div className="hidden lg:block border-b border-gray-100 relative" onMouseLeave={handleMenuLeave}>
-          <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
-            <nav className="flex items-center justify-center">
-              {navLinks.map((link) => (
-                <div
-                  key={link.label}
-                  className="relative flex-shrink-0"
-                  onMouseEnter={() => link.submenu ? handleMenuEnter(link.label) : setActiveMenu(null)}
-                >
-                  <Link
-                    href={link.href}
-                    className={`flex items-center px-4 xl:px-5 py-3.5 text-xs font-bold tracking-widest uppercase transition-all whitespace-nowrap border-b-2 -mb-px ${
-                      activeMenu === link.label
-                        ? 'border-gray-900 text-gray-900'
-                        : link.highlight
-                          ? 'border-transparent text-red-600 hover:text-red-700'
-                          : 'border-transparent text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
+        {/* Mega dropdown */}
+        {activeMenu && activeSub.length > 0 && (
+          <div onMouseEnter={keep} onMouseLeave={leave}
+            className="absolute left-0 right-0 bg-white border-b border-[#E8E8E8] shadow-lg z-50">
+            <div className="max-w-screen-xl mx-auto px-6 py-6 flex gap-10">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#999] mb-4">{activeMenu}</p>
+                <div className="grid grid-cols-2 gap-x-10 gap-y-2">
+                  {activeSub.map(s => (
+                    <Link key={s.label} href={s.href} onClick={() => setActiveMenu(null)}
+                      className="text-sm text-[#444] hover:text-[#FF4D4D] font-medium transition-colors">
+                      {s.label}
+                    </Link>
+                  ))}
                 </div>
-              ))}
-            </nav>
-          </div>
-
-          {/* ── Full-width dropdown (Kisna style) ── */}
-          {activeMenu && (
-            <div
-              onMouseEnter={handleMenuKeep}
-              onMouseLeave={handleMenuLeave}
-              className="absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-xl z-50"
-            >
-              <div className="max-w-screen-xl mx-auto px-10 py-8">
-                {(() => {
-                  const active = navLinks.find(l => l.label === activeMenu);
-                  if (!active?.submenu) return null;
-                  return (
-                    <div className="flex items-start gap-16">
-                      {/* Submenu links in a column */}
-                      <div>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5">
-                          {active.label}
-                        </p>
-                        <div className="space-y-3">
-                          {active.submenu.map((sub) => (
-                            <Link
-                              key={sub.label}
-                              href={sub.href}
-                              onClick={() => setActiveMenu(null)}
-                              className="block text-sm text-gray-600 hover:text-yellow-700 transition-colors"
-                            >
-                              {sub.label}
-                            </Link>
-                          ))}
-                        </div>
-                        <div className="mt-6">
-                          <Link
-                            href={active.href}
-                            onClick={() => setActiveMenu(null)}
-                            className="inline-flex items-center border border-gray-300 hover:border-gray-900 text-xs font-medium text-gray-700 hover:text-gray-900 px-5 py-2 rounded transition-colors"
-                          >
-                            View All
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
+                <Link href={NAV.find(n => n.label === activeMenu)?.href || '/shop'}
+                  onClick={() => setActiveMenu(null)}
+                  className="inline-flex items-center gap-1 mt-5 text-[11px] font-bold tracking-wide uppercase text-[#FF4D4D] hover:underline">
+                  View all {activeMenu} →
+                </Link>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </header>
-      <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

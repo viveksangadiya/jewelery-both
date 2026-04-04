@@ -14,9 +14,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <title>Lumière Jewels – Fine Jewelry Store</title>
-        <meta name="description" content="Discover exquisite jewelry crafted for every occasion." />
+        <title>Lumière — Fine Jewelry for Real Life</title>
+        <meta name="description" content="Gold-plated. Tarnish-resistant. Made for stacking, layering, and everyday wear." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
         {!isAdmin && <AnnouncementBar />}
@@ -24,7 +26,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         {!isAdmin && <Footer />}
         {!isAdmin && <CartDrawer />}
-        <Toaster position="top-right" toastOptions={{ style: { fontFamily: 'Inter, sans-serif' } }} />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              fontFamily: 'DM Sans, system-ui, sans-serif',
+              background: '#111',
+              color: '#fff',
+              borderRadius: '999px',
+              padding: '12px 20px',
+              fontSize: '13px',
+            },
+            iconTheme: { primary: '#FF4D4D', secondary: '#fff' },
+          }}
+        />
       </body>
     </html>
   );
