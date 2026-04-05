@@ -2,17 +2,11 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, MessageCircle, Send, CheckCircle } from 'lucide-react';
 
-const contactOptions = [
-  { icon: MessageCircle, title: 'Live Chat', desc: 'Chat with us instantly', action: 'Start Chat', available: true },
-  { icon: Mail, title: 'Email Us', desc: 'hello@lumierejewels.com', action: 'Send Email', available: true },
-  { icon: Phone, title: 'Call Us', desc: '+91 98765 43210', action: 'Call Now', available: true },
-];
-
 const faqs = [
   { q: 'How do I track my order?', a: 'Go to "Track Order" on our website or click the tracking link in your dispatch email.' },
   { q: 'Can I change or cancel my order?', a: 'Orders can be cancelled or modified within 2 hours of placing. Contact us immediately.' },
-  { q: 'How long does delivery take?', a: 'Standard delivery takes 3–5 business days. Express delivery is available in 1–2 days.' },
-  { q: 'What is your return policy?', a: 'We accept returns within 30 days of delivery for eligible items. See our Returns page for details.' },
+  { q: 'How long does delivery take?', a: 'Standard delivery takes 3–5 business days. Express delivery is available in select pin codes.' },
+  { q: 'What is your return policy?', a: 'We accept returns within 7 days of delivery for eligible items. See our Returns page for details.' },
 ];
 
 export default function ContactPage() {
@@ -35,7 +29,6 @@ export default function ContactPage() {
     e.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    // Simulate submission
     await new Promise(r => setTimeout(r, 1200));
     setSubmitted(true);
     setSubmitting(false);
@@ -46,54 +39,81 @@ export default function ContactPage() {
     if (errors[k]) setErrors(prev => ({ ...prev, [k]: '' }));
   };
 
+  const inputBase = {
+    border: '1px solid #EBEBCA',
+    color: '#642308',
+    backgroundColor: '#FAF9EE',
+  };
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{ backgroundColor: '#FAF9EE' }}>
+
       {/* Hero */}
-      <div className="bg-[#faf8f5] border-b border-gray-100 py-16 px-6">
+      <div className="py-14 px-6" style={{ backgroundColor: '#EBEBCA', borderBottom: '1px solid #B68868' }}>
         <div className="max-w-3xl mx-auto text-center">
-          <div className="w-14 h-14 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-5">
-            <Mail size={22} className="text-gray-700" strokeWidth={1.5} />
+          <div className="w-12 h-12 flex items-center justify-center mx-auto mb-5"
+            style={{ backgroundColor: '#FAF9EE', border: '1px solid #B68868' }}>
+            <Mail size={20} style={{ color: '#642308' }} strokeWidth={1.5} />
           </div>
-          <h1 className="font-display text-4xl font-bold text-gray-900 mb-3">Contact Us</h1>
-          <p className="text-gray-500 text-base leading-relaxed max-w-xl mx-auto">
-            We're here to help. Reach out to us through any of the channels below and we'll get back to you as soon as possible.
+          <h1 className="text-4xl font-bold mb-3" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+            Contact Us
+          </h1>
+          <p className="text-sm leading-relaxed max-w-xl mx-auto" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+            We're here to help. Reach out and we'll get back to you as soon as possible.
           </p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-16">
+      <div className="max-w-5xl mx-auto px-6 py-14">
 
         {/* Contact options */}
-        <div className="grid sm:grid-cols-3 gap-5 mb-16">
-          {contactOptions.map(({ icon: Icon, title, desc, action }) => (
-            <div key={title} className="border border-gray-100 p-6 text-center hover:border-gray-300 transition-colors group">
-              <div className="w-12 h-12 border border-gray-200 group-hover:border-gray-400 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
-                <Icon size={18} className="text-gray-600" strokeWidth={1.5} />
+        <div className="grid sm:grid-cols-3 gap-4 mb-14">
+          {[
+            { icon: MessageCircle, title: 'WhatsApp', desc: '+91 98765 43210', action: 'Message Us' },
+            { icon: Mail,          title: 'Email Us', desc: 'hello@hastkala.in', action: 'Send Email' },
+            { icon: Phone,         title: 'Call Us',  desc: '+91 98765 43210', action: 'Call Now' },
+          ].map(({ icon: Icon, title, desc, action }) => (
+            <div key={title} className="p-6 text-center transition-colors"
+              style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = '#B68868')}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = '#EBEBCA')}
+            >
+              <div className="w-10 h-10 flex items-center justify-center mx-auto mb-4"
+                style={{ border: '1px solid #EBEBCA' }}>
+                <Icon size={17} style={{ color: '#B68868' }} strokeWidth={1.5} />
               </div>
-              <p className="text-sm font-bold uppercase tracking-wide text-gray-900 mb-1">{title}</p>
-              <p className="text-xs text-gray-500 mb-4">{desc}</p>
-              <button className="text-xs font-bold uppercase tracking-widest text-gray-700 border-b border-gray-300 hover:border-gray-900 hover:text-gray-900 pb-0.5 transition-colors">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: '#642308' }}>{title}</p>
+              <p className="text-xs mb-4" style={{ color: '#903E1D' }}>{desc}</p>
+              <button className="text-[10px] font-bold uppercase tracking-[0.15em] pb-0.5 transition-colors"
+                style={{ color: '#642308', borderBottom: '1px solid #642308' }}>
                 {action}
               </button>
             </div>
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-14">
+        <div className="grid lg:grid-cols-2 gap-12">
 
           {/* Contact form */}
           <div>
-            <h2 className="font-display text-2xl font-bold text-gray-900 mb-6">Send Us a Message</h2>
+            <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+              Send Us a Message
+            </h2>
 
             {submitted ? (
-              <div className="border border-green-200 bg-green-50 p-8 text-center">
-                <CheckCircle size={40} className="text-green-500 mx-auto mb-4" strokeWidth={1.5} />
-                <h3 className="font-display text-xl font-bold text-gray-900 mb-2">Message Received!</h3>
-                <p className="text-sm text-gray-600 leading-relaxed mb-5">
-                  Thank you for reaching out. Our team will get back to you within 24 hours at <strong>{form.email}</strong>.
+              <div className="p-8 text-center" style={{ border: '1px solid #EBEBCA', backgroundColor: '#EBEBCA' }}>
+                <CheckCircle size={36} className="mx-auto mb-4" style={{ color: '#642308' }} strokeWidth={1.5} />
+                <h3 className="font-bold text-lg mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+                  Message Received!
+                </h3>
+                <p className="text-sm leading-relaxed mb-5" style={{ color: '#903E1D' }}>
+                  Thank you for reaching out. We'll reply within 24 hours at <strong>{form.email}</strong>.
                 </p>
-                <button onClick={() => { setSubmitted(false); setForm({ name: '', email: '', phone: '', subject: '', message: '' }); }}
-                  className="text-xs font-bold uppercase tracking-widest text-gray-600 border-b border-gray-300 hover:border-gray-900 hover:text-gray-900 pb-0.5 transition-colors">
+                <button
+                  onClick={() => { setSubmitted(false); setForm({ name: '', email: '', phone: '', subject: '', message: '' }); }}
+                  className="text-[10px] font-bold uppercase tracking-[0.15em] pb-0.5 transition-colors"
+                  style={{ color: '#642308', borderBottom: '1px solid #642308' }}
+                >
                   Send Another Message
                 </button>
               </div>
@@ -101,61 +121,91 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Full Name *</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: '#B68868' }}>
+                      Full Name *
+                    </label>
                     <input type="text" value={form.name} onChange={e => set('name', e.target.value)}
                       placeholder="Priya Sharma"
-                      className={`w-full border px-4 py-3 text-sm outline-none transition-colors ${errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-gray-900'}`}
+                      className="w-full px-4 py-3 text-sm outline-none transition-colors"
+                      style={{ ...inputBase, borderColor: errors.name ? '#b91c1c' : '#EBEBCA' }}
+                      onFocus={e => (e.currentTarget.style.borderColor = errors.name ? '#b91c1c' : '#B68868')}
+                      onBlur={e => (e.currentTarget.style.borderColor = errors.name ? '#b91c1c' : '#EBEBCA')}
                     />
-                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+                    {errors.name && <p className="text-[11px] mt-1" style={{ color: '#b91c1c' }}>{errors.name}</p>}
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Phone</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: '#B68868' }}>
+                      Phone
+                    </label>
                     <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="w-full border border-gray-200 focus:border-gray-900 px-4 py-3 text-sm outline-none transition-colors"
+                      className="w-full px-4 py-3 text-sm outline-none transition-colors"
+                      style={inputBase}
+                      onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
+                      onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Email Address *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: '#B68868' }}>
+                    Email Address *
+                  </label>
                   <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
                     placeholder="priya@example.com"
-                    className={`w-full border px-4 py-3 text-sm outline-none transition-colors ${errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-gray-900'}`}
+                    className="w-full px-4 py-3 text-sm outline-none transition-colors"
+                    style={{ ...inputBase, borderColor: errors.email ? '#b91c1c' : '#EBEBCA' }}
+                    onFocus={e => (e.currentTarget.style.borderColor = errors.email ? '#b91c1c' : '#B68868')}
+                    onBlur={e => (e.currentTarget.style.borderColor = errors.email ? '#b91c1c' : '#EBEBCA')}
                   />
-                  {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                  {errors.email && <p className="text-[11px] mt-1" style={{ color: '#b91c1c' }}>{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Subject</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: '#B68868' }}>
+                    Subject
+                  </label>
                   <select value={form.subject} onChange={e => set('subject', e.target.value)}
-                    className="w-full border border-gray-200 focus:border-gray-900 px-4 py-3 text-sm outline-none transition-colors bg-white appearance-none">
+                    className="w-full px-4 py-3 text-sm outline-none transition-colors appearance-none"
+                    style={inputBase}
+                    onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
+                    onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                  >
                     <option value="">Select a topic</option>
                     <option value="order">Order Enquiry</option>
                     <option value="return">Return / Exchange</option>
                     <option value="product">Product Question</option>
+                    <option value="custom">Custom Order</option>
                     <option value="shipping">Shipping Issue</option>
-                    <option value="payment">Payment Issue</option>
                     <option value="other">Other</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Message *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: '#B68868' }}>
+                    Message *
+                  </label>
                   <textarea value={form.message} onChange={e => set('message', e.target.value)}
                     placeholder="Tell us how we can help..."
                     rows={5}
-                    className={`w-full border px-4 py-3 text-sm outline-none transition-colors resize-none ${errors.message ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-gray-900'}`}
+                    className="w-full px-4 py-3 text-sm outline-none transition-colors resize-none"
+                    style={{ ...inputBase, borderColor: errors.message ? '#b91c1c' : '#EBEBCA' }}
+                    onFocus={e => (e.currentTarget.style.borderColor = errors.message ? '#b91c1c' : '#B68868')}
+                    onBlur={e => (e.currentTarget.style.borderColor = errors.message ? '#b91c1c' : '#EBEBCA')}
                   />
-                  {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
-                  <p className="text-[10px] text-gray-400 mt-1 text-right">{form.message.length}/1000</p>
+                  {errors.message && <p className="text-[11px] mt-1" style={{ color: '#b91c1c' }}>{errors.message}</p>}
+                  <p className="text-[10px] mt-1 text-right" style={{ color: '#B68868' }}>{form.message.length}/1000</p>
                 </div>
 
                 <button type="submit" disabled={submitting}
-                  className="w-full bg-gray-900 hover:bg-gray-700 disabled:bg-gray-300 text-white py-4 text-xs font-bold tracking-widest uppercase transition-colors flex items-center justify-center gap-2">
+                  className="w-full py-4 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                  style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
+                  onMouseEnter={e => { if (!submitting) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
+                  onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#642308'); }}
+                >
                   {submitting
-                    ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    : <Send size={13} />}
+                    ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    : <Send size={12} />}
                   {submitting ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
@@ -164,23 +214,25 @@ export default function ContactPage() {
 
           {/* Info + FAQs */}
           <div className="space-y-10">
-            {/* Store info */}
             <div>
-              <h2 className="font-display text-2xl font-bold text-gray-900 mb-5">Our Details</h2>
-              <div className="space-y-4">
+              <h2 className="text-2xl font-bold mb-5" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+                Our Details
+              </h2>
+              <div className="space-y-5">
                 {[
-                  { icon: MapPin, label: 'Address', value: '123 Jeweler\'s Lane, Fort, Mumbai, Maharashtra 400001' },
-                  { icon: Phone, label: 'Phone', value: '+91 98765 43210' },
-                  { icon: Mail, label: 'Email', value: 'hello@lumierejewels.com' },
-                  { icon: Clock, label: 'Support Hours', value: 'Mon–Sat: 9 AM – 7 PM IST\nSun: 10 AM – 5 PM IST' },
+                  { icon: MapPin,  label: 'Address',       value: 'Plot 14, Craft Bazaar, Johari Bazaar\nJaipur, Rajasthan 302003' },
+                  { icon: Phone,   label: 'Phone',         value: '+91 98765 43210' },
+                  { icon: Mail,    label: 'Email',         value: 'hello@hastkala.in' },
+                  { icon: Clock,   label: 'Support Hours', value: 'Mon–Sat: 9 AM – 7 PM IST\nSun: 10 AM – 4 PM IST' },
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex gap-4">
-                    <div className="w-9 h-9 border border-gray-100 flex items-center justify-center flex-shrink-0 rounded-full">
-                      <Icon size={15} className="text-gray-500" strokeWidth={1.5} />
+                    <div className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+                      style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
+                      <Icon size={13} style={{ color: '#B68868' }} strokeWidth={1.5} />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">{label}</p>
-                      <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">{value}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5" style={{ color: '#B68868' }}>{label}</p>
+                      <p className="text-sm whitespace-pre-line leading-relaxed" style={{ color: '#642308' }}>{value}</p>
                     </div>
                   </div>
                 ))}
@@ -189,30 +241,31 @@ export default function ContactPage() {
 
             {/* FAQs */}
             <div>
-              <h2 className="font-display text-xl font-bold text-gray-900 mb-5">Quick Answers</h2>
+              <h2 className="text-xl font-bold mb-5" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+                Quick Answers
+              </h2>
               <div className="space-y-4">
                 {faqs.map(({ q, a }) => (
-                  <div key={q} className="border-b border-gray-100 pb-4 last:border-0">
-                    <p className="text-xs font-bold uppercase tracking-wide text-gray-900 mb-1.5">{q}</p>
-                    <p className="text-xs text-gray-500 leading-relaxed">{a}</p>
+                  <div key={q} className="pb-4" style={{ borderBottom: '1px solid #EBEBCA' }}>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.1em] mb-1.5" style={{ color: '#642308' }}>{q}</p>
+                    <p className="text-xs leading-relaxed" style={{ color: '#903E1D' }}>{a}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Response time */}
-            <div className="bg-gray-50 border border-gray-100 p-5">
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Response Times</p>
+            {/* Response times */}
+            <div className="p-5" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: '#B68868' }}>Response Times</p>
               <div className="space-y-2">
                 {[
-                  { channel: 'Live Chat', time: 'Under 2 minutes' },
-                  { channel: 'Phone', time: 'Immediate' },
+                  { channel: 'WhatsApp',    time: 'Within 4 hours' },
+                  { channel: 'Phone',       time: 'Immediate' },
                   { channel: 'Email / Form', time: 'Within 24 hours' },
-                  { channel: 'WhatsApp', time: 'Within 4 hours' },
                 ].map(({ channel, time }) => (
-                  <div key={channel} className="flex justify-between text-xs">
-                    <span className="text-gray-600">{channel}</span>
-                    <span className="text-gray-900 font-semibold">{time}</span>
+                  <div key={channel} className="flex justify-between text-xs py-1.5" style={{ borderBottom: '1px solid #EBEBCA' }}>
+                    <span style={{ color: '#903E1D' }}>{channel}</span>
+                    <span className="font-semibold" style={{ color: '#642308' }}>{time}</span>
                   </div>
                 ))}
               </div>

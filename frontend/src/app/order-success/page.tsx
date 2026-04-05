@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle, Package, Truck, MapPin, ArrowRight, ShoppingBag } from 'lucide-react';
+import { CheckCircle, Package, Truck, MapPin, ShoppingBag } from 'lucide-react';
 import api from '@/lib/api';
 
 interface OrderData {
@@ -33,42 +33,46 @@ export default function OrderSuccessPage(): JSX.Element {
   const isCOD = method === 'cod' || order?.payment_method === 'cod';
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center py-16 px-4">
+    <div className="min-h-screen flex items-center justify-center py-16 px-4" style={{ backgroundColor: '#FAF9EE' }}>
       <div className="max-w-lg w-full text-center">
-        {/* Success animation */}
-        <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce-once">
-          <CheckCircle size={52} className="text-green-500" />
+
+        {/* Success mark */}
+        <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6"
+          style={{ backgroundColor: '#EBEBCA', border: '2px solid #B68868' }}>
+          <CheckCircle size={40} style={{ color: '#642308' }} />
         </div>
 
-        <h1 className="font-display text-4xl font-bold text-charcoal mb-2">Order Placed! 🎉</h1>
-        <p className="text-gray-500 text-base mb-8">
+        <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+          Order Placed!
+        </h1>
+        <p className="text-sm mb-8" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
           {isCOD
             ? 'Your order is confirmed. Pay when it arrives at your door.'
-            : 'Payment successful! Your order is being processed.'}
+            : 'Payment successful! Your order is being prepared with care.'}
         </p>
 
         {/* Order info */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 text-left mb-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Order Number</span>
-            <span className="font-mono font-bold text-yellow-700 text-sm">{orderNumber}</span>
+        <div className="p-6 text-left mb-5 space-y-3" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
+          <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid #EBEBCA' }}>
+            <span className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: '#B68868' }}>Order Number</span>
+            <span className="font-mono font-bold text-sm" style={{ color: '#642308' }}>{orderNumber}</span>
           </div>
           {order && (
             <>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Total</span>
-                <span className="font-bold text-gray-900">₹{parseFloat(String(order.total)).toLocaleString()}</span>
+              <div className="flex items-center justify-between py-2" style={{ borderBottom: '1px solid #EBEBCA' }}>
+                <span className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: '#B68868' }}>Total</span>
+                <span className="font-bold text-sm" style={{ color: '#642308' }}>₹{parseFloat(String(order.total)).toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Payment</span>
-                <span className={`text-sm font-semibold capitalize ${order.payment_status === 'paid' ? 'text-green-600' : 'text-orange-500'}`}>
+              <div className="flex items-center justify-between py-2" style={{ borderBottom: '1px solid #EBEBCA' }}>
+                <span className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: '#B68868' }}>Payment</span>
+                <span className="text-sm font-semibold capitalize" style={{ color: '#642308' }}>
                   {isCOD ? 'Cash on Delivery' : `Paid via ${order.payment_method}`}
                 </span>
               </div>
               {order.courier_name && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Courier</span>
-                  <span className="text-sm font-medium text-gray-900">{order.courier_name}</span>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: '#B68868' }}>Courier</span>
+                  <span className="text-sm font-medium" style={{ color: '#642308' }}>{order.courier_name}</span>
                 </div>
               )}
             </>
@@ -76,29 +80,44 @@ export default function OrderSuccessPage(): JSX.Element {
         </div>
 
         {/* Steps */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className="grid grid-cols-3 gap-2 mb-6">
           {[
             { icon: CheckCircle, label: 'Order Confirmed', done: true },
-            { icon: Package, label: 'Being Packed', done: !!order?.shipment_id },
-            { icon: Truck, label: 'Out for Delivery', done: false },
+            { icon: Package,     label: 'Being Packed',    done: !!order?.shipment_id },
+            { icon: Truck,       label: 'Out for Delivery', done: false },
           ].map(({ icon: Icon, label, done }) => (
-            <div key={label} className={`rounded-xl p-3 text-center border ${done ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-              <Icon size={20} className={`mx-auto mb-1 ${done ? 'text-green-500' : 'text-gray-300'}`} />
-              <p className={`text-xs font-medium ${done ? 'text-green-700' : 'text-gray-400'}`}>{label}</p>
+            <div key={label} className="p-3 text-center"
+              style={{
+                border: `1px solid ${done ? '#B68868' : '#EBEBCA'}`,
+                backgroundColor: done ? '#EBEBCA' : '#ffffff',
+              }}>
+              <Icon size={18} className="mx-auto mb-1.5" style={{ color: done ? '#642308' : '#EBEBCA' }} />
+              <p className="text-[10px] font-bold tracking-[0.1em] uppercase leading-tight"
+                style={{ color: done ? '#642308' : '#B68868' }}>
+                {label}
+              </p>
             </div>
           ))}
         </div>
 
-        {/* Shiprocket info */}
+        {/* Status note */}
         {order?.shipment_id ? (
-          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-6 text-sm text-blue-700">
-            <p className="font-semibold mb-1">📦 Handed to Shiprocket</p>
-            <p className="text-xs text-blue-500">Your order has been picked up by our courier partner and is on its way.</p>
+          <div className="p-4 mb-5 text-sm" style={{ border: '1px solid #EBEBCA', backgroundColor: '#EBEBCA' }}>
+            <p className="font-bold text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: '#642308' }}>
+              Handed to Courier
+            </p>
+            <p className="text-xs" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+              Your order has been picked up by our courier partner and is on its way.
+            </p>
           </div>
         ) : (
-          <div className="bg-yellow-50 border border-yellow-100 rounded-2xl p-4 mb-6 text-sm text-yellow-700">
-            <p className="font-semibold mb-1">⏳ Preparing your order</p>
-            <p className="text-xs text-yellow-600">We're packing your jewelry. Courier will be assigned shortly.</p>
+          <div className="p-4 mb-5 text-sm" style={{ border: '1px solid #EBEBCA', backgroundColor: '#FAF9EE' }}>
+            <p className="font-bold text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: '#642308' }}>
+              Preparing Your Order
+            </p>
+            <p className="text-xs" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+              We're handpacking your toran with care. Courier will be assigned shortly.
+            </p>
           </div>
         )}
 
@@ -107,22 +126,28 @@ export default function OrderSuccessPage(): JSX.Element {
           {orderNumber && (
             <Link
               href={`/track-order?order=${orderNumber}`}
-              className="flex-1 flex items-center justify-center gap-2 border-2 border-yellow-500 text-yellow-700 font-semibold py-3 rounded-xl hover:bg-yellow-50 transition-colors text-sm"
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
+              style={{ border: '1px solid #642308', color: '#642308', backgroundColor: 'transparent' }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#EBEBCA')}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
             >
-              <MapPin size={16} /> Track Order
+              <MapPin size={14} /> Track Order
             </Link>
           )}
           <Link
             href="/shop"
-            className="flex-1 btn-gold flex items-center justify-center gap-2 font-semibold py-3 rounded-xl text-sm"
+            className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
+            style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#903E1D')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#642308')}
           >
-            <ShoppingBag size={16} /> Continue Shopping
+            <ShoppingBag size={14} /> Continue Shopping
           </Link>
         </div>
 
-        <p className="text-xs text-gray-400 mt-6">
-          Order confirmation sent to your registered email. Questions?{' '}
-          <Link href="/contact" className="text-yellow-600 hover:underline">Contact us</Link>
+        <p className="text-[10px] mt-5" style={{ color: '#B68868' }}>
+          Order confirmation sent to your registered email.{' '}
+          <Link href="/contact" className="hover:underline" style={{ color: '#903E1D' }}>Contact us</Link> with any questions.
         </p>
       </div>
     </div>

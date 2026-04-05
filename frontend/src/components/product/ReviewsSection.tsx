@@ -11,34 +11,37 @@ interface ReviewsSectionProps {
 }
 
 // ── Interactive star picker ───────────────────────────────
-function StarPicker({ value, onChange, size = 28 }: { value: number; onChange?: (v: number) => void; size?: number }) {
+function StarPicker({ value, onChange, size = 26 }: { value: number; onChange?: (v: number) => void; size?: number }) {
   const [hovered, setHovered] = useState(0);
   const display = hovered || value;
   return (
     <div className="flex items-center gap-0.5">
-      {[1,2,3,4,5].map(s => (
+      {[1, 2, 3, 4, 5].map(s => (
         <button key={s} type="button"
           onClick={() => onChange?.(s)}
           onMouseEnter={() => onChange && setHovered(s)}
           onMouseLeave={() => onChange && setHovered(0)}
           className={onChange ? 'cursor-pointer' : 'cursor-default'}>
-          <Star size={size}
-            className={s <= display ? 'text-gray-900' : 'text-gray-300'}
-            fill={s <= display ? 'currentColor' : 'none'} />
+          <Star
+            size={size}
+            style={{ color: s <= display ? '#903E1D' : '#EBEBCA' }}
+            fill={s <= display ? '#903E1D' : 'none'}
+          />
         </button>
       ))}
     </div>
   );
 }
 
-// ── Display stars (no interaction) ───────────────────────
-function Stars({ value, size = 14 }: { value: number; size?: number }) {
+// ── Display stars (read-only) ─────────────────────────────
+function Stars({ value, size = 13 }: { value: number; size?: number }) {
   return (
     <div className="flex items-center gap-0.5">
-      {[1,2,3,4,5].map(s => (
+      {[1, 2, 3, 4, 5].map(s => (
         <Star key={s} size={size}
-          className={s <= Math.round(value) ? 'text-gray-900' : 'text-gray-300'}
-          fill={s <= Math.round(value) ? 'currentColor' : 'none'} />
+          style={{ color: s <= Math.round(value) ? '#903E1D' : '#EBEBCA' }}
+          fill={s <= Math.round(value) ? '#903E1D' : 'none'}
+        />
       ))}
     </div>
   );
@@ -46,21 +49,20 @@ function Stars({ value, size = 14 }: { value: number; size?: number }) {
 
 export default function ReviewsSection({ productId, productName }: ReviewsSectionProps) {
   const user = useAuthStore(s => s.user);
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [summary, setSummary] = useState<any>(null);
-  const [myReview, setMyReview] = useState<any>(null);
+  const [reviews, setReviews]           = useState<any[]>([]);
+  const [summary, setSummary]           = useState<any>(null);
+  const [myReview, setMyReview]         = useState<any>(null);
   const [hasPurchased, setHasPurchased] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
+  const [loading, setLoading]           = useState(true);
+  const [page, setPage]                 = useState(1);
+  const [totalPages, setTotalPages]     = useState(1);
+  const [searchQuery, setSearchQuery]   = useState('');
+  const [sortBy, setSortBy]             = useState('newest');
 
-  // Form state
-  const [showForm, setShowForm] = useState(false);
-  const [rating, setRating] = useState(0);
-  const [title, setTitle] = useState('');
-  const [comment, setComment] = useState('');
+  const [showForm, setShowForm]     = useState(false);
+  const [rating, setRating]         = useState(0);
+  const [title, setTitle]           = useState('');
+  const [comment, setComment]       = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const LIMIT = 5;
@@ -72,7 +74,6 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
       const data = res.data;
       let rows = data.data;
 
-      // Client-side search filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         rows = rows.filter((r: any) =>
@@ -82,10 +83,10 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
         );
       }
 
-      // Client-side sort
       if (sortBy === 'highest') rows = [...rows].sort((a: any, b: any) => b.rating - a.rating);
       if (sortBy === 'lowest')  rows = [...rows].sort((a: any, b: any) => a.rating - b.rating);
-      if (sortBy === 'newest')  rows = [...rows].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      if (sortBy === 'newest')  rows = [...rows].sort((a: any, b: any) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
       setReviews(rows);
       setSummary(data.summary);
@@ -109,8 +110,6 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
 
   useEffect(() => { load(page); }, [productId, page, sortBy]);
   useEffect(() => { loadMyReview(); }, [productId, user]);
-
-  // Search with debounce
   useEffect(() => {
     const t = setTimeout(() => load(1), 400);
     return () => clearTimeout(t);
@@ -123,12 +122,11 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
     setSubmitting(true);
     try {
       await reviewsApi.submit(productId, { rating, title, comment });
-      toast.success(myReview ? 'Review updated!' : 'Review submitted! 🌟');
+      toast.success(myReview ? 'Review updated!' : 'Review submitted!');
       setShowForm(false);
       load(1); loadMyReview();
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Failed to submit';
-      toast.error(msg);
+      toast.error(err.response?.data?.message || 'Failed to submit');
     } finally { setSubmitting(false); }
   };
 
@@ -143,70 +141,83 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
   };
 
   const totalReviews = parseInt(summary?.total || 0);
-  const avgRating = parseFloat(summary?.avg_rating || 0);
-
-  const ratingLabel = (r: number) => {
-    if (r >= 4.5) return 'Excellent'; if (r >= 4) return 'Very Good';
-    if (r >= 3) return 'Good'; if (r >= 2) return 'Fair'; return 'Poor';
-  };
+  const avgRating    = parseFloat(summary?.avg_rating || 0);
 
   return (
-    <div className="mt-20 border-t border-gray-100 pt-14">
+    <div className="mt-20 pt-14" style={{ borderTop: '1px solid #EBEBCA' }}>
 
-      {/* ── Header row — "CUSTOMER REVIEWS  4.5 ★★★★½  WRITE A REVIEW | ASK A QUESTION" ── */}
-      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+      {/* ── Section header ── */}
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-10">
         <div className="flex items-center gap-5 flex-wrap">
-          <h2 className="font-display text-xl font-bold text-gray-900 uppercase tracking-wide">
+          <h2 className="text-xs font-bold tracking-[0.3em] uppercase" style={{ color: '#642308' }}>
             Customer Reviews
-            {totalReviews > 0 && <span className="text-gray-400 font-normal ml-2 text-base normal-case tracking-normal">({totalReviews})</span>}
+            {totalReviews > 0 && (
+              <span className="ml-2 font-normal tracking-normal normal-case" style={{ color: '#B68868' }}>
+                ({totalReviews})
+              </span>
+            )}
           </h2>
           {avgRating > 0 && (
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-gray-900">{avgRating.toFixed(1)}</span>
-              <Stars value={avgRating} size={16} />
+              <span className="text-sm font-bold" style={{ color: '#642308' }}>{avgRating.toFixed(1)}</span>
+              <Stars value={avgRating} size={14} />
             </div>
           )}
         </div>
 
-        {/* Action buttons — right side like Mejuri */}
-        <div className="flex items-center divide-x divide-gray-200">
+        {/* Write review CTA */}
+        <div className="flex items-center">
           {user && hasPurchased !== false && !showForm && (
-            <button onClick={() => setShowForm(true)}
-              className="px-5 py-1 text-sm font-semibold text-gray-600 hover:text-gray-900 uppercase tracking-wide underline underline-offset-4 transition-colors">
+            <button
+              onClick={() => setShowForm(true)}
+              className="text-xs font-bold tracking-[0.2em] uppercase pb-0.5 transition-colors"
+              style={{ color: '#903E1D', borderBottom: '1px solid #B68868' }}>
               {myReview ? 'Edit Review' : 'Write a Review'}
             </button>
           )}
           {user && hasPurchased === false && !myReview && (
-            <span className="px-5 py-1 text-sm text-gray-400 uppercase tracking-wide">
+            <span className="text-xs tracking-widest uppercase" style={{ color: '#B68868' }}>
               Purchase to review
             </span>
           )}
           {!user && (
-            <a href="/account/login"
-              className="px-5 py-1 text-sm font-semibold text-gray-600 hover:text-gray-900 uppercase tracking-wide underline underline-offset-4 transition-colors">
+            <a
+              href="/account/login"
+              className="text-xs font-bold tracking-[0.2em] uppercase pb-0.5 transition-colors"
+              style={{ color: '#903E1D', borderBottom: '1px solid #B68868' }}>
               Write a Review
             </a>
           )}
         </div>
       </div>
 
-      {/* ── Write / Edit form ─────────────────────────── */}
+      {/* ── Write / Edit form ── */}
       {showForm && (
-        <div className="mb-10 border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-bold uppercase tracking-wide text-gray-900">
+        <div className="mb-10 p-6" style={{ border: '1px solid #EBEBCA', backgroundColor: '#FAF9EE' }}>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xs font-bold tracking-[0.25em] uppercase" style={{ color: '#642308' }}>
               {myReview ? 'Edit Your Review' : 'Write a Review'}
             </h3>
-            <button onClick={() => setShowForm(false)} className="text-xs text-gray-400 hover:text-gray-700 uppercase tracking-wide">Cancel</button>
+            <button
+              onClick={() => setShowForm(false)}
+              className="text-[10px] tracking-widest uppercase transition-colors"
+              style={{ color: '#B68868' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+              Cancel
+            </button>
           </div>
-          <form onSubmit={handleSubmit}>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Star picker */}
-            <div className="mb-5">
-              <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">Your Rating *</p>
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.25em] uppercase mb-3" style={{ color: '#B68868' }}>
+                Your Rating *
+              </p>
               <div className="flex items-center gap-3">
-                <StarPicker value={rating} onChange={setRating} size={28} />
+                <StarPicker value={rating} onChange={setRating} size={26} />
                 {rating > 0 && (
-                  <span className="text-sm text-gray-600">
+                  <span className="text-xs" style={{ color: '#903E1D' }}>
                     {['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][rating]}
                   </span>
                 )}
@@ -214,34 +225,62 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
             </div>
 
             {/* Title */}
-            <div className="mb-4">
-              <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">Review Title</p>
-              <input type="text" value={title} onChange={e => setTitle(e.target.value)}
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.25em] uppercase mb-2" style={{ color: '#B68868' }}>
+                Review Title
+              </p>
+              <input
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
                 placeholder="Summarise your experience"
-                className="w-full border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors"
+                className="w-full px-4 py-3 text-sm outline-none transition-colors bg-white"
+                style={{ border: '1px solid #EBEBCA', color: '#642308' }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
+                onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
               />
             </div>
 
             {/* Comment */}
-            <div className="mb-5">
-              <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">Your Review</p>
-              <textarea value={comment} onChange={e => setComment(e.target.value)}
-                placeholder="Share details about your experience..."
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.25em] uppercase mb-2" style={{ color: '#B68868' }}>
+                Your Review
+              </p>
+              <textarea
+                value={comment}
+                onChange={e => setComment(e.target.value)}
+                placeholder="Share details about your experience with this toran…"
                 rows={4}
-                className="w-full border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-900 transition-colors resize-none"
+                className="w-full px-4 py-3 text-sm outline-none transition-colors resize-none bg-white"
+                style={{ border: '1px solid #EBEBCA', color: '#642308' }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
+                onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <button type="submit" disabled={submitting || rating === 0}
-                className="px-8 py-3 bg-gray-900 text-white text-xs font-bold tracking-widest uppercase hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-2">
-                {submitting && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-                {myReview ? 'Update' : 'Submit'} Review
+            <div className="flex items-center gap-4 pt-1">
+              <button
+                type="submit"
+                disabled={submitting || rating === 0}
+                className="px-8 py-3 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 transition-colors disabled:opacity-40"
+                style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
+                onMouseEnter={e => { if (!submitting && rating > 0) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
+                onMouseLeave={e => { if (!submitting && rating > 0) (e.currentTarget.style.backgroundColor = '#642308'); }}>
+                {submitting && (
+                  <div className="w-3.5 h-3.5 border-2 border-t-transparent rounded-full animate-spin"
+                    style={{ borderColor: '#FAF9EE', borderTopColor: 'transparent' }} />
+                )}
+                {myReview ? 'Update Review' : 'Submit Review'}
               </button>
               {myReview && (
-                <button type="button" onClick={handleDelete}
-                  className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-600 uppercase tracking-wide transition-colors">
-                  <Trash2 size={13} /> Delete
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="flex items-center gap-1.5 text-xs tracking-wide uppercase transition-colors"
+                  style={{ color: '#B68868' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
+                  onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+                  <Trash2 size={12} /> Delete
                 </button>
               )}
             </div>
@@ -249,50 +288,68 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
         </div>
       )}
 
-      {/* ── My review highlight ───────────────────────── */}
+      {/* ── My review highlight ── */}
       {myReview && !showForm && (
-        <div className="mb-8 border border-yellow-200 bg-yellow-50/50 p-5 flex gap-6">
+        <div className="mb-8 p-5 flex gap-6" style={{ border: '1px solid #EBEBCA', backgroundColor: '#EBEBCA' }}>
           <div className="w-36 flex-shrink-0">
-            <p className="text-xs font-bold text-gray-900">{user?.name?.split(' ')[0]} {user?.name?.split(' ').pop()?.[0]}.</p>
-            <p className="text-xs text-yellow-700 font-semibold mt-0.5">Your Review</p>
-            <p className="text-xs text-gray-400 mt-0.5 font-mono">
-              {new Date(myReview.created_at).toLocaleDateString('en-GB').replace(/\//g, '/')}
+            <p className="text-xs font-semibold" style={{ color: '#642308' }}>
+              {user?.name?.split(' ')[0]} {user?.name?.split(' ').pop()?.[0]}.
+            </p>
+            <p className="text-[10px] font-bold tracking-wide mt-0.5 uppercase" style={{ color: '#903E1D' }}>Your Review</p>
+            <p className="text-[10px] mt-0.5 font-mono" style={{ color: '#B68868' }}>
+              {new Date(myReview.created_at).toLocaleDateString('en-GB')}
             </p>
           </div>
           <div className="flex-1">
-            <Stars value={myReview.rating} size={15} />
-            {myReview.title && <p className="text-xs font-bold uppercase tracking-wide text-gray-900 mt-2">{myReview.title}</p>}
-            {myReview.comment && <p className="text-sm text-gray-600 mt-1 leading-relaxed" style={{ fontFamily: 'monospace' }}>{myReview.comment}</p>}
+            <Stars value={myReview.rating} size={13} />
+            {myReview.title && (
+              <p className="text-xs font-bold uppercase tracking-wide mt-2" style={{ color: '#642308' }}>
+                {myReview.title}
+              </p>
+            )}
+            {myReview.comment && (
+              <p className="text-sm mt-1.5 leading-relaxed" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+                {myReview.comment}
+              </p>
+            )}
           </div>
-          <button onClick={() => setShowForm(true)}
-            className="flex-shrink-0 text-xs text-gray-400 hover:text-gray-700 flex items-center gap-1 self-start transition-colors">
-            <Edit2 size={12} /> Edit
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex-shrink-0 flex items-center gap-1 self-start text-xs transition-colors"
+            style={{ color: '#B68868' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+            <Edit2 size={11} /> Edit
           </button>
         </div>
       )}
 
-      {/* ── Search + Sort controls ────────────────────── */}
+      {/* ── Search + Sort bar ── */}
       {totalReviews > 0 && (
-        <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+        <div className="flex items-center justify-between gap-4 mb-8 flex-wrap">
           {/* Search */}
-          <div className="flex items-center gap-2 border-b border-gray-300 pb-1 w-64">
-            <Search size={14} className="text-gray-400 flex-shrink-0" />
+          <div
+            className="flex items-center gap-2 pb-1 w-56"
+            style={{ borderBottom: '1px solid #EBEBCA' }}>
+            <Search size={13} style={{ color: '#B68868', flexShrink: 0 }} />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search Reviews"
-              className="flex-1 text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400"
+              placeholder="Search reviews"
+              className="flex-1 text-xs outline-none bg-transparent"
+              style={{ color: '#642308' }}
             />
           </div>
 
           {/* Sort */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Sort:</span>
+            <span className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: '#B68868' }}>Sort:</span>
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value)}
-              className="text-xs font-bold uppercase tracking-wide text-gray-700 border-none outline-none bg-transparent cursor-pointer">
+              className="text-xs font-semibold tracking-wide border-none outline-none bg-transparent cursor-pointer"
+              style={{ color: '#642308' }}>
               <option value="newest">Newest</option>
               <option value="highest">Highest Rating</option>
               <option value="lowest">Lowest Rating</option>
@@ -301,12 +358,12 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
         </div>
       )}
 
-      {/* ── Reviews list — Mejuri 2-col layout ───────── */}
+      {/* ── Reviews list ── */}
       {loading ? (
         <div className="space-y-8">
-          {[1,2,3].map(i => (
-            <div key={i} className="flex gap-6 border-b border-gray-100 pb-8">
-              <div className="w-36 space-y-1.5 flex-shrink-0">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="flex gap-6 pb-8" style={{ borderBottom: '1px solid #EBEBCA' }}>
+              <div className="w-36 space-y-2 flex-shrink-0">
                 <div className="skeleton h-3 rounded w-20" />
                 <div className="skeleton h-2.5 rounded w-16" />
               </div>
@@ -319,81 +376,101 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
           ))}
         </div>
       ) : reviews.length === 0 && !myReview ? (
-        <div className="text-center py-16 border border-gray-100">
-          <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-2">No Reviews Yet</p>
-          <p className="text-xs text-gray-400">Be the first to share your experience</p>
+        /* Empty state */
+        <div className="py-16 text-center" style={{ border: '1px solid #EBEBCA' }}>
+          <p className="text-xs font-bold tracking-[0.3em] uppercase mb-2" style={{ color: '#B68868' }}>
+            No Reviews Yet
+          </p>
+          <p className="text-xs mb-6" style={{ color: '#B68868' }}>
+            Be the first to share your experience
+          </p>
           {user && hasPurchased !== false && !showForm && (
-            <button onClick={() => setShowForm(true)}
-              className="mt-5 px-8 py-3 bg-gray-900 text-white text-xs font-bold tracking-widest uppercase hover:bg-gray-700 transition-colors">
+            <button
+              onClick={() => setShowForm(true)}
+              className="px-8 py-3 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
+              style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#903E1D')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}>
               Write a Review
             </button>
           )}
         </div>
       ) : (
-        <div className="divide-y divide-gray-100">
+        /* Reviews — 2-col layout */
+        <div>
           {reviews
             .filter(r => !myReview || r.id !== myReview.id)
-            .map(r => (
-            <div key={r.id} className="flex gap-6 lg:gap-16 py-7">
-              {/* Left col: name, badge, date */}
-              <div className="w-36 xl:w-44 flex-shrink-0">
-                <p className="text-sm font-semibold text-gray-900">
-                  {/* First name + last initial — like Mejuri */}
-                  {r.user_name?.split(' ')[0]} {r.user_name?.split(' ').slice(1).map((n: string) => n[0]).join('')}.
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5">Verified Buyer</p>
-                <p className="text-xs text-gray-400 mt-0.5 font-mono">
-                  {new Date(r.created_at).toLocaleDateString('en-GB').replace(/\//g, '/')}
-                </p>
-              </div>
+            .map((r, idx, arr) => (
+              <div
+                key={r.id}
+                className="flex gap-8 lg:gap-16 py-7"
+                style={{ borderBottom: idx < arr.length - 1 ? '1px solid #EBEBCA' : 'none' }}>
 
-              {/* Right col: stars, title, comment */}
-              <div className="flex-1 min-w-0">
-                <Stars value={r.rating} size={15} />
-                {r.title && (
-                  <p className="text-xs font-bold uppercase tracking-wide text-gray-900 mt-2">
-                    {r.title}
+                {/* Left: author */}
+                <div className="w-36 xl:w-44 flex-shrink-0">
+                  <p className="text-sm font-semibold" style={{ color: '#642308' }}>
+                    {r.user_name?.split(' ')[0]} {r.user_name?.split(' ').slice(1).map((n: string) => n[0]).join('')}.
                   </p>
-                )}
-                {r.comment && (
-                  <p className="text-sm text-gray-600 mt-1.5 leading-relaxed" style={{ fontFamily: 'monospace' }}>
-                    {r.comment}
+                  <p className="text-[10px] font-medium tracking-wide mt-0.5 uppercase" style={{ color: '#B68868' }}>
+                    Verified Buyer
                   </p>
-                )}
+                  <p className="text-[10px] mt-0.5 font-mono" style={{ color: '#B68868' }}>
+                    {new Date(r.created_at).toLocaleDateString('en-GB')}
+                  </p>
+                </div>
+
+                {/* Right: review content */}
+                <div className="flex-1 min-w-0">
+                  <Stars value={r.rating} size={13} />
+                  {r.title && (
+                    <p className="text-xs font-bold uppercase tracking-wide mt-2" style={{ color: '#642308' }}>
+                      {r.title}
+                    </p>
+                  )}
+                  {r.comment && (
+                    <p className="text-sm mt-1.5 leading-relaxed" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+                      {r.comment}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       )}
 
-      {/* ── Pagination — like Mejuri: « 1 2 3 ... 214 » ── */}
+      {/* ── Pagination ── */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-10">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 disabled:opacity-30 transition-colors">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="w-8 h-8 flex items-center justify-center transition-colors disabled:opacity-30"
+            style={{ color: '#B68868' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
             <ChevronLeft size={16} />
           </button>
 
-          {/* Page numbers */}
           {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
             let num: number;
-            if (totalPages <= 5) num = i + 1;
-            else if (page <= 3) num = i + 1;
+            if (totalPages <= 5)        num = i + 1;
+            else if (page <= 3)         num = i + 1;
             else if (page >= totalPages - 2) num = totalPages - 4 + i;
-            else num = page - 2 + i;
+            else                        num = page - 2 + i;
             return num;
           }).map((num, i, arr) => (
             <span key={num} className="flex items-center gap-2">
-              {i === arr.length - 1 && num < totalPages && arr[i-1] !== num - 1 && (
-                <span className="text-gray-400 text-sm">...</span>
+              {i === arr.length - 1 && num < totalPages && arr[i - 1] !== num - 1 && (
+                <span className="text-sm" style={{ color: '#B68868' }}>…</span>
               )}
               <button
                 onClick={() => setPage(num)}
-                className={`w-8 h-8 flex items-center justify-center text-sm font-semibold transition-colors ${
-                  page === num
-                    ? 'text-gray-900 underline underline-offset-2'
-                    : 'text-gray-400 hover:text-gray-900'
-                }`}>
+                className="w-8 h-8 flex items-center justify-center text-sm font-semibold transition-colors"
+                style={{
+                  color: page === num ? '#642308' : '#B68868',
+                  textDecoration: page === num ? 'underline' : 'none',
+                  textUnderlineOffset: '3px',
+                }}>
                 {num}
               </button>
             </span>
@@ -401,16 +478,25 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
 
           {totalPages > 5 && page < totalPages - 2 && (
             <>
-              <span className="text-gray-400 text-sm">...</span>
-              <button onClick={() => setPage(totalPages)}
-                className="w-8 h-8 flex items-center justify-center text-sm font-semibold text-gray-400 hover:text-gray-900 transition-colors">
+              <span className="text-sm" style={{ color: '#B68868' }}>…</span>
+              <button
+                onClick={() => setPage(totalPages)}
+                className="w-8 h-8 flex items-center justify-center text-sm font-semibold transition-colors"
+                style={{ color: '#B68868' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
                 {totalPages}
               </button>
             </>
           )}
 
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 disabled:opacity-30 transition-colors">
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="w-8 h-8 flex items-center justify-center transition-colors disabled:opacity-30"
+            style={{ color: '#B68868' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
             <ChevronRight size={16} />
           </button>
         </div>

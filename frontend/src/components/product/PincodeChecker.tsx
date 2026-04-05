@@ -11,10 +11,10 @@ interface ServiceabilityResult {
 }
 
 export default function PincodeChecker() {
-  const [pincode, setPincode]   = useState('');
-  const [result, setResult]     = useState<ServiceabilityResult | null>(null);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
+  const [pincode, setPincode] = useState('');
+  const [result, setResult]   = useState<ServiceabilityResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const check = async () => {
@@ -28,8 +28,7 @@ export default function PincodeChecker() {
     setLoading(true);
     try {
       const res = await api.get(`/shiprocket/serviceability?pincode=${pin}`);
-      const data = res.data.data;
-      setResult(data);
+      setResult(res.data.data);
     } catch {
       setError('Unable to check serviceability. Please try again.');
     } finally {
@@ -48,35 +47,33 @@ export default function PincodeChecker() {
     if (error) setError('');
   };
 
-  // Format ETD from Shiprocket — could be "2-3 Days", "2026-04-05", etc.
   const formatETD = (etd: string | null): string => {
     if (!etd) return '3–5 business days';
-    // If it's a date string like "2026-04-05"
     if (/^\d{4}-\d{2}-\d{2}/.test(etd)) {
       const date = new Date(etd);
       if (!isNaN(date.getTime())) {
-        const today = new Date();
-        const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const diffDays = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
         if (diffDays <= 1) return 'Tomorrow';
         if (diffDays <= 7) return `${diffDays} days`;
         return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
       }
     }
-    // Already a string like "2-3 Days"
     return etd;
   };
 
   return (
-    <div className="border border-[#E8E0D4] bg-[#FDFBF8] p-4">
+    <div className="p-4" style={{ border: '1px solid #EBEBCA', backgroundColor: '#FAF9EE' }}>
+
+      {/* Label */}
       <div className="flex items-center gap-2 mb-3">
-        <MapPin size={14} className="text-[#B8892A] flex-shrink-0" />
-        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#3D2E1E]">
+        <MapPin size={13} style={{ color: '#B68868', flexShrink: 0 }} />
+        <span className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: '#642308' }}>
           Check Delivery Availability
         </span>
       </div>
 
       {/* Input row */}
-      <div className="flex gap-2">
+      <div className="flex gap-0">
         <input
           ref={inputRef}
           type="text"
@@ -85,48 +82,68 @@ export default function PincodeChecker() {
           onKeyDown={handleKeyDown}
           placeholder="Enter 6-digit pincode"
           maxLength={6}
-          className="flex-1 border border-[#D8C8B8] focus:border-[#B8892A] bg-white px-3 py-2.5 text-sm text-[#1A1410] placeholder-[#C8B8A8] outline-none transition-colors font-mono tracking-widest"
+          className="flex-1 px-3 py-2.5 text-sm outline-none transition-colors font-mono tracking-widest bg-white"
+          style={{
+            border: '1px solid #EBEBCA',
+            borderRight: 'none',
+            color: '#642308',
+          }}
+          onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
+          onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
         />
         <button
           onClick={check}
           disabled={loading || pincode.length < 6}
-          className="px-5 bg-[#1A1410] hover:bg-[#2D2018] disabled:bg-[#C8B8A8] disabled:cursor-not-allowed text-white text-[10px] font-semibold tracking-[0.2em] uppercase transition-colors flex items-center gap-2 flex-shrink-0">
-          {loading ? <Loader2 size={13} className="animate-spin" /> : 'Check'}
+          className="px-5 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 flex-shrink-0 transition-colors disabled:opacity-40"
+          style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
+          onMouseEnter={e => { if (pincode.length >= 6 && !loading) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
+          onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#642308'); }}>
+          {loading
+            ? <Loader2 size={13} className="animate-spin" />
+            : 'Check'}
         </button>
       </div>
 
       {/* Error */}
       {error && (
-        <p className="text-xs text-red-500 mt-2 flex items-center gap-1.5">
+        <p className="text-xs mt-2.5 flex items-center gap-1.5" style={{ color: '#b91c1c' }}>
           <XCircle size={12} /> {error}
         </p>
       )}
 
       {/* Result */}
       {result && !loading && (
-        <div className={`mt-3 p-3 border ${result.is_serviceable ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'}`}>
+        <div
+          className="mt-3 p-3"
+          style={{
+            border: `1px solid ${result.is_serviceable ? '#EBEBCA' : '#f5c6c6'}`,
+            backgroundColor: result.is_serviceable ? '#EBEBCA' : '#fdf2f2',
+          }}>
           {result.is_serviceable ? (
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CheckCircle size={14} className="text-emerald-600 flex-shrink-0" />
-                <span className="text-xs font-semibold text-emerald-800">Delivery available to {pincode}</span>
+                <CheckCircle size={13} style={{ color: '#642308', flexShrink: 0 }} />
+                <span className="text-xs font-semibold" style={{ color: '#642308' }}>
+                  Delivery available to {pincode}
+                </span>
               </div>
               {result.estimated_delivery && (
                 <div className="flex items-center gap-2 ml-5">
-                  <Clock size={11} className="text-emerald-600 flex-shrink-0" />
-                  <span className="text-xs text-emerald-700">
-                    Expected by: <strong>{formatETD(result.estimated_delivery)}</strong>
+                  <Clock size={11} style={{ color: '#903E1D', flexShrink: 0 }} />
+                  <span className="text-xs" style={{ color: '#903E1D' }}>
+                    Expected by:{' '}
+                    <strong style={{ color: '#642308' }}>{formatETD(result.estimated_delivery)}</strong>
                   </span>
                 </div>
               )}
               {result.cheapest_rate !== null && (
                 <div className="flex items-center gap-2 ml-5">
-                  <Truck size={11} className="text-emerald-600 flex-shrink-0" />
-                  <span className="text-xs text-emerald-700">
+                  <Truck size={11} style={{ color: '#903E1D', flexShrink: 0 }} />
+                  <span className="text-xs" style={{ color: '#903E1D' }}>
                     {result.cheapest_rate === 0 ? (
-                      <strong>Free shipping on this order</strong>
+                      <strong style={{ color: '#642308' }}>Free shipping on this order</strong>
                     ) : (
-                      <>Shipping from <strong>₹{result.cheapest_rate}</strong></>
+                      <>Shipping from <strong style={{ color: '#642308' }}>₹{result.cheapest_rate}</strong></>
                     )}
                   </span>
                 </div>
@@ -134,8 +151,8 @@ export default function PincodeChecker() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <XCircle size={14} className="text-red-500 flex-shrink-0" />
-              <span className="text-xs text-red-700">
+              <XCircle size={13} style={{ color: '#b91c1c', flexShrink: 0 }} />
+              <span className="text-xs" style={{ color: '#b91c1c' }}>
                 Sorry, we don't deliver to <strong>{pincode}</strong> yet.
               </span>
             </div>
