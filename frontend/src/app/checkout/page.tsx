@@ -58,6 +58,7 @@ export default function CheckoutPage(): JSX.Element {
   const [loading, setLoading]               = useState(false);
   const [eta, setEta]                       = useState('');
   const [pincodeOk, setPincodeOk]           = useState<boolean | null>(null);
+  const [guestEmail, setGuestEmail]         = useState('');
 
   const safeItems = Array.isArray(items) ? items : [];
   const subtotal  = safeItems.reduce((sum, i) => sum + itemPrice(i) * i.quantity, 0);
@@ -75,8 +76,9 @@ export default function CheckoutPage(): JSX.Element {
   }, [user]);
 
   useEffect(() => {
-    if (mounted && !user) router.push('/account/login?redirect=/checkout');
     if (mounted && safeItems.length === 0) router.push('/shop');
+    // guests: force COD
+    if (mounted && !user) setPaymentMethod('cod');
   }, [mounted, user, items]);
 
   const set = (k: keyof Address, v: string) => setAddress(p => ({ ...p, [k]: v }));
@@ -113,12 +115,28 @@ export default function CheckoutPage(): JSX.Element {
     if (!name || !phone || !address_line1 || !city || !state || !pincode) { toast.error('Please fill all required fields'); return false; }
     if (!/^[6-9]\d{9}$/.test(phone)) { toast.error('Enter a valid 10-digit mobile number'); return false; }
     if (!/^\d{6}$/.test(pincode))     { toast.error('Enter a valid 6-digit pincode'); return false; }
+    if (!user && !guestEmail.trim()) { toast.error('Please enter your email address'); return false; }
+    if (!user && !/\S+@\S+\.\S+/.test(guestEmail)) { toast.error('Please enter a valid email address'); return false; }
     return true;
   };
 
   const handlePlaceOrder = async () => {
+    if (!user) { await handleGuestCOD(); return; }
     if (paymentMethod === 'razorpay') await handleRazorpay();
     else await handleCOD();
+  };
+
+  const handleGuestCOD = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post('/payment/guest-cod-order', {
+        shipping_address: address,
+        items: safeItems.map(i => ({ product_id: i.product_id, quantity: i.quantity })),
+        email: guestEmail,
+      });
+      clearCart();
+      router.push(`/order-success?order=${res.data.data.order_number}&method=cod`);
+    } catch (e: any) { toast.error(e.response?.data?.message || 'Failed to place order'); setLoading(false); }
   };
 
   const handleRazorpay = async () => {
@@ -215,6 +233,25 @@ export default function CheckoutPage(): JSX.Element {
                     Delivery Address
                   </h2>
                 </div>
+                {!user && (
+                  <div className="mb-5 pb-5" style={{ borderBottom: '1px solid #EBEBCA' }}>
+                    <p className="text-xs mb-3" style={{ color: '#903E1D' }}>
+                      Checking out as guest. <a href="/account/login?redirect=/checkout" className="underline" style={{ color: '#642308' }}>Sign in</a> for a faster experience.
+                    </p>
+                    <Field label="Email Address" required>
+                      <input
+                        type="email"
+                        value={guestEmail}
+                        onChange={e => setGuestEmail(e.target.value)}
+                        className="w-full px-4 py-3 text-sm"
+                        style={inputStyle}
+                        placeholder="your@email.com"
+                        onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
+                        onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                      />
+                    </Field>
+                  </div>
+                )}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <Field label="Full Name" required>
                     <div className="relative">
@@ -336,14 +373,22 @@ export default function CheckoutPage(): JSX.Element {
                 </div>
 
                 {/* Payment options */}
+                {!user && (
+                  <div className="flex items-center gap-2 px-4 py-3 mb-3 text-xs"
+                    style={{ backgroundColor: '#FAF9EE', border: '1px solid #EBEBCA', color: '#903E1D' }}>
+                    <Banknote size={13} style={{ color: '#642308', flexShrink: 0 }} />
+                    Guest orders are Cash on Delivery only. Sign in to pay online.
+                  </div>
+                )}
                 <div className="space-y-3">
-                  {[
+                  {([
                     {
                       value: 'razorpay' as PaymentMethod,
                       icon: CreditCard,
                       title: 'Pay Online',
                       subtitle: 'UPI, Cards, Net Banking, Wallets via Razorpay',
                       badges: ['UPI', 'Visa', 'Mastercard'],
+                      guestHidden: true,
                     },
                     {
                       value: 'cod' as PaymentMethod,
@@ -351,8 +396,11 @@ export default function CheckoutPage(): JSX.Element {
                       title: 'Cash on Delivery',
                       subtitle: 'Pay when your order arrives at your doorstep',
                       badges: [],
+                      guestHidden: false,
                     },
-                  ].map(opt => (
+                  ] as Array<{ value: PaymentMethod; icon: any; title: string; subtitle: string; badges: string[]; guestHidden: boolean }>)
+                  .filter(opt => !(!user && opt.guestHidden))
+                  .map(opt => (
                     <label key={opt.value}
                       className="flex items-center gap-4 p-4 cursor-pointer transition-all"
                       style={{

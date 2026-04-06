@@ -1,19 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-playfair: 'Playfair Display', Georgia, serif;
   --font-inter: 'Inter', system-ui, sans-serif;
-
-  /* Craft palette */
-  --ivory:      #FAF9EE;
-  --beige:      #EBEBCA;
-  --chamoisee:  #B68868;
-  --brown:      #903E1D;
-  --seal-brown: #642308;
 }
 
 * {
@@ -26,60 +18,57 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-inter);
-  background-color: var(--ivory);
-  color: var(--seal-brown);
+  background-color: #ffffff;
+  color: #1c1c1c;
   -webkit-font-smoothing: antialiased;
 }
 
-.font-display { font-family: var(--font-playfair); }
+.font-display { font-family: var(--font-inter); }
 
 /* Scrollbar */
 ::-webkit-scrollbar        { width: 6px; }
-::-webkit-scrollbar-track  { background: var(--beige); }
-::-webkit-scrollbar-thumb  { background: var(--brown); border-radius: 3px; }
+::-webkit-scrollbar-track  { background: #f5f5f5; }
+::-webkit-scrollbar-thumb  { background: #9b9b9b; border-radius: 3px; }
 
 /* Product card hover */
 .product-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(100, 35, 8, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 /* Shimmer skeleton */
 .skeleton {
-  background: linear-gradient(90deg, #ede9db 25%, #e0dac9 50%, #ede9db 75%);
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
 /* Announcement bar */
 .announcement-bar {
-  background: linear-gradient(135deg, var(--seal-brown), #4e1b05);
+  background: #1c1c1c;
 }
 
-/* Craft button — primary */
+/* Primary button */
 .btn-craft {
-  background: linear-gradient(135deg, var(--brown), #7a3318);
-  color: #FAF9EE;
+  background: #1c1c1c;
+  color: #ffffff;
   transition: all 0.2s;
 }
 .btn-craft:hover {
-  background: linear-gradient(135deg, #a04820, var(--brown));
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(144, 62, 29, 0.35);
+  background: #363636;
 }
 
 /* Category card */
 .category-card {
   position: relative;
   overflow: hidden;
-  border-radius: 12px;
   cursor: pointer;
   transition: transform 0.3s ease;
 }
-.category-card:hover         { transform: scale(1.02); }
-.category-card img           { transition: transform 0.5s ease; }
-.category-card:hover img     { transform: scale(1.08); }
+.category-card:hover     { transform: scale(1.01); }
+.category-card img       { transition: transform 0.5s ease; }
+.category-card:hover img { transform: scale(1.05); }
 
 /* Search panel slide-in from right */
 @keyframes slide-in-right {
@@ -98,9 +87,24 @@ body {
   overflow: hidden;
 }
 
-/* Decorative divider — hand-drawn feel */
+/* Thin divider */
 .craft-divider {
   border: none;
-  height: 2px;
-  background: linear-gradient(to right, transparent, var(--chamoisee), transparent);
+  height: 1px;
+  background: #e8e8e8;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0%   { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 1; }
 }

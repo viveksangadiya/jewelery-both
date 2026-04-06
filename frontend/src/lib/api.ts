@@ -39,6 +39,8 @@ export const authApi = {
     api.post('/auth/register', data),
   login: (data: LoginPayload): Promise<AxiosResponse<ApiResponse<AuthData>>> =>
     api.post('/auth/login', data),
+  googleAuth: (id_token: string): Promise<AxiosResponse<ApiResponse<AuthData>>> =>
+    api.post('/auth/google', { id_token }),
   getProfile: (): Promise<AxiosResponse<ApiResponse<import('@/types').User>>> =>
     api.get('/auth/profile'),
   updateProfile: (data: Partial<import('@/types').User>): Promise<AxiosResponse<ApiResponse<import('@/types').User>>> =>
@@ -91,6 +93,10 @@ export const categoriesApi = {
     api.get('/categories'),
   create: (data: Partial<Category>): Promise<AxiosResponse<ApiResponse<Category>>> =>
     api.post('/categories', data),
+  update: (id: number, data: Partial<Category>): Promise<AxiosResponse<ApiResponse<Category>>> =>
+    api.put(`/categories/${id}`, data),
+  delete: (id: number): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.delete(`/categories/${id}`),
 };
 
 // ── Cart ──────────────────────────────────────────────────
@@ -131,6 +137,8 @@ export const ordersApi = {
     api.put(`/orders/admin/${id}/status`, { status }),
   validateCoupon: (code: string, subtotal: number) =>
     api.post('/orders/validate-coupon', { code, subtotal }),
+  cancel: (id: number): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.post(`/orders/${id}/cancel`),
 };
 
 // ── Coupons (Admin) ───────────────────────────────────────
@@ -153,6 +161,14 @@ export const wishlistApi = {
     api.get('/wishlist/ids'),
   toggle: (product_id: number): Promise<AxiosResponse<ApiResponse<{ wishlisted: boolean }>>> =>
     api.post('/wishlist/toggle', { product_id }),
+  clear: (): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.delete('/wishlist'),
+};
+
+// ── Contact ───────────────────────────────────────────────
+export const contactApi = {
+  send: (data: { name: string; email: string; phone?: string; subject?: string; message: string }) =>
+    api.post('/contact', data),
 };
 
 export default api;

@@ -1,10 +1,13 @@
 const express = require('express');
-const crypto = require('crypto');
-const pool = require('../config/db');
+const crypto  = require('crypto');
+const pool    = require('../config/db');
 const { authenticate } = require('../middleware/auth');
 const shiprocket = require('../services/shiprocket');
 
 const router = express.Router();
+
+// Razorpay webhook needs raw body — must be defined BEFORE express.json() applies.
+// We use express.raw() scoped to this one route only.
 
 const generateOrderNumber = () => {
   const t = Date.now().toString(36).toUpperCase();
@@ -51,7 +54,7 @@ async function buildOrderFromCart(userId, coupon_code, client) {
     }
   }
 
-  const shipping = subtotal >= 999 ? 0 : 99;
+  const shipping = subtotal >= 499 ? 0 : 99;
   const total = Math.round(subtotal - discount + shipping);
   return { cartItems, subtotal, discount, couponId, shipping, total };
 }
@@ -198,6 +201,14 @@ router.post('/verify', authenticate, async (req, res) => {
     await pool.query('DELETE FROM cart_items WHERE user_id=$1', [req.user.id]);
     pushToShiprocket(order);
 
+    // Send confirmation email async
+    const { sendOrderConfirmation } = require('../services/email');
+    pool.query('SELECT * FROM order_items WHERE order_id=$1', [order.id]).then(async r => {
+      const userResult = await pool.query('SELECT name, email FROM users WHERE id=$1', [req.user.id]);
+      const u = userResult.rows[0];
+      if (u) sendOrderConfirmation(order, r.rows, u.email, u.name).catch(() => {});
+    });
+
     res.json({
       success: true,
       message: 'Payment confirmed! Your order is being prepared.',
@@ -206,6 +217,88 @@ router.post('/verify', authenticate, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ════════════════════════════════════════════════════════
+// POST /api/payment/guest-cod-order  (No login required)
+// ════════════════════════════════════════════════════════
+router.post('/guest-cod-order', async (req, res) => {
+  // Ensure guest_email column exists (idempotent)
+  pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS guest_email VARCHAR(255)').catch(() => {});
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { shipping_address, items: cartItems, email } = req.body;
+
+    if (!email?.trim()) return res.status(400).json({ success: false, message: 'Email is required for guest checkout' });
+    if (!cartItems?.length) return res.status(400).json({ success: false, message: 'Cart is empty' });
+    if (!/\S+@\S+\.\S+/.test(email)) return res.status(400).json({ success: false, message: 'Invalid email address' });
+
+    let subtotal = 0;
+    const validatedItems = [];
+
+    for (const item of cartItems) {
+      const pResult = await client.query(
+        'SELECT id, name, base_price, sale_price, stock FROM products WHERE id=$1 AND is_active=true',
+        [item.product_id]
+      );
+      if (!pResult.rows.length) continue;
+      const p = pResult.rows[0];
+      if (p.stock < item.quantity) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ success: false, message: `"${p.name}" is out of stock` });
+      }
+      const price = parseFloat(p.sale_price || p.base_price);
+      subtotal += price * item.quantity;
+      validatedItems.push({ product_id: p.id, name: p.name, price, quantity: item.quantity });
+    }
+
+    if (!validatedItems.length) return res.status(400).json({ success: false, message: 'No valid items' });
+
+    const shipping = subtotal >= 499 ? 0 : 99;
+    const total = Math.round(subtotal + shipping);
+    const orderNumber = generateOrderNumber();
+
+    const orderResult = await client.query(`
+      INSERT INTO orders
+        (order_number, status, subtotal, discount, shipping_charge, total, payment_method, payment_status, shipping_address, notes, guest_email)
+      VALUES ($1,'pending',$2,0,$3,$4,'cod','pending',$5,'',$6) RETURNING *
+    `, [orderNumber, subtotal, shipping, total, JSON.stringify(shipping_address), email.trim().toLowerCase()]);
+
+    const order = orderResult.rows[0];
+
+    for (const item of validatedItems) {
+      await client.query(`
+        INSERT INTO order_items (order_id, product_id, product_name, quantity, price)
+        VALUES ($1,$2,$3,$4,$5)
+      `, [order.id, item.product_id, item.name, item.quantity, item.price]);
+      await client.query('UPDATE products SET stock = stock - $1 WHERE id=$2', [item.quantity, item.product_id]);
+    }
+
+    await client.query('COMMIT');
+
+    // Send confirmation email
+    const { sendOrderConfirmation } = require('../services/email');
+    pool.query('SELECT * FROM order_items WHERE order_id=$1', [order.id]).then(r => {
+      const name = shipping_address?.name || '';
+      sendOrderConfirmation(order, r.rows, email, name).catch(() => {});
+    });
+
+    pushToShiprocket(order);
+
+    res.status(201).json({
+      success: true,
+      message: 'Order placed! Cash to be paid on delivery.',
+      data: { order_number: order.order_number, order_id: order.id, total },
+    });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message || 'Failed to place order' });
+  } finally {
+    client.release();
   }
 });
 
@@ -233,6 +326,14 @@ router.post('/cod-order', authenticate, async (req, res) => {
 
     pushToShiprocket(order);
 
+    // Send confirmation email async
+    const { sendOrderConfirmation } = require('../services/email');
+    pool.query('SELECT * FROM order_items WHERE order_id=$1', [order.id]).then(async r => {
+      const userResult = await pool.query('SELECT name, email FROM users WHERE id=$1', [req.user.id]);
+      const u = userResult.rows[0];
+      if (u) sendOrderConfirmation(order, r.rows, u.email, u.name).catch(() => {});
+    });
+
     res.status(201).json({
       success: true,
       message: 'Order placed! Cash to be paid on delivery.',
@@ -244,6 +345,72 @@ router.post('/cod-order', authenticate, async (req, res) => {
     res.status(500).json({ success: false, message: err.message || 'Failed to place order' });
   } finally {
     client.release();
+  }
+});
+
+// ════════════════════════════════════════════════════════
+// POST /api/payment/razorpay-webhook
+// Register this URL in Razorpay Dashboard → Settings → Webhooks
+// Events to enable: payment.captured, payment.failed
+// ════════════════════════════════════════════════════════
+router.post('/razorpay-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.warn('⚠️  RAZORPAY_WEBHOOK_SECRET not set — skipping signature verification');
+    } else {
+      const signature = req.headers['x-razorpay-signature'];
+      const expected = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(req.body) // raw Buffer — do NOT parse before signing
+        .digest('hex');
+      if (signature !== expected) {
+        console.warn('❌ Razorpay webhook: invalid signature');
+        return res.status(400).json({ success: false, message: 'Invalid signature' });
+      }
+    }
+
+    const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : req.body;
+    const event = typeof rawBody === 'string' ? JSON.parse(rawBody) : rawBody;
+    const eventType = event?.event;
+    const payment   = event?.payload?.payment?.entity;
+
+    console.log(`💳 Razorpay webhook: ${eventType}`);
+
+    if (eventType === 'payment.captured') {
+      // Mark order as paid (in case /verify was missed)
+      const rzpOrderId = payment?.order_id;
+      const rzpPayId   = payment?.id;
+      if (rzpOrderId) {
+        const result = await pool.query(
+          `UPDATE orders SET payment_status='paid', payment_id=$1, updated_at=NOW()
+           WHERE payment_id=$2 AND payment_status != 'paid' RETURNING *`,
+          [rzpPayId, rzpOrderId]
+        );
+        if (result.rows.length > 0) {
+          const order = result.rows[0];
+          await pool.query('DELETE FROM cart_items WHERE user_id=$1', [order.user_id]);
+          pushToShiprocket(order);
+          console.log(`✅ Webhook: order ${order.order_number} marked paid`);
+        }
+      }
+    }
+
+    if (eventType === 'payment.failed') {
+      const rzpOrderId = payment?.order_id;
+      if (rzpOrderId) {
+        await pool.query(
+          `UPDATE orders SET payment_status='failed', updated_at=NOW() WHERE payment_id=$1 AND payment_status='pending'`,
+          [rzpOrderId]
+        );
+        console.log(`❌ Webhook: payment failed for RZP order ${rzpOrderId}`);
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Razorpay webhook error:', err);
+    res.status(500).json({ success: false });
   }
 });
 

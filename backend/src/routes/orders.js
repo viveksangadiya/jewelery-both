@@ -157,6 +157,42 @@ router.put('/admin/:id/status', authenticate, isAdmin, async (req, res) => {
   }
 });
 
+// ── POST /api/orders/:id/cancel ───────────────────────────
+router.post('/:id/cancel', authenticate, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const orderResult = await client.query(
+      'SELECT * FROM orders WHERE id=$1 AND user_id=$2',
+      [req.params.id, req.user.id]
+    );
+    if (orderResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+    const order = orderResult.rows[0];
+    if (!['pending', 'confirmed'].includes(order.status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot cancel an order with status "${order.status}". Only pending or confirmed orders can be cancelled.`,
+      });
+    }
+    // Restore stock
+    const items = await client.query('SELECT * FROM order_items WHERE order_id=$1', [order.id]);
+    for (const item of items.rows) {
+      await client.query('UPDATE products SET stock = stock + $1 WHERE id=$2', [item.quantity, item.product_id]);
+    }
+    await client.query("UPDATE orders SET status='cancelled', updated_at=NOW() WHERE id=$1", [order.id]);
+    await client.query('COMMIT');
+    res.json({ success: true, message: 'Order cancelled successfully' });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  } finally {
+    client.release();
+  }
+});
+
 // ── GET /api/orders/:id  — MUST be after all specific routes
 router.get('/:id', authenticate, async (req, res) => {
   try {
@@ -238,7 +274,7 @@ router.post('/', authenticate, async (req, res) => {
       }
     }
 
-    const shipping = subtotal >= 999 ? 0 : 99;
+    const shipping = subtotal >= 499 ? 0 : 99;
     const total = subtotal - discount + shipping;
     const orderNumber = generateOrderNumber();
 

@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, MessageCircle, Send, CheckCircle } from 'lucide-react';
+import { contactApi } from '@/lib/api';
+import toast from 'react-hot-toast';
 
 const faqs = [
   { q: 'How do I track my order?', a: 'Go to "Track Order" on our website or click the tracking link in your dispatch email.' },
@@ -29,9 +31,14 @@ export default function ContactPage() {
     e.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    await new Promise(r => setTimeout(r, 1200));
-    setSubmitted(true);
-    setSubmitting(false);
+    try {
+      await contactApi.send(form);
+      setSubmitted(true);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to send message. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const set = (k: string, v: string) => {

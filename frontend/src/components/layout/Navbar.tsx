@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Heart, User, Search, Menu, X, MapPin } from 'lucide-react';
+import { ShoppingBag, Heart, User, Search, Menu, X } from 'lucide-react';
 import SearchPanel from '@/components/layout/SearchPanel';
 import { useCartStore, useAuthStore, useWishlistStore } from '@/lib/store';
 
@@ -41,13 +41,13 @@ const navLinks = [
     label: 'Wall Hangings',
     href: '/shop?category=wall-hangings',
     submenu: [
-      { label: 'Macrame Hangings', href: '/shop?category=wall-hangings&tag=macrame' },
+      { label: 'Macrame Hangings',   href: '/shop?category=wall-hangings&tag=macrame' },
       { label: 'Boho Dreamcatchers', href: '/shop?category=wall-hangings&tag=boho' },
-      { label: 'Woven Art',        href: '/shop?category=wall-hangings&tag=woven' },
+      { label: 'Woven Art',          href: '/shop?category=wall-hangings&tag=woven' },
     ],
   },
-  { label: 'Gift Sets',  href: '/shop?category=gift-sets' },
-  { label: 'Sale',       href: '/shop?sale=true', highlight: true },
+  { label: 'Gift Sets', href: '/shop?category=gift-sets' },
+  { label: 'Sale',      href: '/shop?sale=true', highlight: true },
 ];
 
 export default function Navbar() {
@@ -91,17 +91,15 @@ export default function Navbar() {
       {/* ── Mobile Drawer ─────────────────────────────── */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-craft-800/50" onClick={() => setMobileOpen(false)} />
-          <div className="absolute left-0 top-0 bottom-0 w-[290px] bg-craft-50 shadow-2xl flex flex-col">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+          <div className="absolute left-0 top-0 bottom-0 w-[290px] bg-white shadow-2xl flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-craft-100">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#e8e8e8]">
               <Link href="/" onClick={() => setMobileOpen(false)}>
-                <span className="font-display text-xl font-bold tracking-tight text-craft-800">
-                  Hast<span className="text-craft-600">Kala</span>
-                </span>
+                <span className="text-xl font-bold tracking-tight text-[#1c1c1c]">HastKala</span>
               </Link>
-              <button onClick={() => setMobileOpen(false)} className="p-1.5 hover:bg-craft-100 rounded-full transition-colors">
-                <X size={20} className="text-craft-700" />
+              <button onClick={() => setMobileOpen(false)} className="p-1.5 hover:bg-[#f5f5f5] rounded transition-colors">
+                <X size={20} className="text-[#1c1c1c]" />
               </button>
             </div>
 
@@ -112,22 +110,20 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`block px-5 py-3.5 text-sm font-semibold tracking-wide border-b border-craft-100/60 transition-colors ${
-                      link.highlight
-                        ? 'text-red-700'
-                        : 'text-craft-800 hover:text-craft-600 hover:bg-craft-100/50'
+                    className={`block px-5 py-3.5 text-sm font-medium border-b border-[#f5f5f5] transition-colors ${
+                      link.highlight ? 'text-red-600' : 'text-[#1c1c1c] hover:text-[#6b6b6b]'
                     }`}
                   >
                     {link.label}
                   </Link>
                   {link.submenu && (
-                    <div className="bg-craft-100/30">
+                    <div className="bg-[#f5f5f5]">
                       {link.submenu.map((sub) => (
                         <Link
                           key={sub.label}
                           href={sub.href}
                           onClick={() => setMobileOpen(false)}
-                          className="block px-8 py-2.5 text-sm text-craft-600 hover:text-craft-800 transition-colors border-b border-craft-100/40 last:border-0"
+                          className="block px-8 py-2.5 text-sm text-[#6b6b6b] hover:text-[#1c1c1c] transition-colors border-b border-[#e8e8e8] last:border-0"
                         >
                           {sub.label}
                         </Link>
@@ -139,11 +135,11 @@ export default function Navbar() {
             </div>
 
             {mounted && !user && (
-              <div className="p-4 border-t border-craft-100">
+              <div className="p-4 border-t border-[#e8e8e8]">
                 <Link
                   href="/account/login"
                   onClick={() => setMobileOpen(false)}
-                  className="block w-full text-center btn-craft py-3 rounded-xl font-semibold text-sm"
+                  className="block w-full text-center bg-[#1c1c1c] text-white py-3 font-semibold text-sm tracking-wide"
                 >
                   Sign In / Register
                 </Link>
@@ -154,66 +150,60 @@ export default function Navbar() {
       )}
 
       {/* ── Main Header ───────────────────────────────── */}
-      <header className={`sticky top-0 z-40 bg-craft-50 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
+      <header className={`sticky top-0 z-40 bg-white transition-shadow duration-200 ${scrolled ? 'shadow-sm' : ''}`}
+        style={{ borderBottom: '1px solid #e8e8e8' }}>
 
-        {/* ── ROW 1: Pincode | Logo | Icons ── */}
-        <div className="border-b border-craft-100">
-          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 flex items-center h-[68px]">
+        {/* ── ROW 1: Logo center, Icons right ── */}
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 flex items-center h-[64px]">
 
-            {/* Left */}
-            <div className="w-1/3 flex items-center">
-              <button className="lg:hidden p-2 -ml-1 hover:bg-craft-100 rounded-lg transition-colors" onClick={() => setMobileOpen(true)}>
-                <Menu size={22} className="text-craft-700" />
-              </button>
-              <button className="hidden lg:flex items-center gap-1.5 text-xs text-craft-500 hover:text-craft-800 transition-colors font-medium tracking-wide uppercase">
-                <MapPin size={13} />
-                Enter Pincode
-              </button>
-            </div>
+          {/* Left */}
+          <div className="w-1/3 flex items-center">
+            <button className="lg:hidden p-2 -ml-1 hover:bg-[#f5f5f5] rounded transition-colors" onClick={() => setMobileOpen(true)}>
+              <Menu size={22} className="text-[#1c1c1c]" />
+            </button>
+          </div>
 
-            {/* Center: Logo */}
-            <div className="flex-1 flex justify-center">
-              <Link href="/">
-                <span className="font-display text-2xl sm:text-[28px] font-bold tracking-tight text-craft-800 whitespace-nowrap">
-                  Hast<span className="text-craft-600">Kala</span>
-                  <span className="text-craft-300 ml-1 text-lg">✦</span>
+          {/* Center: Logo */}
+          <div className="flex-1 flex justify-center">
+            <Link href="/">
+              <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#1c1c1c] whitespace-nowrap">
+                HastKala
+              </span>
+            </Link>
+          </div>
+
+          {/* Right: Icons */}
+          <div className="w-1/3 flex items-center justify-end gap-0.5">
+            <button onClick={() => setSearchOpen(true)} className="p-2.5 hover:bg-[#f5f5f5] rounded transition-colors">
+              <Search size={20} className="text-[#1c1c1c]" />
+            </button>
+
+            <Link href="/account" className="relative p-2.5 hover:bg-[#f5f5f5] rounded transition-colors">
+              <Heart size={20} className="text-[#1c1c1c]" />
+              {mounted && wishlistCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-[#1c1c1c] text-white text-[8px] rounded-full flex items-center justify-center font-bold leading-none">
+                  {wishlistCount > 9 ? '9+' : wishlistCount}
                 </span>
-              </Link>
-            </div>
+              )}
+            </Link>
 
-            {/* Right: Icons */}
-            <div className="w-1/3 flex items-center justify-end gap-0.5">
-              <button onClick={() => setSearchOpen(true)} className="p-2.5 hover:bg-craft-100 rounded-lg transition-colors">
-                <Search size={20} className="text-craft-700" />
-              </button>
+            <Link href={mounted && user ? '/account' : '/account/login'} className="p-2.5 hover:bg-[#f5f5f5] rounded transition-colors">
+              <User size={20} className="text-[#1c1c1c]" />
+            </Link>
 
-              <Link href="/account" className="relative p-2.5 hover:bg-craft-100 rounded-lg transition-colors">
-                <Heart size={20} className="text-craft-700" />
-                {mounted && wishlistCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center font-bold leading-none">
-                    {wishlistCount > 9 ? '9+' : wishlistCount}
-                  </span>
-                )}
-              </Link>
-
-              <Link href={mounted && user ? '/account' : '/account/login'} className="p-2.5 hover:bg-craft-100 rounded-lg transition-colors">
-                <User size={20} className="text-craft-700" />
-              </Link>
-
-              <button onClick={openCart} className="relative p-2.5 hover:bg-craft-100 rounded-lg transition-colors">
-                <ShoppingBag size={20} className="text-craft-700" />
-                {mounted && cartCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-craft-600 text-white text-[8px] rounded-full flex items-center justify-center font-bold leading-none">
-                    {cartCount > 9 ? '9+' : cartCount}
-                  </span>
-                )}
-              </button>
-            </div>
+            <button onClick={openCart} className="relative p-2.5 hover:bg-[#f5f5f5] rounded transition-colors">
+              <ShoppingBag size={20} className="text-[#1c1c1c]" />
+              {mounted && cartCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-[#1c1c1c] text-white text-[8px] rounded-full flex items-center justify-center font-bold leading-none">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
         {/* ── ROW 2: Nav links ── */}
-        <div className="hidden lg:block border-b border-craft-100 relative" onMouseLeave={handleMenuLeave}>
+        <div className="hidden lg:block border-t relative" style={{ borderColor: '#e8e8e8' }} onMouseLeave={handleMenuLeave}>
           <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
             <nav className="flex items-center justify-center">
               {navLinks.map((link) => (
@@ -224,12 +214,12 @@ export default function Navbar() {
                 >
                   <Link
                     href={link.href}
-                    className={`flex items-center px-4 xl:px-5 py-3.5 text-xs font-bold tracking-widest uppercase transition-all whitespace-nowrap border-b-2 -mb-px ${
+                    className={`flex items-center px-4 xl:px-5 py-3 text-xs font-medium tracking-widest uppercase transition-all whitespace-nowrap border-b-2 -mb-px ${
                       activeMenu === link.label
-                        ? 'border-craft-600 text-craft-800'
+                        ? 'border-[#1c1c1c] text-[#1c1c1c]'
                         : link.highlight
-                          ? 'border-transparent text-red-700 hover:text-red-800'
-                          : 'border-transparent text-craft-600 hover:text-craft-800'
+                          ? 'border-transparent text-red-600 hover:text-red-700'
+                          : 'border-transparent text-[#6b6b6b] hover:text-[#1c1c1c]'
                     }`}
                   >
                     {link.label}
@@ -244,7 +234,8 @@ export default function Navbar() {
             <div
               onMouseEnter={handleMenuKeep}
               onMouseLeave={handleMenuLeave}
-              className="absolute top-full left-0 right-0 bg-craft-50 border-t border-craft-100 shadow-xl z-50"
+              className="absolute top-full left-0 right-0 bg-white border-t shadow-md z-50"
+              style={{ borderColor: '#e8e8e8' }}
             >
               <div className="max-w-screen-xl mx-auto px-10 py-8">
                 {(() => {
@@ -253,7 +244,7 @@ export default function Navbar() {
                   return (
                     <div className="flex items-start gap-16">
                       <div>
-                        <p className="text-[10px] font-bold text-craft-300 uppercase tracking-widest mb-5">
+                        <p className="text-[10px] font-bold text-[#9b9b9b] uppercase tracking-widest mb-5">
                           {active.label}
                         </p>
                         <div className="space-y-3">
@@ -262,7 +253,7 @@ export default function Navbar() {
                               key={sub.label}
                               href={sub.href}
                               onClick={() => setActiveMenu(null)}
-                              className="block text-sm text-craft-600 hover:text-craft-800 transition-colors"
+                              className="block text-sm text-[#4a4a4a] hover:text-[#1c1c1c] transition-colors"
                             >
                               {sub.label}
                             </Link>
@@ -272,7 +263,7 @@ export default function Navbar() {
                           <Link
                             href={active.href}
                             onClick={() => setActiveMenu(null)}
-                            className="inline-flex items-center border border-craft-300 hover:border-craft-800 text-xs font-medium text-craft-700 hover:text-craft-900 px-5 py-2 rounded transition-colors"
+                            className="inline-flex items-center border border-[#e8e8e8] hover:border-[#1c1c1c] text-xs font-medium text-[#4a4a4a] hover:text-[#1c1c1c] px-5 py-2 transition-colors"
                           >
                             View All
                           </Link>

@@ -6,22 +6,41 @@ const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
 
-// ============================================================
-// ONE-TIME ADMIN SEED — hit GET /api/auth/seed-admin once,
-// then DELETE this route block and restart the server.
-// ============================================================
-router.get('/seed-admin', async (req, res) => {
+// Google OAuth
+router.post('/google', async (req, res) => {
   try {
-    const hash = await bcrypt.hash('Admin@123', 10);
-    await pool.query(
-      `INSERT INTO users (name, email, password, role, is_verified)
-       VALUES ('Admin User', 'admin@jewelrystore.com', $1, 'admin', true)
-       ON CONFLICT (email) DO UPDATE SET password = $1, role = 'admin', is_verified = true`,
-      [hash]
-    );
-    res.json({ success: true, message: 'Admin ready. Email: admin@jewelrystore.com | Pass: Admin@123' });
+    const { id_token } = req.body;
+    if (!id_token) return res.status(400).json({ success: false, message: 'id_token required' });
+
+    const { OAuth2Client } = require('google-auth-library');
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken: id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { email, name, sub: googleId } = payload;
+
+    // Upsert user
+    let result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    let user;
+    if (result.rows.length > 0) {
+      user = result.rows[0];
+    } else {
+      const inserted = await pool.query(
+        `INSERT INTO users (name, email, password, is_verified)
+         VALUES ($1, $2, $3, true) RETURNING id, name, email, role`,
+        [name, email, `google_${googleId}`]
+      );
+      user = inserted.rows[0];
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+    const { password: _, ...userWithoutPassword } = user;
+    res.json({ success: true, data: { user: userWithoutPassword, token } });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error('Google auth error:', err.message);
+    res.status(401).json({ success: false, message: 'Google authentication failed' });
   }
 });
 

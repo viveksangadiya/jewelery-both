@@ -1,9 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, User, Heart, LogOut, ChevronRight, Trash2, ShoppingBag, ExternalLink } from 'lucide-react';
+import { Package, User, Heart, LogOut, ChevronRight, Trash2, ShoppingBag, ExternalLink, Save, X } from 'lucide-react';
 import { useAuthStore, useWishlistStore } from '@/lib/store';
-import { ordersApi, wishlistApi } from '@/lib/api';
+import { ordersApi, wishlistApi, authApi } from '@/lib/api';
 import toast from 'react-hot-toast';
 
 const statusStyle: Record<string, { bg: string; color: string }> = {
@@ -27,6 +27,9 @@ export default function AccountPage() {
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [loadingWishlist, setLoadingWishlist] = useState(false);
   const [tab, setTab] = useState('orders');
+  const [profileEdit, setProfileEdit] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: '', phone: '' });
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     if (!user) { router.push('/account/login'); return; }
@@ -55,6 +58,26 @@ export default function AccountPage() {
     await toggle(productId);
     setWishlistProducts(prev => prev.filter(p => p.id !== productId));
     toast.success('Removed from wishlist');
+  };
+
+  const startEditProfile = () => {
+    setProfileForm({ name: user?.name || '', phone: user?.phone || '' });
+    setProfileEdit(true);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!profileForm.name.trim()) { toast.error('Name is required'); return; }
+    setSavingProfile(true);
+    try {
+      const res = await authApi.updateProfile(profileForm);
+      useAuthStore.getState().setUser(res.data.data);
+      setProfileEdit(false);
+      toast.success('Profile updated!');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   const handleClearWishlist = async () => {
@@ -211,23 +234,91 @@ export default function AccountPage() {
             {/* ── Profile ──────────────────────────────── */}
             {tab === 'profile' && (
               <div>
-                <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
-                  My Profile
-                </h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+                    My Profile
+                  </h2>
+                  {!profileEdit && (
+                    <button
+                      onClick={startEditProfile}
+                      className="text-[10px] font-bold tracking-[0.15em] uppercase px-4 py-2 transition-colors"
+                      style={{ border: '1px solid #EBEBCA', color: '#642308' }}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = '#B68868')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                    >
+                      Edit Profile
+                    </button>
+                  )}
+                </div>
                 <div className="p-6" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    {[
-                      { label: 'Full Name', value: user.name },
-                      { label: 'Email', value: user.email },
-                      { label: 'Phone', value: user.phone || 'Not set' },
-                      { label: 'Member Since', value: user.created_at ? new Date(user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : '—' },
-                    ].map(({ label, value }) => (
-                      <div key={label} style={{ borderBottom: '1px solid #EBEBCA', paddingBottom: '1rem' }}>
-                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#B68868' }}>{label}</p>
-                        <p className="text-sm font-medium" style={{ color: '#642308' }}>{value}</p>
+                  {profileEdit ? (
+                    <div className="space-y-5">
+                      <div>
+                        <label className="block text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#B68868' }}>Full Name *</label>
+                        <input
+                          value={profileForm.name}
+                          onChange={e => setProfileForm(p => ({ ...p, name: e.target.value }))}
+                          className="w-full px-4 py-3 text-sm outline-none transition-colors"
+                          style={{ border: '1px solid #EBEBCA', color: '#642308', backgroundColor: '#FAF9EE' }}
+                          onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
+                          onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                          placeholder="Your full name"
+                        />
                       </div>
-                    ))}
-                  </div>
+                      <div>
+                        <label className="block text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#B68868' }}>Phone</label>
+                        <input
+                          value={profileForm.phone}
+                          onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))}
+                          className="w-full px-4 py-3 text-sm outline-none transition-colors"
+                          style={{ border: '1px solid #EBEBCA', color: '#642308', backgroundColor: '#FAF9EE' }}
+                          onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
+                          onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                          placeholder="+91 98765 43210"
+                        />
+                      </div>
+                      <div style={{ borderTop: '1px solid #EBEBCA', paddingTop: '1rem' }}>
+                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#B68868' }}>Email</p>
+                        <p className="text-sm" style={{ color: '#B68868' }}>{user.email} <span className="text-[10px]">(cannot be changed)</span></p>
+                      </div>
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          onClick={handleSaveProfile}
+                          disabled={savingProfile}
+                          className="flex items-center gap-2 px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] uppercase transition-colors disabled:opacity-50"
+                          style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
+                          onMouseEnter={e => { if (!savingProfile) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
+                          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}
+                        >
+                          {savingProfile ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <Save size={11} />}
+                          Save Changes
+                        </button>
+                        <button
+                          onClick={() => setProfileEdit(false)}
+                          className="flex items-center gap-2 px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] uppercase transition-colors"
+                          style={{ border: '1px solid #EBEBCA', color: '#903E1D' }}
+                          onMouseEnter={e => (e.currentTarget.style.borderColor = '#B68868')}
+                          onMouseLeave={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                        >
+                          <X size={11} /> Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid sm:grid-cols-2 gap-6">
+                      {[
+                        { label: 'Full Name', value: user.name },
+                        { label: 'Email', value: user.email },
+                        { label: 'Phone', value: user.phone || 'Not set' },
+                        { label: 'Member Since', value: user.created_at ? new Date(user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : '—' },
+                      ].map(({ label, value }) => (
+                        <div key={label} style={{ borderBottom: '1px solid #EBEBCA', paddingBottom: '1rem' }}>
+                          <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#B68868' }}>{label}</p>
+                          <p className="text-sm font-medium" style={{ color: '#642308' }}>{value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -9,21 +9,21 @@ module.exports = {
     extend: {
       colors: {
         craft: {
-          50:  '#FAF9EE', // Ivory — main background
-          100: '#EBEBCA', // Beige — secondary panels
-          200: '#d9d4a0',
-          300: '#B68868', // Chamoisee — warm accent
-          400: '#a07252',
-          500: '#8a5535',
-          600: '#903E1D', // Brown — primary brand
-          700: '#7a3318',
-          800: '#642308', // Seal Brown — dark headings / footer
-          900: '#3e1505', // Very dark brown
+          50:  '#ffffff', // White — main background
+          100: '#f5f5f5', // Light gray — secondary panels
+          200: '#e8e8e8', // Border gray
+          300: '#9b9b9b', // Muted text / icons
+          400: '#6b6b6b', // Medium gray
+          500: '#4a4a4a', // Secondary text
+          600: '#363636', // Dark secondary
+          700: '#1c1c1c', // Primary text / brand
+          800: '#141414', // Near-black headings
+          900: '#000000', // Black
         },
       },
       fontFamily: {
-        display: ['var(--font-playfair)', 'Georgia', 'serif'],
-        body:    ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['Inter', 'system-ui', 'sans-serif'],
+        body:    ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-in':  'fadeIn 0.5s ease-in-out',
@@ -31,9 +31,9 @@ module.exports = {
         'shimmer':  'shimmer 2s infinite linear',
       },
       keyframes: {
-        fadeIn:  { '0%': { opacity: 0 },                                          '100%': { opacity: 1 } },
-        slideUp: { '0%': { transform: 'translateY(20px)', opacity: 0 },           '100%': { transform: 'translateY(0)', opacity: 1 } },
-        shimmer: { '0%': { backgroundPosition: '-200% 0' },                       '100%': { backgroundPosition: '200% 0' } },
+        fadeIn:  { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
       },
     },
   },

@@ -34,6 +34,7 @@ app.use('/api/shiprocket', require('./routes/shiprocket'));
 app.use('/api/reviews',   require('./routes/reviews'));
 app.use('/api/returns',   require('./routes/returns'));
 app.use('/api/coupons',   require('./routes/coupons'));
+app.use('/api/contact',   require('./routes/contact'));
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });

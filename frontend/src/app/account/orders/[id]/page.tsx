@@ -6,6 +6,7 @@ import {
   MapPin, CreditCard, RefreshCw, Copy, ExternalLink
 } from 'lucide-react';
 import { ordersApi } from '@/lib/api';
+import toast from 'react-hot-toast';
 import { useAuthStore } from '@/lib/store';
 import type { Order } from '@/types';
 
@@ -39,6 +40,7 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     if (!user) { router.push('/account/login'); return; }
@@ -88,6 +90,22 @@ export default function OrderDetailPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const handleCancel = async () => {
+    if (!confirm('Are you sure you want to cancel this order?')) return;
+    setCancelling(true);
+    try {
+      await ordersApi.cancel(order.id);
+      toast.success('Order cancelled successfully');
+      setOrder(prev => prev ? { ...prev, status: 'cancelled' } : prev);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to cancel order');
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const canCancel = ['pending', 'confirmed'].includes(order.status);
 
   return (
     <div className="min-h-screen py-10" style={{ backgroundColor: '#FAF9EE' }}>
@@ -173,6 +191,22 @@ export default function OrderDetailPage() {
                 This order has been {order.status}.
                 {order.status === 'refunded' && ' Your refund will be processed in 5–7 business days.'}
               </p>
+            </div>
+          )}
+
+          {canCancel && (
+            <div className="mt-4 pt-4" style={{ borderTop: '1px solid #EBEBCA' }}>
+              <button
+                onClick={handleCancel}
+                disabled={cancelling}
+                className="text-[10px] font-bold tracking-[0.15em] uppercase px-4 py-2 transition-colors disabled:opacity-50"
+                style={{ border: '1px solid #f5c6c6', color: '#b91c1c' }}
+                onMouseEnter={e => { if (!cancelling) (e.currentTarget as HTMLElement).style.backgroundColor = '#FFF0EE'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
+              >
+                {cancelling ? 'Cancelling...' : 'Cancel Order'}
+              </button>
+              <p className="text-[10px] mt-2" style={{ color: '#B68868' }}>Orders can be cancelled before they are shipped.</p>
             </div>
           )}
         </div>

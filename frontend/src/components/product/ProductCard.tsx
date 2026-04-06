@@ -57,7 +57,7 @@ export default function ProductCard({ product }: { product: Product }): JSX.Elem
     <Link href={`/product/${product.slug}`} className="block group">
 
       {/* ── Image container ── */}
-      <div className="relative overflow-hidden aspect-[3/4]" style={{ backgroundColor: '#EBEBCA' }}>
+      <div className="relative overflow-hidden aspect-[3/4]" style={{ backgroundColor: '#f5f5f5' }}>
 
         {product.primary_image ? (
           <img
@@ -67,23 +67,21 @@ export default function ProductCard({ product }: { product: Product }): JSX.Elem
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <ShoppingBag size={32} style={{ color: '#B68868' }} />
+            <ShoppingBag size={32} style={{ color: '#9b9b9b' }} />
           </div>
         )}
 
         {/* ── Badges — top left ── */}
         <div className="absolute top-3 left-3 flex flex-col gap-1">
           {discount > 0 && (
-            <span
-              className="text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase"
-              style={{ backgroundColor: '#642308', color: '#FAF9EE' }}>
-              −{discount}%
+            <span className="text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase"
+              style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}>
+              -{discount}%
             </span>
           )}
           {product.is_featured && !discount && (
-            <span
-              className="text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase"
-              style={{ backgroundColor: '#FAF9EE', color: '#642308' }}>
+            <span className="text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase"
+              style={{ backgroundColor: '#ffffff', color: '#1c1c1c' }}>
               New
             </span>
           )}
@@ -94,7 +92,7 @@ export default function ProductCard({ product }: { product: Product }): JSX.Elem
           onClick={handleWishlist}
           className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center transition-all"
           style={{
-            backgroundColor: 'rgba(250,249,238,0.9)',
+            backgroundColor: 'rgba(255,255,255,0.9)',
             opacity: wishlisted ? 1 : 0,
           }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
@@ -102,13 +100,12 @@ export default function ProductCard({ product }: { product: Product }): JSX.Elem
         >
           <Heart
             size={14}
-            style={{ color: wishlisted ? '#903E1D' : '#642308' }}
-            fill={wishlisted ? '#903E1D' : 'none'}
+            style={{ color: wishlisted ? '#1c1c1c' : '#1c1c1c' }}
+            fill={wishlisted ? '#1c1c1c' : 'none'}
             strokeWidth={1.5}
           />
         </button>
 
-        {/* ── Hover wishlist reveal — using group ── */}
         <style>{`
           .group:hover .wishlist-btn { opacity: 1 !important; }
         `}</style>
@@ -119,12 +116,12 @@ export default function ProductCard({ product }: { product: Product }): JSX.Elem
             onClick={handleAddToCart}
             disabled={adding}
             className="w-full py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
-            style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-            onMouseEnter={e => { if (!adding) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
-            onMouseLeave={e => { if (!adding) (e.currentTarget.style.backgroundColor = '#642308'); }}
+            style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+            onMouseEnter={e => { if (!adding) (e.currentTarget.style.backgroundColor = '#363636'); }}
+            onMouseLeave={e => { if (!adding) (e.currentTarget.style.backgroundColor = '#1c1c1c'); }}
           >
             {adding
-              ? <div className="w-3.5 h-3.5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#FAF9EE', borderTopColor: 'transparent' }} />
+              ? <div className="w-3.5 h-3.5 border-2 rounded-full animate-spin" style={{ borderColor: '#ffffff', borderTopColor: 'transparent' }} />
               : 'Add to Cart'}
           </button>
         </div>
@@ -132,20 +129,15 @@ export default function ProductCard({ product }: { product: Product }): JSX.Elem
 
       {/* ── Info ── */}
       <div className="pt-3 pb-2 px-0.5">
-        {/* Name */}
-        <h3
-          className="text-[11px] font-semibold tracking-[0.08em] uppercase leading-snug truncate"
-          style={{ color: '#642308' }}>
+        <h3 className="text-[11px] font-semibold tracking-[0.06em] uppercase leading-snug truncate" style={{ color: '#1c1c1c' }}>
           {product.name}
         </h3>
-
-        {/* Price row */}
         <div className="flex items-center gap-2 mt-1.5">
-          <span className="text-sm font-bold" style={{ color: '#642308' }}>
+          <span className="text-sm font-bold" style={{ color: '#1c1c1c' }}>
             ₹{price.toLocaleString()}
           </span>
           {discount > 0 && (
-            <span className="text-xs line-through" style={{ color: '#B68868' }}>
+            <span className="text-xs line-through" style={{ color: '#9b9b9b' }}>
               ₹{basePrice.toLocaleString()}
             </span>
           )}
