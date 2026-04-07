@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Shield, RefreshCw, Truck, Award, ChevronLeft, ChevronRight, Star, Sparkles } from 'lucide-react';
+import { ArrowRight, Shield, RefreshCw, Truck, Award, ChevronLeft, ChevronRight, Star, Sparkles, Clock, Leaf, Heart, Package } from 'lucide-react';
 import ProductCard from '@/components/product/ProductCard';
 import { productsApi } from '@/lib/api';
 
@@ -60,6 +60,29 @@ const TRUST = [
   { icon: Award,    title: 'Made in India',   desc: 'Supporting local artisans' },
 ];
 
+const STATS = [
+  { number: '500+',    label: 'Happy Customers' },
+  { number: '50+',     label: 'Pincodes Reached' },
+  { number: '1000+',   label: 'Products Delivered' },
+];
+
+const BRAND_VALUES = [
+  { icon: Clock,  hindi: 'सदाबहार', english: 'TIMELESS' },
+  { icon: Heart,  hindi: 'प्रेम',    english: 'CRAFTED WITH LOVE' },
+  { icon: Leaf,   hindi: 'प्रामाणिक', english: 'AUTHENTIC' },
+];
+
+const CRAFT_FEATURES = [
+  { icon: '🏺', label: 'Heritage\nCraft' },
+  { icon: '✋', label: 'Skin\nFriendly' },
+  { icon: '♾️', label: 'Made\nto Last' },
+  { icon: '🌿', label: 'Natural\nMaterials' },
+  { icon: '🎁', label: 'Gift\nReady' },
+];
+
+const PRODUCT_TABS = ['Best Sellers', 'New Arrivals', 'Festival', 'Wedding'] as const;
+type ProductTab = typeof PRODUCT_TABS[number];
+
 const ARTISAN_STEPS = [
   { step: '01', title: 'Artisan Selection', desc: 'We partner with skilled craftspeople from Rajasthan, Gujarat & across India.' },
   { step: '02', title: 'Handcrafted',       desc: 'Every toran is made by hand using traditional techniques passed down generations.' },
@@ -72,6 +95,9 @@ export default function HomePage() {
   const [animating, setAnimating]           = useState(false);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [newArrivals, setNewArrivals]       = useState<any[]>([]);
+  const [festivalProducts, setFestivalProducts] = useState<any[]>([]);
+  const [weddingProducts, setWeddingProducts]   = useState<any[]>([]);
+  const [activeTab, setActiveTab]           = useState<ProductTab>('Best Sellers');
   const [loading, setLoading]               = useState(true);
   const autoSlideRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -91,13 +117,24 @@ export default function HomePage() {
 
   useEffect(() => {
     Promise.all([
-      productsApi.getAll({ sort: 'popular', limit: 8 } as any),
-      productsApi.getAll({ sort: 'newest',  limit: 4 } as any),
-    ]).then(([pop, newer]) => {
+      productsApi.getAll({ sort: 'popular',  limit: 8 } as any),
+      productsApi.getAll({ sort: 'newest',   limit: 8 } as any),
+      productsApi.getAll({ category: 'festival', limit: 8 } as any),
+      productsApi.getAll({ category: 'wedding',  limit: 8 } as any),
+    ]).then(([pop, newer, fest, wed]) => {
       setFeaturedProducts(pop.data.data);
       setNewArrivals(newer.data.data);
+      setFestivalProducts(fest.data.data);
+      setWeddingProducts(wed.data.data);
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
+
+  const tabProducts: Record<ProductTab, any[]> = {
+    'Best Sellers': featuredProducts,
+    'New Arrivals': newArrivals,
+    'Festival':     festivalProducts,
+    'Wedding':      weddingProducts,
+  };
 
   const hero = heroSlides[slide];
 
@@ -189,18 +226,33 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════
-          TRUST BAR
+          STATS BAR (saadaa-style big numbers)
       ══════════════════════════════════════════════════ */}
-      <section style={{ backgroundColor: '#f5f5f5', borderTop: '1px solid #e8e8e8', borderBottom: '1px solid #e8e8e8' }}>
+      <section className="py-10 bg-white" style={{ borderTop: '1px solid #e8e8e8', borderBottom: '1px solid #e8e8e8' }}>
         <div className="max-w-screen-xl mx-auto px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x" style={{ borderColor: '#e8e8e8' }}>
-            {TRUST.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="flex items-center gap-4 px-6 py-5">
-                <Icon size={18} className="flex-shrink-0 text-[#1c1c1c]" />
-                <div>
-                  <p className="text-xs font-bold tracking-wide uppercase text-[#1c1c1c]">{title}</p>
-                  <p className="text-xs mt-0.5 text-[#9b9b9b]">{desc}</p>
-                </div>
+          <div className="grid grid-cols-3 divide-x" style={{ borderColor: '#e8e8e8' }}>
+            {STATS.map(({ number, label }) => (
+              <div key={label} className="text-center py-4">
+                <p className="text-4xl lg:text-5xl font-bold text-[#1c1c1c]">{number}</p>
+                <p className="text-xs mt-2 text-[#9b9b9b] tracking-wide">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
+          CRAFT FEATURES STRIP
+      ══════════════════════════════════════════════════ */}
+      <section style={{ backgroundColor: '#f5f5f5', borderBottom: '1px solid #e8e8e8' }}>
+        <div className="max-w-screen-xl mx-auto px-6">
+          <div className="flex items-center justify-between py-6 gap-4 overflow-x-auto">
+            {CRAFT_FEATURES.map(({ icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-2 flex-shrink-0 min-w-[80px]">
+                <span className="text-2xl">{icon}</span>
+                <p className="text-[10px] font-semibold text-center text-[#1c1c1c] whitespace-pre-line leading-tight">
+                  {label}
+                </p>
               </div>
             ))}
           </div>
@@ -260,19 +312,56 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════
-          BESTSELLERS
+          BRAND STORY (saadaa-style)
       ══════════════════════════════════════════════════ */}
-      <section className="py-20" style={{ backgroundColor: '#f5f5f5' }}>
+      <section className="py-20 bg-white text-center" style={{ borderTop: '1px solid #e8e8e8' }}>
+        <div className="max-w-2xl mx-auto px-6">
+          <h2 className="text-3xl lg:text-4xl font-bold leading-snug mb-6 text-[#1c1c1c]">
+            WELCOME TO THE WORLD<br />
+            OF <span className="font-normal" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>हस्तकला</span> | HASTKALA<br />
+            <span className="text-2xl font-normal text-[#6b6b6b]">Handcrafted With Devotion.</span>
+          </h2>
+          <div className="flex items-center justify-center gap-3 text-sm text-[#9b9b9b] mb-12">
+            <Link href="/about" className="underline underline-offset-4 hover:text-[#1c1c1c] transition-colors">Read The Story</Link>
+            <span>and</span>
+            <Link href="/shop" className="underline underline-offset-4 hover:text-[#1c1c1c] transition-colors">Meet The Artisans</Link>
+          </div>
+          <div className="flex items-center justify-center gap-12 mb-12">
+            {BRAND_VALUES.map(({ icon: Icon, hindi, english }) => (
+              <div key={english} className="flex flex-col items-center gap-3">
+                <div className="w-14 h-14 rounded-full border border-[#e8e8e8] flex items-center justify-center">
+                  <Icon size={20} className="text-[#1c1c1c]" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <p className="text-[9px] text-[#9b9b9b]">{hindi}</p>
+                  <p className="text-[10px] font-bold tracking-[0.15em] text-[#1c1c1c]">{english}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-[#9b9b9b] mb-2">Together, let's celebrate artisan heritage :</p>
+          <p className="text-sm font-semibold text-[#1c1c1c] tracking-wide">#HASTKALA #WEARHASTKALA</p>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
+          TABBED PRODUCTS (saadaa-style tabs)
+      ══════════════════════════════════════════════════ */}
+      <section className="py-16" style={{ backgroundColor: '#f5f5f5', borderTop: '1px solid #e8e8e8' }}>
         <div className="max-w-screen-xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-2 text-[#9b9b9b]">Most Loved</p>
-              <h2 className="text-4xl lg:text-5xl font-bold text-[#1c1c1c]">Bestsellers</h2>
-            </div>
-            <Link href="/shop" className="hidden sm:flex items-center gap-2 text-sm font-medium text-[#1c1c1c] pb-0.5 hover:opacity-60 transition-opacity"
-              style={{ borderBottom: '1px solid #1c1c1c' }}>
-              View All <ArrowRight size={14} />
-            </Link>
+          {/* Tab bar */}
+          <div className="flex items-center justify-center gap-1 mb-12">
+            {PRODUCT_TABS.map(tab => (
+              <button key={tab} onClick={() => setActiveTab(tab)}
+                className="px-6 py-2.5 text-sm font-medium transition-all duration-200 rounded-full"
+                style={{
+                  backgroundColor: activeTab === tab ? '#1c1c1c' : 'transparent',
+                  color:           activeTab === tab ? '#ffffff' : '#6b6b6b',
+                  border:          activeTab === tab ? '1px solid #1c1c1c' : '1px solid #e8e8e8',
+                }}>
+                {tab}
+              </button>
+            ))}
           </div>
 
           {loading ? (
@@ -289,11 +378,17 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="flex flex-wrap">
-              {featuredProducts.map(p => (
-                <div key={p.id} className="border-r border-b border-[#e8e8e8]" style={{ width: '25%' }}>
+              {(tabProducts[activeTab] || []).map((p: any) => (
+                <div key={p.id} className="border-r border-b border-[#e8e8e8] bg-white" style={{ width: '25%' }}>
                   <ProductCard product={p} />
                 </div>
               ))}
+              {!loading && (tabProducts[activeTab] || []).length === 0 && (
+                <div className="w-full py-20 text-center">
+                  <p className="text-sm text-[#9b9b9b]">No products yet in this collection.</p>
+                  <Link href="/shop" className="mt-4 inline-block text-sm underline text-[#1c1c1c]">Browse all</Link>
+                </div>
+              )}
             </div>
           )}
 
@@ -388,42 +483,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════
-          NEW ARRIVALS
-      ══════════════════════════════════════════════════ */}
-      <section className="py-20 bg-white" style={{ borderTop: '1px solid #e8e8e8' }}>
-        <div className="max-w-screen-xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-2 text-[#9b9b9b]">Just Arrived</p>
-              <h2 className="text-4xl lg:text-5xl font-bold text-[#1c1c1c]">New Arrivals</h2>
-            </div>
-            <Link href="/shop?sort=newest" className="hidden sm:flex items-center gap-2 text-sm font-medium text-[#1c1c1c] pb-0.5 hover:opacity-60 transition-opacity"
-              style={{ borderBottom: '1px solid #1c1c1c' }}>
-              See All New <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {Array(4).fill(0).map((_, i) => (
-                <div key={i}>
-                  <div className="skeleton aspect-[3/4] rounded" />
-                  <div className="skeleton h-3 rounded w-2/3 mt-3" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-wrap">
-              {newArrivals.map(p => (
-                <div key={p.id} className="border-r border-b border-[#e8e8e8]" style={{ width: '25%' }}>
-                  <ProductCard product={p} />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════════════════
           TESTIMONIALS
@@ -462,6 +521,69 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
+          JOURNAL (saadaa-style blog strip)
+      ══════════════════════════════════════════════════ */}
+      <section className="py-16 bg-white" style={{ borderTop: '1px solid #e8e8e8' }}>
+        <div className="max-w-screen-xl mx-auto px-6">
+          <div className="mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-[#1c1c1c]">The Journal</h2>
+            <p className="text-sm text-[#9b9b9b] mt-1">Threads of artisan living</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 overflow-hidden" style={{ border: '1px solid #e8e8e8' }}>
+            {[
+              { title: 'The Art of Toran Making', category: 'CRAFT', img: 'https://images.unsplash.com/photo-1609766856923-5038fcd63e62?w=600&q=80' },
+              { title: 'How Artisans Keep Traditions Alive', category: 'HERITAGE', img: 'https://images.unsplash.com/photo-1574017989479-a5b8df17e98e?w=600&q=80' },
+              { title: 'Decorating Your Home for Diwali', category: 'FESTIVAL', img: 'https://images.unsplash.com/photo-1583753961571-9d3aa6bb00c6?w=600&q=80' },
+            ].map(({ title, category, img }, i) => (
+              <div key={title} className="relative overflow-hidden group cursor-pointer aspect-[4/3]"
+                style={{ borderRight: i < 2 ? '1px solid #e8e8e8' : 'none' }}>
+                <img src={img} alt={title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 60%)' }} />
+                <div className="absolute bottom-0 left-0 p-5">
+                  <p className="text-[9px] font-bold tracking-[0.2em] mb-2 text-white/60">{category}</p>
+                  <p className="text-base font-bold text-white leading-tight">{title}</p>
+                  <p className="text-xs mt-3 flex items-center gap-1.5 text-white/70 group-hover:text-white transition-colors">
+                    Read more <ArrowRight size={10} />
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
+          BOTTOM TRUST BAR (saadaa marquee-style)
+      ══════════════════════════════════════════════════ */}
+      <section style={{ backgroundColor: '#1c1c1c', borderTop: '1px solid #363636' }} className="overflow-hidden">
+        <div className="py-3 overflow-hidden">
+          <div className="animate-marquee">
+            {[
+              'Free Returns & Exchanges',
+              'Loved by 500+ Customers',
+              '100% Handcrafted by Artisans',
+              'Secure Payments',
+              'Free Delivery on ₹499+',
+              '7-Day Easy Returns',
+              'Made in India',
+              'Free Returns & Exchanges',
+              'Loved by 500+ Customers',
+              '100% Handcrafted by Artisans',
+              'Secure Payments',
+              'Free Delivery on ₹499+',
+              '7-Day Easy Returns',
+              'Made in India',
+            ].map((t, i) => (
+              <span key={i} className="inline-flex items-center gap-6 px-6 text-[10px] font-medium tracking-widest whitespace-nowrap text-white/50 uppercase">
+                <span className="text-white/25">✦</span> {t}
+              </span>
             ))}
           </div>
         </div>

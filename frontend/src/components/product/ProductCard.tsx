@@ -72,43 +72,41 @@ export default function ProductCard({ product }: { product: Product }): JSX.Elem
         )}
 
         {/* ── Badges — top left ── */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1">
+        <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
           {discount > 0 && (
             <span className="text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase"
               style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}>
               -{discount}%
             </span>
           )}
-          {product.is_featured && !discount && (
+          {product.is_featured && (
             <span className="text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase"
-              style={{ backgroundColor: '#ffffff', color: '#1c1c1c' }}>
-              New
+              style={{ backgroundColor: '#16a34a', color: '#ffffff' }}>
+              NEW
             </span>
           )}
         </div>
 
-        {/* ── Wishlist — top right ── */}
+        {/* ── Wishlist — always visible, saadaa-style ── */}
         <button
           onClick={handleWishlist}
-          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center transition-all"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center transition-all z-10"
           style={{
-            backgroundColor: 'rgba(255,255,255,0.9)',
-            opacity: wishlisted ? 1 : 0,
+            backgroundColor: 'rgba(255,255,255,0.92)',
+            borderRadius: '50%',
+            opacity: wishlisted ? 1 : 0.8,
+            boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
           }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-          onMouseLeave={e => { if (!wishlisted) e.currentTarget.style.opacity = '0'; }}
+          onMouseLeave={e => { if (!wishlisted) e.currentTarget.style.opacity = '0.8'; }}
         >
           <Heart
             size={14}
-            style={{ color: wishlisted ? '#1c1c1c' : '#1c1c1c' }}
-            fill={wishlisted ? '#1c1c1c' : 'none'}
+            style={{ color: wishlisted ? '#e11d48' : '#6b6b6b' }}
+            fill={wishlisted ? '#e11d48' : 'none'}
             strokeWidth={1.5}
           />
         </button>
-
-        <style>{`
-          .group:hover .wishlist-btn { opacity: 1 !important; }
-        `}</style>
 
         {/* ── Add to cart — slides up on hover ── */}
         <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">

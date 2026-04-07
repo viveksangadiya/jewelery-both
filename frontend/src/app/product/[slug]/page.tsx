@@ -1,13 +1,46 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Heart, Share2, Star, Plus, Minus, Shield, Truck, RefreshCw, ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
+import { Heart, Share2, Star, Plus, Minus, Shield, Truck, RefreshCw, ChevronLeft, ChevronRight, X, ZoomIn, Package, ShoppingBag as SBag, CheckCircle2 } from 'lucide-react';
 import { productsApi, cartApi } from '@/lib/api';
 import { useCartStore, useWishlistStore, useAuthStore } from '@/lib/store';
 import ProductCard from '@/components/product/ProductCard';
 import ReviewsSection from '@/components/product/ReviewsSection';
 import PincodeChecker from '@/components/product/PincodeChecker';
 import toast from 'react-hot-toast';
+
+// ── Delivery Timeline ────────────────────────────────────
+function DeliveryTimeline() {
+  const today = new Date();
+  const fmt = (d: Date) => d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+  const add = (n: number) => { const d = new Date(today); d.setDate(d.getDate() + n); return d; };
+
+  const steps = [
+    { icon: SBag,         label: 'Order Placed',      date: fmt(today) },
+    { icon: Package,      label: 'Order Shipped',     date: `${fmt(add(3))}–${fmt(add(4))}` },
+    { icon: CheckCircle2, label: 'Estimated Delivery', date: `${fmt(add(5))}–${fmt(add(7))}` },
+  ];
+
+  return (
+    <div className="mb-6 px-4 py-4" style={{ backgroundColor: 'rgba(235,235,202,0.35)', border: '1px solid #EBEBCA' }}>
+      <div className="flex items-start justify-between gap-2">
+        {steps.map(({ icon: Icon, label, date }, i) => (
+          <div key={label} className="flex flex-col items-center text-center flex-1 relative">
+            {i < steps.length - 1 && (
+              <div className="absolute top-5 left-1/2 w-full h-px" style={{ backgroundColor: '#EBEBCA', zIndex: 0 }} />
+            )}
+            <div className="relative z-10 w-10 h-10 rounded-full flex items-center justify-center mb-2"
+              style={{ backgroundColor: '#642308' }}>
+              <Icon size={14} style={{ color: '#FAF9EE' }} strokeWidth={1.5} />
+            </div>
+            <p className="text-[9px] font-bold tracking-wide" style={{ color: '#642308' }}>{date}</p>
+            <p className="text-[9px] mt-0.5" style={{ color: '#B68868' }}>{label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // ── Accordion ────────────────────────────────────────────
 function Accordion({ label, children, defaultOpen = false }: {
@@ -467,8 +500,42 @@ export default function ProductPage() {
               </button>
             </div>
 
+            {/* ── Delivery Timeline (saadaa-style) ── */}
+            <DeliveryTimeline />
+
+            {/* ── Key Highlights (saadaa-style grid) ── */}
+            {(product.material || product.weight_grams || product.category_name) && (
+              <div className="mb-6" style={{ border: '1px solid #EBEBCA' }}>
+                <p className="text-[9px] font-bold tracking-[0.25em] uppercase px-4 py-3"
+                  style={{ color: '#642308', borderBottom: '1px solid #EBEBCA', backgroundColor: 'rgba(235,235,202,0.3)' }}>
+                  Key Highlights
+                </p>
+                <div className="grid grid-cols-2">
+                  {[
+                    { label: 'Craft',    value: 'Handmade' },
+                    { label: 'Origin',   value: 'Made in India' },
+                    product.material    ? { label: 'Material', value: product.material } : null,
+                    product.weight_grams ? { label: 'Weight',  value: `${product.weight_grams}g` } : null,
+                    { label: 'Occasion', value: 'Festive, Daily, Gifting' },
+                    { label: 'Care',     value: 'Wipe with soft cloth' },
+                  ].filter(Boolean).map(({ label, value }: any, i: number, arr: any[]) => (
+                    <div key={label}
+                      className="px-4 py-3 text-xs"
+                      style={{
+                        borderBottom: i < arr.length - 2 ? '1px solid #EBEBCA' : 'none',
+                        borderRight: i % 2 === 0 ? '1px solid #EBEBCA' : 'none',
+                      }}>
+                      <span style={{ color: '#B68868' }}>{label}</span>
+                      <br />
+                      <span className="font-medium" style={{ color: '#642308' }}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Trust strip */}
-            <div className="grid grid-cols-3 mb-8" style={{ border: '1px solid #EBEBCA' }}>
+            <div className="grid grid-cols-3 mb-6" style={{ border: '1px solid #EBEBCA' }}>
               {[
                 { icon: Shield,    label: 'Handmade',      sub: 'By artisans' },
                 { icon: Truck,     label: 'Free Shipping',  sub: 'Orders ₹499+' },
