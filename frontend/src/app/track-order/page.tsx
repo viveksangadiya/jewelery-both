@@ -78,26 +78,26 @@ export default function TrackOrderPage(): JSX.Element {
   const shipmentInfo = tracking?.tracking?.tracking_data?.shipment_track?.[0];
 
   return (
-    <div className="min-h-screen py-14" style={{ backgroundColor: '#FAF9EE' }}>
+    <div className="min-h-screen py-14 bg-white">
       <div className="max-w-2xl mx-auto px-4">
 
         {/* Header */}
         <div className="text-center mb-10">
           <div className="w-16 h-16 flex items-center justify-center mx-auto mb-5"
-            style={{ backgroundColor: '#EBEBCA', border: '1px solid #B68868' }}>
-            <Truck size={28} style={{ color: '#642308' }} />
+            style={{ backgroundColor: '#f5f5f5', border: '1px solid #e1e1e1' }}>
+            <Truck size={28} style={{ color: '#1c1c1c' }} />
           </div>
-          <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+          <h1 className="text-3xl font-bold mb-2" style={{ color: '#1c1c1c' }}>
             Track Your Order
           </h1>
-          <p className="text-sm" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+          <p className="text-sm" style={{ color: '#363636' }}>
             Enter your order number to get live shipping updates
           </p>
         </div>
 
         {/* Search box */}
-        <div className="p-6 mb-5" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
-          <p className="text-[10px] tracking-[0.2em] uppercase font-bold mb-2" style={{ color: '#B68868' }}>Order Number</p>
+        <div className="p-6 mb-5" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
+          <p className="text-[10px] tracking-[0.2em] uppercase font-bold mb-2" style={{ color: '#9b9b9b' }}>Order Number</p>
           <div className="flex gap-0">
             <input
               type="text"
@@ -106,17 +106,17 @@ export default function TrackOrderPage(): JSX.Element {
               onKeyDown={(e) => e.key === 'Enter' && handleTrack()}
               placeholder="e.g. HK-ABC123-XY"
               className="flex-1 px-4 py-3 text-sm outline-none font-mono transition-colors"
-              style={{ border: '1px solid #EBEBCA', borderRight: 'none', color: '#642308', backgroundColor: '#FAF9EE' }}
-              onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-              onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+              style={{ border: '1px solid #e1e1e1', borderRight: 'none', color: '#1c1c1c', backgroundColor: '#ffffff' }}
+              onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
             />
             <button
               onClick={handleTrack}
               disabled={loading || !orderNumber.trim()}
               className="px-5 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 flex-shrink-0 transition-colors disabled:opacity-50"
-              style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-              onMouseEnter={e => { if (!loading && orderNumber.trim()) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
-              onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#642308'); }}
+              style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+              onMouseEnter={e => { if (!loading && orderNumber.trim()) (e.currentTarget.style.backgroundColor = '#363636'); }}
+              onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#1c1c1c'); }}
             >
               {loading
                 ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -125,7 +125,7 @@ export default function TrackOrderPage(): JSX.Element {
             </button>
           </div>
           {error && (
-            <p className="mt-3 text-xs flex items-center gap-1.5" style={{ color: '#b91c1c' }}>
+            <p className="mt-3 text-xs flex items-center gap-1.5" style={{ color: '#e32c2b' }}>
               <XCircle size={13} /> {error}
             </p>
           )}
@@ -136,45 +136,45 @@ export default function TrackOrderPage(): JSX.Element {
           <div className="space-y-4">
 
             {/* Order summary */}
-            <div className="p-6" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
+            <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
               <div className="flex items-start justify-between mb-5">
                 <div>
-                  <p className="text-[10px] tracking-[0.25em] uppercase font-bold mb-1" style={{ color: '#B68868' }}>Order Number</p>
-                  <p className="font-mono font-bold text-lg" style={{ color: '#642308' }}>{tracking.order_number}</p>
+                  <p className="text-[10px] tracking-[0.25em] uppercase font-bold mb-1" style={{ color: '#9b9b9b' }}>Order Number</p>
+                  <p className="font-mono font-bold text-lg" style={{ color: '#1c1c1c' }}>{tracking.order_number}</p>
                 </div>
                 <span className="text-[10px] px-2.5 py-1 font-bold tracking-[0.15em] uppercase capitalize"
                   style={{
-                    backgroundColor: isCancelled ? '#FFF0EE' : tracking.status === 'delivered' ? '#EBEBCA' : '#FAF9EE',
-                    color: isCancelled ? '#b91c1c' : '#642308',
-                    border: `1px solid ${isCancelled ? '#f5c6c6' : '#EBEBCA'}`,
+                    backgroundColor: isCancelled ? '#fff0f0' : tracking.status === 'delivered' ? '#d4e3cb' : '#f5f5f5',
+                    color: isCancelled ? '#e32c2b' : '#1c1c1c',
+                    border: `1px solid ${isCancelled ? '#f5c6c6' : '#e1e1e1'}`,
                   }}>
                   {tracking.status}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div style={{ borderBottom: '1px solid #EBEBCA', paddingBottom: '0.75rem' }}>
-                  <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#B68868' }}>Order Date</p>
-                  <p className="font-medium text-sm" style={{ color: '#642308' }}>
+                <div style={{ borderBottom: '1px solid #e1e1e1', paddingBottom: '0.75rem' }}>
+                  <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#9b9b9b' }}>Order Date</p>
+                  <p className="font-medium text-sm" style={{ color: '#1c1c1c' }}>
                     {new Date(tracking.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
-                <div style={{ borderBottom: '1px solid #EBEBCA', paddingBottom: '0.75rem' }}>
-                  <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#B68868' }}>Payment</p>
-                  <p className="font-medium text-sm capitalize" style={{ color: tracking.payment_status === 'paid' ? '#642308' : '#B68868' }}>
+                <div style={{ borderBottom: '1px solid #e1e1e1', paddingBottom: '0.75rem' }}>
+                  <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#9b9b9b' }}>Payment</p>
+                  <p className="font-medium text-sm capitalize" style={{ color: tracking.payment_status === 'paid' ? '#347a07' : '#9b9b9b' }}>
                     {tracking.payment_status}
                   </p>
                 </div>
                 {tracking.courier_name && (
                   <div>
-                    <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#B68868' }}>Courier</p>
-                    <p className="font-medium text-sm" style={{ color: '#642308' }}>{tracking.courier_name}</p>
+                    <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#9b9b9b' }}>Courier</p>
+                    <p className="font-medium text-sm" style={{ color: '#1c1c1c' }}>{tracking.courier_name}</p>
                   </div>
                 )}
                 {tracking.awb_code && (
                   <div>
-                    <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#B68868' }}>AWB Number</p>
-                    <p className="font-mono font-medium text-sm" style={{ color: '#642308' }}>{tracking.awb_code}</p>
+                    <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#9b9b9b' }}>AWB Number</p>
+                    <p className="font-mono font-medium text-sm" style={{ color: '#1c1c1c' }}>{tracking.awb_code}</p>
                   </div>
                 )}
               </div>
@@ -185,7 +185,7 @@ export default function TrackOrderPage(): JSX.Element {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 flex items-center gap-2 text-xs font-bold tracking-[0.1em] uppercase hover:underline"
-                  style={{ color: '#903E1D' }}
+                  style={{ color: '#363636' }}
                 >
                   <ExternalLink size={12} /> Track on courier website
                 </a>
@@ -193,9 +193,9 @@ export default function TrackOrderPage(): JSX.Element {
 
               {shipmentInfo?.eta && (
                 <div className="mt-4 px-4 py-3 flex items-center gap-2 text-sm"
-                  style={{ backgroundColor: '#EBEBCA', border: '1px solid #B68868' }}>
-                  <Clock size={14} style={{ color: '#642308' }} />
-                  <span style={{ color: '#642308' }}>
+                  style={{ backgroundColor: '#d4e3cb', border: '1px solid #347a07' }}>
+                  <Clock size={14} style={{ color: '#347a07' }} />
+                  <span style={{ color: '#1c1c1c' }}>
                     Estimated delivery: <strong>{shipmentInfo.eta}</strong>
                   </span>
                 </div>
@@ -204,16 +204,16 @@ export default function TrackOrderPage(): JSX.Element {
 
             {/* Progress steps */}
             {!isCancelled && (
-              <div className="p-6" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
-                <h3 className="text-[10px] tracking-[0.25em] uppercase font-bold mb-6" style={{ color: '#B68868' }}>
+              <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
+                <h3 className="text-[10px] tracking-[0.25em] uppercase font-bold mb-6" style={{ color: '#9b9b9b' }}>
                   Shipment Progress
                 </h3>
                 <div className="relative">
-                  <div className="absolute top-4 left-5 right-5 h-px" style={{ backgroundColor: '#EBEBCA' }} />
+                  <div className="absolute top-4 left-5 right-5 h-px" style={{ backgroundColor: '#e1e1e1' }} />
                   <div
                     className="absolute top-4 left-5 h-px transition-all duration-500"
                     style={{
-                      backgroundColor: '#642308',
+                      backgroundColor: '#1c1c1c',
                       width: currentStepIndex >= 0
                         ? `calc(${(currentStepIndex / (statusSteps.length - 1)) * 100}% - 2.5rem)`
                         : '0%',
@@ -228,16 +228,16 @@ export default function TrackOrderPage(): JSX.Element {
                         <div key={step.key} className="flex flex-col items-center gap-2 flex-1">
                           <div className="w-9 h-9 flex items-center justify-center z-10 transition-all"
                             style={{
-                              backgroundColor: done ? '#642308' : '#FAF9EE',
-                              border: `2px solid ${done ? '#642308' : active ? '#642308' : '#EBEBCA'}`,
-                              color: done ? '#FAF9EE' : active ? '#642308' : '#EBEBCA',
-                              outline: active ? '3px solid #EBEBCA' : 'none',
+                              backgroundColor: done ? '#1c1c1c' : '#ffffff',
+                              border: `2px solid ${done ? '#1c1c1c' : active ? '#1c1c1c' : '#e1e1e1'}`,
+                              color: done ? '#ffffff' : active ? '#1c1c1c' : '#e1e1e1',
+                              outline: active ? '3px solid #e1e1e1' : 'none',
                               outlineOffset: '2px',
                             }}>
                             <Icon size={14} />
                           </div>
                           <p className="text-[10px] font-bold tracking-[0.05em] text-center leading-tight uppercase"
-                            style={{ color: done ? '#642308' : '#B68868' }}>
+                            style={{ color: done ? '#1c1c1c' : '#9b9b9b' }}>
                             {step.label}
                           </p>
                         </div>
@@ -250,8 +250,8 @@ export default function TrackOrderPage(): JSX.Element {
 
             {/* Live activity timeline */}
             {activities.length > 0 && (
-              <div className="p-6" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
-                <h3 className="text-[10px] tracking-[0.25em] uppercase font-bold mb-5" style={{ color: '#B68868' }}>
+              <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
+                <h3 className="text-[10px] tracking-[0.25em] uppercase font-bold mb-5" style={{ color: '#9b9b9b' }}>
                   Tracking Activity
                 </h3>
                 <div className="space-y-0">
@@ -259,21 +259,21 @@ export default function TrackOrderPage(): JSX.Element {
                     <div key={idx} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div className="w-2.5 h-2.5 flex-shrink-0 mt-1.5"
-                          style={{ backgroundColor: idx === 0 ? '#642308' : '#EBEBCA' }} />
+                          style={{ backgroundColor: idx === 0 ? '#1c1c1c' : '#e1e1e1' }} />
                         {idx < Math.min(activities.length, 8) - 1 && (
-                          <div className="w-px flex-1 my-1" style={{ backgroundColor: '#EBEBCA' }} />
+                          <div className="w-px flex-1 my-1" style={{ backgroundColor: '#e1e1e1' }} />
                         )}
                       </div>
                       <div className="pb-4 flex-1">
-                        <p className="text-sm font-semibold" style={{ color: idx === 0 ? '#642308' : '#903E1D' }}>
+                        <p className="text-sm font-semibold" style={{ color: idx === 0 ? '#1c1c1c' : '#363636' }}>
                           {activity.sr_status_label || activity.activity}
                         </p>
                         {activity.location && (
-                          <p className="text-xs flex items-center gap-1 mt-0.5" style={{ color: '#B68868' }}>
+                          <p className="text-xs flex items-center gap-1 mt-0.5" style={{ color: '#9b9b9b' }}>
                             <MapPin size={10} /> {activity.location}
                           </p>
                         )}
-                        <p className="text-xs mt-0.5" style={{ color: '#B68868' }}>{activity.date}</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#9b9b9b' }}>{activity.date}</p>
                       </div>
                     </div>
                   ))}
@@ -283,10 +283,10 @@ export default function TrackOrderPage(): JSX.Element {
 
             {/* Not yet shipped */}
             {!tracking.shipment_id && !isCancelled && (
-              <div className="p-5 text-center" style={{ border: '1px solid #EBEBCA', backgroundColor: '#EBEBCA' }}>
-                <Package size={28} className="mx-auto mb-2" style={{ color: '#B68868' }} />
-                <p className="text-sm font-bold tracking-[0.1em] uppercase" style={{ color: '#642308' }}>Your order is being prepared</p>
-                <p className="text-xs mt-1" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+              <div className="p-5 text-center" style={{ border: '1px solid #e1e1e1', backgroundColor: '#f5f5f5' }}>
+                <Package size={28} className="mx-auto mb-2" style={{ color: '#9b9b9b' }} />
+                <p className="text-sm font-bold tracking-[0.1em] uppercase" style={{ color: '#1c1c1c' }}>Your order is being prepared</p>
+                <p className="text-xs mt-1" style={{ color: '#363636' }}>
                   Live tracking will be available once your order is shipped
                 </p>
               </div>
@@ -294,9 +294,9 @@ export default function TrackOrderPage(): JSX.Element {
           </div>
         )}
 
-        <p className="text-center text-[10px] mt-8" style={{ color: '#B68868' }}>
+        <p className="text-center text-[10px] mt-8" style={{ color: '#9b9b9b' }}>
           Can't find your order?{' '}
-          <a href="/contact" className="hover:underline" style={{ color: '#903E1D' }}>Contact us</a> for help.
+          <a href="/contact" className="hover:underline" style={{ color: '#363636' }}>Contact us</a> for help.
         </p>
       </div>
     </div>

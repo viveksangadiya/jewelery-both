@@ -62,12 +62,12 @@ export default function PincodeChecker() {
   };
 
   return (
-    <div className="p-4" style={{ border: '1px solid #EBEBCA', backgroundColor: '#FAF9EE' }}>
+    <div className="p-4" style={{ border: '1px solid #e1e1e1' }}>
 
       {/* Label */}
       <div className="flex items-center gap-2 mb-3">
-        <MapPin size={13} style={{ color: '#B68868', flexShrink: 0 }} />
-        <span className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: '#642308' }}>
+        <MapPin size={12} style={{ color: '#9b9b9b', flexShrink: 0 }} />
+        <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#1c1c1c]">
           Check Delivery Availability
         </span>
       </div>
@@ -82,31 +82,26 @@ export default function PincodeChecker() {
           onKeyDown={handleKeyDown}
           placeholder="Enter 6-digit pincode"
           maxLength={6}
-          className="flex-1 px-3 py-2.5 text-sm outline-none transition-colors font-mono tracking-widest bg-white"
+          className="flex-1 px-3 py-2.5 text-sm outline-none font-mono tracking-widest bg-white text-[#1c1c1c] placeholder:text-[#9b9b9b] placeholder:font-sans placeholder:tracking-normal"
           style={{
-            border: '1px solid #EBEBCA',
+            border: '1px solid #e1e1e1',
             borderRight: 'none',
-            color: '#642308',
           }}
-          onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-          onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+          onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+          onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
         />
         <button
           onClick={check}
           disabled={loading || pincode.length < 6}
-          className="px-5 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 flex-shrink-0 transition-colors disabled:opacity-40"
-          style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-          onMouseEnter={e => { if (pincode.length >= 6 && !loading) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
-          onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#642308'); }}>
-          {loading
-            ? <Loader2 size={13} className="animate-spin" />
-            : 'Check'}
+          className="px-5 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 flex-shrink-0 transition-colors disabled:opacity-40 bg-[#1c1c1c] text-white hover:bg-[#363636]"
+        >
+          {loading ? <Loader2 size={13} className="animate-spin" /> : 'Check'}
         </button>
       </div>
 
       {/* Error */}
       {error && (
-        <p className="text-xs mt-2.5 flex items-center gap-1.5" style={{ color: '#b91c1c' }}>
+        <p className="text-xs mt-2.5 flex items-center gap-1.5 text-[#e32c2b]">
           <XCircle size={12} /> {error}
         </p>
       )}
@@ -116,34 +111,34 @@ export default function PincodeChecker() {
         <div
           className="mt-3 p-3"
           style={{
-            border: `1px solid ${result.is_serviceable ? '#EBEBCA' : '#f5c6c6'}`,
-            backgroundColor: result.is_serviceable ? '#EBEBCA' : '#fdf2f2',
-          }}>
+            border: `1px solid ${result.is_serviceable ? '#d4e3cb' : '#f5c6c6'}`,
+            backgroundColor: result.is_serviceable ? '#d4e3cb' : '#fff0f0',
+          }}
+        >
           {result.is_serviceable ? (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CheckCircle size={13} style={{ color: '#642308', flexShrink: 0 }} />
-                <span className="text-xs font-semibold" style={{ color: '#642308' }}>
+                <CheckCircle size={12} style={{ color: '#347a07', flexShrink: 0 }} />
+                <span className="text-xs font-semibold text-[#1c1c1c]">
                   Delivery available to {pincode}
                 </span>
               </div>
               {result.estimated_delivery && (
                 <div className="flex items-center gap-2 ml-5">
-                  <Clock size={11} style={{ color: '#903E1D', flexShrink: 0 }} />
-                  <span className="text-xs" style={{ color: '#903E1D' }}>
-                    Expected by:{' '}
-                    <strong style={{ color: '#642308' }}>{formatETD(result.estimated_delivery)}</strong>
+                  <Clock size={11} style={{ color: '#347a07', flexShrink: 0 }} />
+                  <span className="text-xs text-[#363636]">
+                    Expected by: <strong className="text-[#1c1c1c]">{formatETD(result.estimated_delivery)}</strong>
                   </span>
                 </div>
               )}
               {result.cheapest_rate !== null && (
                 <div className="flex items-center gap-2 ml-5">
-                  <Truck size={11} style={{ color: '#903E1D', flexShrink: 0 }} />
-                  <span className="text-xs" style={{ color: '#903E1D' }}>
+                  <Truck size={11} style={{ color: '#347a07', flexShrink: 0 }} />
+                  <span className="text-xs text-[#363636]">
                     {result.cheapest_rate === 0 ? (
-                      <strong style={{ color: '#642308' }}>Free shipping on this order</strong>
+                      <strong className="text-[#347a07]">Free shipping on this order</strong>
                     ) : (
-                      <>Shipping from <strong style={{ color: '#642308' }}>₹{result.cheapest_rate}</strong></>
+                      <>Shipping from <strong className="text-[#1c1c1c]">₹{result.cheapest_rate}</strong></>
                     )}
                   </span>
                 </div>
@@ -151,8 +146,8 @@ export default function PincodeChecker() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <XCircle size={13} style={{ color: '#b91c1c', flexShrink: 0 }} />
-              <span className="text-xs" style={{ color: '#b91c1c' }}>
+              <XCircle size={12} style={{ color: '#e32c2b', flexShrink: 0 }} />
+              <span className="text-xs text-[#e32c2b]">
                 Sorry, we don't deliver to <strong>{pincode}</strong> yet.
               </span>
             </div>

@@ -83,34 +83,34 @@ export default function LoginPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16" style={{ backgroundColor: '#FAF9EE' }}>
-      <div className="w-full max-w-md">
+  const inputCls = "w-full pl-10 pr-4 py-3 text-sm outline-none transition-colors bg-white text-[#1c1c1c] placeholder:text-[#9b9b9b]";
+  const inputStyle = { border: '1px solid #e1e1e1' };
 
-        {/* Brand */}
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-16 bg-white">
+      <div className="w-full max-w-sm">
+
+        {/* Brand mark */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-1" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
-            HastKala<span style={{ color: '#B68868' }}>✦</span>
-          </h1>
-          <p className="text-[11px] tracking-[0.25em] uppercase font-medium" style={{ color: '#903E1D' }}>
+          <h1 className="text-2xl font-bold tracking-tight text-[#1c1c1c] mb-1">HastKala</h1>
+          <p className="text-[10px] tracking-[0.3em] uppercase text-[#9b9b9b]">
             Handmade Craft Since 2020
           </p>
         </div>
 
-        {/* Card */}
-        <div style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
+        <div style={{ border: '1px solid #e1e1e1' }}>
 
           {/* Mode tabs */}
-          <div className="flex" style={{ borderBottom: '1px solid #EBEBCA' }}>
-            {(['login', 'register'] as const).map(m => (
+          <div className="flex" style={{ borderBottom: '1px solid #e1e1e1' }}>
+            {(['login', 'register'] as const).map((m, i) => (
               <button
                 key={m}
                 onClick={() => setMode(m)}
                 className="flex-1 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
                 style={{
-                  backgroundColor: mode === m ? '#642308' : 'transparent',
-                  color: mode === m ? '#FAF9EE' : '#903E1D',
-                  borderRight: m === 'login' ? '1px solid #EBEBCA' : 'none',
+                  backgroundColor: mode === m ? '#1c1c1c' : 'transparent',
+                  color: mode === m ? '#ffffff' : '#9b9b9b',
+                  borderRight: i === 0 ? '1px solid #e1e1e1' : 'none',
                 }}
               >
                 {m === 'login' ? 'Sign In' : 'Create Account'}
@@ -118,14 +118,14 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <div className="p-8">
+          <div className="p-7">
             {/* Google Button */}
             {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
               <>
                 <div className="mb-4">
                   {googleLoading ? (
-                    <div className="w-full h-11 flex items-center justify-center gap-2 text-sm"
-                      style={{ border: '1px solid #EBEBCA', color: '#903E1D' }}>
+                    <div className="w-full h-11 flex items-center justify-center gap-2 text-sm text-[#363636]"
+                      style={{ border: '1px solid #e1e1e1' }}>
                       <Loader2 size={14} className="animate-spin" />
                       Signing in with Google...
                     </div>
@@ -133,13 +133,12 @@ export default function LoginPage() {
                     <div id="google-btn" className="w-full flex justify-center" />
                   )}
                 </div>
-
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="flex-1 h-px" style={{ backgroundColor: '#EBEBCA' }} />
-                  <span className="text-[10px] tracking-[0.2em] uppercase font-medium" style={{ color: '#B68868' }}>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="flex-1 h-px bg-[#e1e1e1]" />
+                  <span className="text-[10px] tracking-[0.2em] uppercase font-medium text-[#9b9b9b]">
                     or continue with email
                   </span>
-                  <div className="flex-1 h-px" style={{ backgroundColor: '#EBEBCA' }} />
+                  <div className="flex-1 h-px bg-[#e1e1e1]" />
                 </div>
               </>
             )}
@@ -147,85 +146,72 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-3">
               {mode === 'register' && (
                 <div className="relative">
-                  <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#B68868' }} />
-                  <input
-                    type="text" required placeholder="Full Name"
+                  <User size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b]" />
+                  <input type="text" required placeholder="Full Name"
                     value={form.name} onChange={e => set('name', e.target.value)}
-                    className="w-full pl-9 pr-4 py-3 text-sm outline-none transition-colors"
-                    style={{ border: '1px solid #EBEBCA', color: '#642308', backgroundColor: '#FAF9EE' }}
-                    onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                    onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                    className={inputCls} style={inputStyle}
+                    onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                    onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
                   />
                 </div>
               )}
 
               <div className="relative">
-                <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#B68868' }} />
-                <input
-                  type="email" required placeholder="Email Address"
+                <Mail size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b]" />
+                <input type="email" required placeholder="Email Address"
                   value={form.email} onChange={e => set('email', e.target.value)}
-                  className="w-full pl-9 pr-4 py-3 text-sm outline-none transition-colors"
-                  style={{ border: '1px solid #EBEBCA', color: '#642308', backgroundColor: '#FAF9EE' }}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                  onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                  className={inputCls} style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                  onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
                 />
               </div>
 
               {mode === 'register' && (
                 <div className="relative">
-                  <Phone size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#B68868' }} />
-                  <input
-                    type="tel" placeholder="Phone Number (optional)"
+                  <Phone size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b]" />
+                  <input type="tel" placeholder="Phone (optional)"
                     value={form.phone} onChange={e => set('phone', e.target.value)}
-                    className="w-full pl-9 pr-4 py-3 text-sm outline-none transition-colors"
-                    style={{ border: '1px solid #EBEBCA', color: '#642308', backgroundColor: '#FAF9EE' }}
-                    onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                    onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                    className={inputCls} style={inputStyle}
+                    onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                    onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
                   />
                 </div>
               )}
 
               <div className="relative">
-                <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: '#B68868' }} />
+                <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b]" />
                 <input
                   type={showPw ? 'text' : 'password'} required placeholder="Password"
                   value={form.password} onChange={e => set('password', e.target.value)}
-                  className="w-full pl-9 pr-10 py-3 text-sm outline-none transition-colors"
-                  style={{ border: '1px solid #EBEBCA', color: '#642308', backgroundColor: '#FAF9EE' }}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                  onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                  className={inputCls} style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                  onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
                 />
-                <button
-                  type="button" onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors"
-                  style={{ color: '#B68868' }}
-                >
-                  {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                <button type="button" onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b] hover:text-[#1c1c1c] transition-colors">
+                  {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
 
               <button
                 type="submit" disabled={loading}
-                className="w-full py-3.5 text-[11px] font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-colors disabled:opacity-60 mt-2"
-                style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-                onMouseEnter={e => { if (!loading) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
-                onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#642308'); }}
+                className="btn-craft w-full mt-1 disabled:opacity-60"
               >
                 {loading
-                  ? <Loader2 size={15} className="animate-spin" />
+                  ? <Loader2 size={14} className="animate-spin" />
                   : mode === 'login' ? 'Sign In' : 'Create Account'}
               </button>
             </form>
 
             {mode === 'login' && (
-              <p className="text-center text-xs mt-4" style={{ color: '#B68868' }}>
-                <a href="#" className="hover:underline" style={{ color: '#903E1D' }}>Forgot your password?</a>
+              <p className="text-center text-xs mt-4 text-[#9b9b9b]">
+                <a href="#" className="hover:text-[#1c1c1c] transition-colors">Forgot your password?</a>
               </p>
             )}
           </div>
         </div>
 
-        <p className="text-center text-[10px] mt-5" style={{ color: '#B68868' }}>
+        <p className="text-center text-[10px] mt-5 text-[#9b9b9b]">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
       </div>

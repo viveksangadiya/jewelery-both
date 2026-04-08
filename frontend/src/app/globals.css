@@ -1,14 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-inter: 'Inter', system-ui, sans-serif;
-}
-
-* {
+/* ── Base reset ────────────────────────────────────────── */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -17,69 +12,86 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-inter);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.875rem;        /* 14px base — matches saadaa */
   background-color: #ffffff;
   color: #1c1c1c;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.font-display { font-family: var(--font-inter); }
+/* ── Typography helpers ────────────────────────────────── */
+.font-display  { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.font-body     { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
-/* Scrollbar */
-::-webkit-scrollbar        { width: 6px; }
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; }
 ::-webkit-scrollbar-track  { background: #f5f5f5; }
-::-webkit-scrollbar-thumb  { background: #9b9b9b; border-radius: 3px; }
+::-webkit-scrollbar-thumb  { background: #9b9b9b; }
 
-/* Product card hover */
-.product-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-.product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+/* ── Buttons — global sharp corners ───────────────────── */
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
 }
 
-/* Shimmer skeleton */
+/* ── Product card hover ────────────────────────────────── */
+.product-card { transition: box-shadow 0.2s ease; }
+@media (hover: hover) {
+  .product-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+}
+
+/* ── Shimmer skeleton ──────────────────────────────────── */
 .skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-/* Announcement bar */
-.announcement-bar {
-  background: #1c1c1c;
-}
+/* ── Announcement bar ──────────────────────────────────── */
+.announcement-bar { background: #1c1c1c; }
 
-/* Primary button */
+/* ── Primary CTA button ────────────────────────────────── */
 .btn-craft {
   background: #1c1c1c;
   color: #ffffff;
-  transition: all 0.2s;
+  font-size: 0.625rem;          /* 10px */
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  height: 48px;
+  padding: 0 1.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
-.btn-craft:hover {
-  background: #363636;
-}
+.btn-craft:hover  { background: #363636; }
 
-/* Category card */
+/* ── Category card ─────────────────────────────────────── */
 .category-card {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease;
 }
-.category-card:hover     { transform: scale(1.01); }
-.category-card img       { transition: transform 0.5s ease; }
-.category-card:hover img { transform: scale(1.05); }
+@media (hover: hover) {
+  .category-card img { transition: transform 0.5s ease; }
+  .category-card:hover img { transform: scale(1.04); }
+}
 
-/* Search panel slide-in from right */
+/* ── Search panel slide-in ─────────────────────────────── */
 @keyframes slide-in-right {
-  from { transform: translateX(100%); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
 .animate-slide-in-right {
   animation: slide-in-right 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 
-/* Line clamp utility */
+/* ── Line clamp ────────────────────────────────────────── */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -87,29 +99,14 @@ body {
   overflow: hidden;
 }
 
-/* Thin divider */
+/* ── Divider ───────────────────────────────────────────── */
 .craft-divider {
   border: none;
   height: 1px;
-  background: #e8e8e8;
+  background: #e1e1e1;
 }
 
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
-}
-
-@keyframes fadeIn {
-  0%   { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@keyframes slideUp {
-  0%   { transform: translateY(20px); opacity: 0; }
-  100% { transform: translateY(0);    opacity: 1; }
-}
-
-/* Marquee scrolling trust bar */
+/* ── Marquee trust bar ─────────────────────────────────── */
 @keyframes marquee {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -121,7 +118,18 @@ body {
 }
 .animate-marquee:hover { animation-play-state: paused; }
 
-/* Fade-in for hero slides */
-.animate-fade-in {
-  animation: fadeIn 0.6s ease forwards;
+/* ── Keyframes ─────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
+@keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes slideUp {
+  0%   { transform: translateY(16px); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 1; }
+}
+.animate-fade-in  { animation: fadeIn  0.5s ease forwards; }
+.animate-slide-up { animation: slideUp 0.35s ease forwards; }

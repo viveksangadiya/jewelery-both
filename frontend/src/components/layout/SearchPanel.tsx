@@ -27,7 +27,7 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
   const [results, setResults] = useState<any[]>([]);
   const [picks, setPicks]     = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const inputRef   = useRef<HTMLInputElement>(null);
+  const inputRef    = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const { toggle, isWishlisted } = useWishlistStore();
@@ -85,29 +85,26 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
     e.stopPropagation();
     const was = isWishlisted(productId);
     await toggle(productId);
-    toast.success(was ? 'Removed from wishlist' : 'Saved!', { icon: '❤️' });
+    toast.success(was ? 'Removed from wishlist' : 'Saved!');
   };
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[60] transition-opacity"
-        style={{ backgroundColor: 'rgba(100,35,8,0.3)' }}
+        className="fixed inset-0 z-[60]"
+        style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
         onClick={onClose}
       />
 
       {/* Panel */}
       <div
-        className="fixed top-0 right-0 bottom-0 z-[70] w-full max-w-[460px] flex flex-col overflow-hidden animate-slide-in-right"
-        style={{ backgroundColor: '#FAF9EE', borderLeft: '1px solid #EBEBCA' }}
+        className="fixed top-0 right-0 bottom-0 z-[70] w-full max-w-[460px] flex flex-col overflow-hidden bg-white animate-slide-in-right"
+        style={{ borderLeft: '1px solid #e1e1e1' }}
       >
-        {/* ── Search bar ── */}
-        <div
-          className="flex items-center gap-3 px-5 py-4"
-          style={{ borderBottom: '1px solid #EBEBCA' }}
-        >
-          <Search size={16} style={{ color: '#B68868', flexShrink: 0 }} />
+        {/* ── Search input bar ── */}
+        <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #e1e1e1' }}>
+          <Search size={15} style={{ color: '#9b9b9b', flexShrink: 0 }} />
           <form onSubmit={handleSubmit} className="flex-1">
             <input
               ref={inputRef}
@@ -115,37 +112,32 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search torans, wall hangings, gift sets…"
-              className="w-full text-sm outline-none bg-transparent"
-              style={{ color: '#642308' }}
+              className="w-full text-sm outline-none bg-transparent text-[#1c1c1c] placeholder:text-[#9b9b9b]"
             />
           </form>
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="text-xs font-medium flex-shrink-0 tracking-wide transition-colors"
-              style={{ color: '#B68868' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+              className="text-xs font-medium flex-shrink-0 text-[#9b9b9b] hover:text-[#1c1c1c] transition-colors"
+            >
               Clear
             </button>
           )}
           <button
             onClick={onClose}
-            className="flex-shrink-0 ml-1 transition-colors"
-            style={{ color: '#903E1D' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#903E1D')}>
-            <X size={18} />
+            className="flex-shrink-0 ml-1 text-[#9b9b9b] hover:text-[#1c1c1c] transition-colors"
+          >
+            <X size={17} />
           </button>
         </div>
 
         {/* ── Scrollable body ── */}
         <div className="flex-1 overflow-y-auto">
 
-          {/* Trending tags — only without query */}
+          {/* Trending tags */}
           {!query.trim() && (
             <div className="px-5 pt-6 pb-5">
-              <p className="text-[10px] font-bold tracking-[0.3em] uppercase mb-4" style={{ color: '#B68868' }}>
+              <p className="text-[10px] font-bold tracking-[0.3em] uppercase mb-4 text-[#9b9b9b]">
                 Trending
               </p>
               <div className="flex flex-wrap gap-2">
@@ -154,18 +146,10 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
                     key={t.label}
                     href={t.href}
                     onClick={onClose}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium tracking-wide transition-all"
-                    style={{ border: '1px solid #EBEBCA', color: '#903E1D' }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.borderColor = '#B68868';
-                      (e.currentTarget as HTMLElement).style.backgroundColor = '#EBEBCA';
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.borderColor = '#EBEBCA';
-                      (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                    }}
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium tracking-wide text-[#363636] transition-colors hover:text-[#1c1c1c] hover:border-[#1c1c1c]"
+                    style={{ border: '1px solid #e1e1e1' }}
                   >
-                    <ArrowRight size={10} style={{ color: '#B68868' }} />
+                    <ArrowRight size={9} style={{ color: '#9b9b9b' }} />
                     {t.label}
                   </Link>
                 ))}
@@ -173,23 +157,20 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
             </div>
           )}
 
-          {/* Divider */}
-          {!query.trim() && <div className="mx-5 h-px" style={{ backgroundColor: '#EBEBCA' }} />}
+          {!query.trim() && <div className="mx-5 h-px" style={{ backgroundColor: '#e1e1e1' }} />}
 
           {/* Products section */}
           <div className="px-5 pt-5 pb-8">
             <div className="flex items-center justify-between mb-5">
-              <p className="text-[10px] font-bold tracking-[0.3em] uppercase" style={{ color: '#642308' }}>
+              <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#9b9b9b]">
                 {loading ? 'Searching…' : sectionLabel}
               </p>
               {query.trim() && results.length > 0 && (
                 <Link
                   href={`/shop?search=${encodeURIComponent(query)}`}
                   onClick={onClose}
-                  className="text-xs font-semibold transition-colors"
-                  style={{ color: '#903E1D' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#903E1D')}>
+                  className="text-xs font-semibold text-[#363636] hover:text-[#1c1c1c] transition-colors"
+                >
                   View all →
                 </Link>
               )}
@@ -211,11 +192,10 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
             {/* No results */}
             {!loading && query.trim() && results.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-2xl mb-3">🪢</p>
-                <p className="text-sm font-semibold mb-1" style={{ color: '#642308' }}>
+                <p className="text-sm font-semibold mb-1 text-[#1c1c1c]">
                   No results for "{query}"
                 </p>
-                <p className="text-xs" style={{ color: '#B68868' }}>
+                <p className="text-xs text-[#9b9b9b]">
                   Try different keywords or browse categories
                 </p>
               </div>
@@ -238,10 +218,7 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
                       className="group block"
                     >
                       {/* Image */}
-                      <div
-                        className="relative aspect-square overflow-hidden mb-2"
-                        style={{ backgroundColor: '#EBEBCA' }}
-                      >
+                      <div className="relative aspect-square overflow-hidden mb-2" style={{ backgroundColor: '#f5f5f5' }}>
                         {product.primary_image ? (
                           <img
                             src={product.primary_image}
@@ -255,30 +232,30 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
                         <button
                           onClick={e => handleWishlist(e, product.id)}
                           className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center transition-all"
-                          style={{ backgroundColor: 'rgba(250,249,238,0.9)' }}
+                          style={{ backgroundColor: 'rgba(255,255,255,0.9)' }}
                         >
                           <Heart
                             size={11}
-                            style={{ color: wishlisted ? '#903E1D' : '#B68868' }}
-                            fill={wishlisted ? '#903E1D' : 'none'}
+                            style={{ color: wishlisted ? '#e32c2b' : '#9b9b9b' }}
+                            fill={wishlisted ? '#e32c2b' : 'none'}
                           />
                         </button>
                       </div>
 
                       {/* Price */}
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold" style={{ color: '#642308' }}>
+                        <span className="text-xs font-bold text-[#1c1c1c]">
                           ₹{price.toLocaleString()}
                         </span>
                         {hasDiscount && (
-                          <span className="text-[10px] line-through" style={{ color: '#B68868' }}>
+                          <span className="text-[10px] line-through text-[#9b9b9b]">
                             ₹{origPrice.toLocaleString()}
                           </span>
                         )}
                       </div>
 
                       {/* Name */}
-                      <p className="text-[11px] leading-snug mt-0.5 line-clamp-2" style={{ color: '#903E1D' }}>
+                      <p className="text-[11px] leading-snug mt-0.5 line-clamp-2 text-[#363636]">
                         {product.name}
                       </p>
                     </Link>
@@ -291,14 +268,12 @@ export default function SearchPanel({ open, onClose }: SearchPanelProps) {
 
         {/* ── Footer CTA ── */}
         {!query.trim() && (
-          <div className="px-5 py-4" style={{ borderTop: '1px solid #EBEBCA' }}>
+          <div className="px-5 py-4" style={{ borderTop: '1px solid #e1e1e1' }}>
             <Link
               href="/shop"
               onClick={onClose}
-              className="flex items-center justify-center gap-2 w-full py-3.5 text-xs font-bold tracking-[0.2em] uppercase transition-colors"
-              style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#903E1D')}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}>
+              className="btn-craft w-full"
+            >
               Browse All Products <ArrowRight size={13} />
             </Link>
           </div>

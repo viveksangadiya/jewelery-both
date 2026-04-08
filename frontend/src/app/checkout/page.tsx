@@ -25,10 +25,9 @@ const INDIAN_STATES = [
 
 declare global { interface Window { Razorpay: any; } }
 
-// Shared input style
 const inputStyle = {
-  border: '1px solid #EBEBCA',
-  color: '#642308',
+  border: '1px solid #e1e1e1',
+  color: '#1c1c1c',
   backgroundColor: 'white',
   outline: 'none',
 };
@@ -36,8 +35,8 @@ const inputStyle = {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-[10px] font-bold tracking-[0.2em] uppercase mb-2" style={{ color: '#B68868' }}>
-        {label}{required && <span style={{ color: '#903E1D' }}> *</span>}
+      <label className="block text-[10px] font-bold tracking-[0.2em] uppercase mb-2" style={{ color: '#9b9b9b' }}>
+        {label}{required && <span style={{ color: '#e32c2b' }}> *</span>}
       </label>
       {children}
     </div>
@@ -78,7 +77,6 @@ export default function CheckoutPage(): JSX.Element {
 
   useEffect(() => {
     if (mounted && safeItems.length === 0) router.push('/shop');
-    // guests: force COD
     if (mounted && !user) setPaymentMethod('cod');
   }, [mounted, user, items]);
 
@@ -154,7 +152,7 @@ export default function CheckoutPage(): JSX.Element {
         description: 'Handmade Craft Order',
         order_id: razorpay_order_id,
         prefill: { name: address.name, contact: address.phone, email: user?.email || '' },
-        theme: { color: '#903E1D' },
+        theme: { color: '#1c1c1c' },
         handler: async (resp: any) => {
           try {
             const verify = await api.post('/payment/verify', {
@@ -184,21 +182,21 @@ export default function CheckoutPage(): JSX.Element {
   };
 
   if (!mounted) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FAF9EE' }}>
+    <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-        style={{ borderColor: '#EBEBCA', borderTopColor: '#903E1D' }} />
+        style={{ borderColor: '#e1e1e1', borderTopColor: '#1c1c1c' }} />
     </div>
   );
 
   return (
-    <div className="min-h-screen py-10" style={{ backgroundColor: '#FAF9EE' }}>
+    <div className="min-h-screen py-10 bg-white">
       <div className="max-w-5xl mx-auto px-4">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
-          <h1 className="font-display text-2xl font-normal" style={{ color: '#642308' }}>Checkout</h1>
-          <span className="flex items-center gap-1.5 text-xs" style={{ color: '#B68868' }}>
-            <ShieldCheck size={13} style={{ color: '#903E1D' }} /> Secure checkout
+          <h1 className="text-2xl font-bold" style={{ color: '#1c1c1c' }}>Checkout</h1>
+          <span className="flex items-center gap-1.5 text-xs" style={{ color: '#9b9b9b' }}>
+            <ShieldCheck size={13} style={{ color: '#1c1c1c' }} /> Secure checkout
           </span>
         </div>
 
@@ -208,16 +206,16 @@ export default function CheckoutPage(): JSX.Element {
             <div key={label} className="flex items-center gap-2">
               <div className="w-6 h-6 flex items-center justify-center text-[10px] font-bold"
                 style={{
-                  backgroundColor: step > idx ? '#642308' : step === idx + 1 ? '#903E1D' : '#EBEBCA',
-                  color: step > idx || step === idx + 1 ? '#FAF9EE' : '#B68868',
+                  backgroundColor: step > idx ? '#1c1c1c' : step === idx + 1 ? '#1c1c1c' : '#e1e1e1',
+                  color: step > idx || step === idx + 1 ? '#ffffff' : '#9b9b9b',
                 }}>
                 {step > idx ? '✓' : idx + 1}
               </div>
               <span className="text-xs font-medium"
-                style={{ color: step === idx + 1 ? '#642308' : '#B68868' }}>
+                style={{ color: step === idx + 1 ? '#1c1c1c' : '#9b9b9b' }}>
                 {label}
               </span>
-              {idx < 1 && <ChevronRight size={13} style={{ color: '#EBEBCA' }} />}
+              {idx < 1 && <ChevronRight size={13} style={{ color: '#e1e1e1' }} />}
             </div>
           ))}
         </div>
@@ -227,17 +225,17 @@ export default function CheckoutPage(): JSX.Element {
 
             {/* ── Step 1: Address ── */}
             {step === 1 && (
-              <div className="p-6" style={{ backgroundColor: 'white', border: '1px solid #EBEBCA' }}>
+              <div className="p-6" style={{ backgroundColor: 'white', border: '1px solid #e1e1e1' }}>
                 <div className="flex items-center gap-2 mb-6">
-                  <MapPin size={15} style={{ color: '#903E1D' }} />
-                  <h2 className="text-xs font-bold tracking-[0.2em] uppercase" style={{ color: '#642308' }}>
+                  <MapPin size={15} style={{ color: '#9b9b9b' }} />
+                  <h2 className="text-xs font-bold tracking-[0.2em] uppercase" style={{ color: '#1c1c1c' }}>
                     Delivery Address
                   </h2>
                 </div>
                 {!user && (
-                  <div className="mb-5 pb-5" style={{ borderBottom: '1px solid #EBEBCA' }}>
-                    <p className="text-xs mb-3" style={{ color: '#903E1D' }}>
-                      Checking out as guest. <a href="/account/login?redirect=/checkout" className="underline" style={{ color: '#642308' }}>Sign in</a> for a faster experience.
+                  <div className="mb-5 pb-5" style={{ borderBottom: '1px solid #e1e1e1' }}>
+                    <p className="text-xs mb-3" style={{ color: '#363636' }}>
+                      Checking out as guest. <a href="/account/login?redirect=/checkout" className="underline" style={{ color: '#1c1c1c' }}>Sign in</a> for a faster experience.
                     </p>
                     <Field label="Email Address" required>
                       <input
@@ -247,8 +245,8 @@ export default function CheckoutPage(): JSX.Element {
                         className="w-full px-4 py-3 text-sm"
                         style={inputStyle}
                         placeholder="your@email.com"
-                        onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                        onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
                       />
                     </Field>
                   </div>
@@ -256,22 +254,22 @@ export default function CheckoutPage(): JSX.Element {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <Field label="Full Name" required>
                     <div className="relative">
-                      <User size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#B68868' }} />
+                      <User size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9b9b9b' }} />
                       <input value={address.name} onChange={e => set('name', e.target.value)}
                         className="w-full pl-9 pr-4 py-3 text-sm"
                         style={inputStyle} placeholder="Your full name"
-                        onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')} />
+                        onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                        onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')} />
                     </div>
                   </Field>
                   <Field label="Mobile" required>
                     <div className="relative">
-                      <Phone size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#B68868' }} />
+                      <Phone size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9b9b9b' }} />
                       <input value={address.phone} onChange={e => set('phone', e.target.value)} maxLength={10}
                         className="w-full pl-9 pr-4 py-3 text-sm"
                         style={inputStyle} placeholder="10-digit mobile"
-                        onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')} />
+                        onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                        onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')} />
                     </div>
                   </Field>
                   <div className="sm:col-span-2">
@@ -279,8 +277,8 @@ export default function CheckoutPage(): JSX.Element {
                       <input value={address.address_line1} onChange={e => set('address_line1', e.target.value)}
                         className="w-full px-4 py-3 text-sm"
                         style={inputStyle} placeholder="House No, Street, Area"
-                        onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')} />
+                        onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                        onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')} />
                     </Field>
                   </div>
                   <div className="sm:col-span-2">
@@ -288,16 +286,16 @@ export default function CheckoutPage(): JSX.Element {
                       <input value={address.address_line2} onChange={e => set('address_line2', e.target.value)}
                         className="w-full px-4 py-3 text-sm"
                         style={inputStyle} placeholder="Landmark, Colony (optional)"
-                        onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')} />
+                        onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                        onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')} />
                     </Field>
                   </div>
                   <Field label="City" required>
                     <input value={address.city} onChange={e => set('city', e.target.value)}
                       className="w-full px-4 py-3 text-sm"
                       style={inputStyle} placeholder="Jaipur"
-                      onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                      onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')} />
+                      onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                      onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')} />
                   </Field>
                   <Field label="Pincode" required>
                     <input
@@ -307,14 +305,14 @@ export default function CheckoutPage(): JSX.Element {
                       className="w-full px-4 py-3 text-sm"
                       style={{
                         ...inputStyle,
-                        borderColor: pincodeOk === true ? '#903E1D' : pincodeOk === false ? '#b91c1c' : '#EBEBCA',
+                        borderColor: pincodeOk === true ? '#347a07' : pincodeOk === false ? '#e32c2b' : '#e1e1e1',
                       }}
                       placeholder="400001"
-                      onFocus={e => { if (pincodeOk === null) e.currentTarget.style.borderColor = '#B68868'; }}
-                      onBlur={e => { if (pincodeOk === null) e.currentTarget.style.borderColor = '#EBEBCA'; }}
+                      onFocus={e => { if (pincodeOk === null) e.currentTarget.style.borderColor = '#1c1c1c'; }}
+                      onBlur={e => { if (pincodeOk === null) e.currentTarget.style.borderColor = '#e1e1e1'; }}
                     />
                     {pincodeOk && eta && (
-                      <p className="text-xs mt-1 flex items-center gap-1" style={{ color: '#642308' }}>
+                      <p className="text-xs mt-1 flex items-center gap-1" style={{ color: '#347a07' }}>
                         <Truck size={11} /> Est. delivery: {eta}
                       </p>
                     )}
@@ -323,8 +321,8 @@ export default function CheckoutPage(): JSX.Element {
                     <select value={address.state} onChange={e => set('state', e.target.value)}
                       className="w-full px-4 py-3 text-sm appearance-none"
                       style={inputStyle}
-                      onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                      onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}>
+                      onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                      onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}>
                       {INDIAN_STATES.map(s => <option key={s}>{s}</option>)}
                     </select>
                   </Field>
@@ -332,9 +330,9 @@ export default function CheckoutPage(): JSX.Element {
                 <button
                   onClick={() => { if (validateAddress()) setStep(2); }}
                   className="mt-6 w-full py-4 text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-colors"
-                  style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#903E1D')}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}>
+                  style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#363636')}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#1c1c1c')}>
                   Continue to Payment <ChevronRight size={14} />
                 </button>
               </div>
@@ -342,42 +340,42 @@ export default function CheckoutPage(): JSX.Element {
 
             {/* ── Step 2: Payment ── */}
             {step === 2 && (
-              <div className="p-6" style={{ backgroundColor: 'white', border: '1px solid #EBEBCA' }}>
+              <div className="p-6" style={{ backgroundColor: 'white', border: '1px solid #e1e1e1' }}>
                 <div className="flex items-center gap-2 mb-6">
-                  <CreditCard size={15} style={{ color: '#903E1D' }} />
-                  <h2 className="text-xs font-bold tracking-[0.2em] uppercase" style={{ color: '#642308' }}>
+                  <CreditCard size={15} style={{ color: '#9b9b9b' }} />
+                  <h2 className="text-xs font-bold tracking-[0.2em] uppercase" style={{ color: '#1c1c1c' }}>
                     Payment Method
                   </h2>
                 </div>
 
                 {/* Address summary */}
                 <div className="flex items-start justify-between p-4 mb-6"
-                  style={{ backgroundColor: '#FAF9EE', border: '1px solid #EBEBCA' }}>
+                  style={{ backgroundColor: '#f5f5f5', border: '1px solid #e1e1e1' }}>
                   <div>
-                    <p className="text-[10px] font-bold tracking-[0.15em] uppercase mb-1" style={{ color: '#B68868' }}>
+                    <p className="text-[10px] font-bold tracking-[0.15em] uppercase mb-1" style={{ color: '#9b9b9b' }}>
                       Delivering to
                     </p>
-                    <p className="text-sm font-semibold" style={{ color: '#642308' }}>
+                    <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>
                       {address.name} · {address.phone}
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: '#903E1D' }}>
+                    <p className="text-xs mt-0.5" style={{ color: '#363636' }}>
                       {address.address_line1}, {address.city}, {address.state} – {address.pincode}
                     </p>
                   </div>
                   <button onClick={() => setStep(1)}
                     className="text-xs font-bold ml-3 whitespace-nowrap underline underline-offset-2 transition-colors"
-                    style={{ color: '#903E1D' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#903E1D')}>
+                    style={{ color: '#9b9b9b' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#1c1c1c')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#9b9b9b')}>
                     Change
                   </button>
                 </div>
 
-                {/* Payment options */}
+                {/* Guest note */}
                 {!user && (
                   <div className="flex items-center gap-2 px-4 py-3 mb-3 text-xs"
-                    style={{ backgroundColor: '#FAF9EE', border: '1px solid #EBEBCA', color: '#903E1D' }}>
-                    <Banknote size={13} style={{ color: '#642308', flexShrink: 0 }} />
+                    style={{ backgroundColor: '#f5f5f5', border: '1px solid #e1e1e1', color: '#363636' }}>
+                    <Banknote size={13} style={{ color: '#1c1c1c', flexShrink: 0 }} />
                     Guest orders are Cash on Delivery only. Sign in to pay online.
                   </div>
                 )}
@@ -405,23 +403,23 @@ export default function CheckoutPage(): JSX.Element {
                     <label key={opt.value}
                       className="flex items-center gap-4 p-4 cursor-pointer transition-all"
                       style={{
-                        border: `1px solid ${paymentMethod === opt.value ? '#642308' : '#EBEBCA'}`,
-                        backgroundColor: paymentMethod === opt.value ? '#FAF9EE' : 'white',
+                        border: `1px solid ${paymentMethod === opt.value ? '#1c1c1c' : '#e1e1e1'}`,
+                        backgroundColor: paymentMethod === opt.value ? '#f5f5f5' : 'white',
                       }}>
                       <input type="radio" name="payment" value={opt.value}
                         checked={paymentMethod === opt.value}
                         onChange={() => setPaymentMethod(opt.value)}
-                        style={{ accentColor: '#903E1D' }} />
-                      <opt.icon size={18} style={{ color: paymentMethod === opt.value ? '#642308' : '#B68868' }} />
+                        style={{ accentColor: '#1c1c1c' }} />
+                      <opt.icon size={18} style={{ color: paymentMethod === opt.value ? '#1c1c1c' : '#9b9b9b' }} />
                       <div className="flex-1">
-                        <p className="text-sm font-semibold" style={{ color: '#642308' }}>{opt.title}</p>
-                        <p className="text-xs mt-0.5" style={{ color: '#903E1D' }}>{opt.subtitle}</p>
+                        <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>{opt.title}</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#363636' }}>{opt.subtitle}</p>
                       </div>
                       {opt.badges.length > 0 && (
                         <div className="flex gap-1">
                           {opt.badges.map(b => (
                             <span key={b} className="text-xs px-1.5 py-0.5 font-medium"
-                              style={{ border: '1px solid #EBEBCA', color: '#903E1D' }}>{b}</span>
+                              style={{ border: '1px solid #e1e1e1', color: '#363636' }}>{b}</span>
                           ))}
                         </div>
                       )}
@@ -433,13 +431,13 @@ export default function CheckoutPage(): JSX.Element {
                   onClick={handlePlaceOrder}
                   disabled={loading}
                   className="mt-6 w-full py-4 text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
-                  style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-                  onMouseEnter={e => { if (!loading) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}>
+                  style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+                  onMouseEnter={e => { if (!loading) (e.currentTarget.style.backgroundColor = '#363636'); }}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#1c1c1c')}>
                   {loading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"
-                        style={{ borderColor: 'rgba(250,249,238,0.4)', borderTopColor: '#FAF9EE' }} />
+                        style={{ borderColor: 'rgba(255,255,255,0.4)', borderTopColor: '#ffffff' }} />
                       Processing…
                     </>
                   ) : (
@@ -449,7 +447,7 @@ export default function CheckoutPage(): JSX.Element {
                     </>
                   )}
                 </button>
-                <p className="text-center text-xs mt-3" style={{ color: '#B68868' }}>
+                <p className="text-center text-xs mt-3" style={{ color: '#9b9b9b' }}>
                   🔒 Secured by {paymentMethod === 'razorpay' ? 'Razorpay' : '256-bit SSL'}
                 </p>
               </div>
@@ -458,8 +456,8 @@ export default function CheckoutPage(): JSX.Element {
 
           {/* ── Order Summary sidebar ── */}
           <div>
-            <div className="p-5 sticky top-24" style={{ backgroundColor: 'white', border: '1px solid #EBEBCA' }}>
-              <h3 className="text-xs font-bold tracking-[0.2em] uppercase mb-5" style={{ color: '#642308' }}>
+            <div className="p-5 sticky top-24" style={{ backgroundColor: 'white', border: '1px solid #e1e1e1' }}>
+              <h3 className="text-xs font-bold tracking-[0.2em] uppercase mb-5" style={{ color: '#1c1c1c' }}>
                 Order Summary
               </h3>
 
@@ -467,83 +465,82 @@ export default function CheckoutPage(): JSX.Element {
               <div className="space-y-3 mb-5 max-h-52 overflow-y-auto">
                 {safeItems.map(item => (
                   <div key={item.id} className="flex items-center gap-3">
-                    <div className="w-12 h-12 flex-shrink-0 overflow-hidden" style={{ backgroundColor: '#EBEBCA' }}>
+                    <div className="w-12 h-12 flex-shrink-0 overflow-hidden" style={{ backgroundColor: '#f5f5f5' }}>
                       {item.image && <img src={item.image} alt={item.name} className="w-full h-full object-cover" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium truncate" style={{ color: '#642308' }}>{item.name}</p>
-                      <p className="text-xs mt-0.5" style={{ color: '#B68868' }}>Qty: {item.quantity}</p>
+                      <p className="text-xs font-medium truncate" style={{ color: '#1c1c1c' }}>{item.name}</p>
+                      <p className="text-xs mt-0.5" style={{ color: '#9b9b9b' }}>Qty: {item.quantity}</p>
                     </div>
-                    <p className="text-sm font-semibold" style={{ color: '#642308' }}>
+                    <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>
                       ₹{(itemPrice(item) * item.quantity).toLocaleString()}
                     </p>
                   </div>
                 ))}
               </div>
 
-              {/* Divider */}
-              <div className="h-px mb-4" style={{ backgroundColor: '#EBEBCA' }} />
+              <div className="h-px mb-4" style={{ backgroundColor: '#e1e1e1' }} />
 
               {/* Coupon */}
               {!couponApplied ? (
                 <div className="flex gap-0 mb-4">
                   <div className="flex-1 flex items-center gap-2 px-3 py-2.5"
-                    style={{ border: '1px solid #EBEBCA', borderRight: 'none' }}>
-                    <Tag size={11} style={{ color: '#B68868' }} />
+                    style={{ border: '1px solid #e1e1e1', borderRight: 'none' }}>
+                    <Tag size={11} style={{ color: '#9b9b9b' }} />
                     <input value={couponCode} onChange={e => setCouponCode(e.target.value.toUpperCase())}
                       placeholder="Coupon code"
                       className="flex-1 text-xs outline-none bg-transparent font-mono tracking-widest"
-                      style={{ color: '#642308' }} />
+                      style={{ color: '#1c1c1c' }} />
                   </div>
                   <button onClick={applyCoupon}
                     className="px-4 text-[10px] font-bold tracking-widest uppercase transition-colors"
-                    style={{ backgroundColor: '#EBEBCA', color: '#642308' }}
-                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#d4c9a0')}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EBEBCA')}>
+                    style={{ backgroundColor: '#f5f5f5', color: '#1c1c1c' }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#e1e1e1')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}>
                     Apply
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center justify-between px-3 py-2.5 mb-4"
-                  style={{ backgroundColor: '#EBEBCA' }}>
-                  <span className="text-xs font-bold" style={{ color: '#642308' }}>✓ {couponCode} applied</span>
+                  style={{ backgroundColor: '#d4e3cb' }}>
+                  <span className="text-xs font-bold" style={{ color: '#347a07' }}>✓ {couponCode} applied</span>
                   <button onClick={() => { setCouponApplied(false); setDiscount(0); setCouponCode(''); }}
-                    className="text-xs underline" style={{ color: '#903E1D' }}>Remove</button>
+                    className="text-xs underline" style={{ color: '#363636' }}>Remove</button>
                 </div>
               )}
 
               {/* Price breakdown */}
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between">
-                  <span style={{ color: '#903E1D' }}>Subtotal</span>
-                  <span style={{ color: '#642308' }}>₹{subtotal.toLocaleString()}</span>
+                  <span style={{ color: '#363636' }}>Subtotal</span>
+                  <span style={{ color: '#1c1c1c' }}>₹{subtotal.toLocaleString()}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between">
-                    <span style={{ color: '#903E1D' }}>Discount</span>
-                    <span style={{ color: '#642308' }}>−₹{discount.toLocaleString()}</span>
+                    <span style={{ color: '#363636' }}>Discount</span>
+                    <span style={{ color: '#347a07' }}>−₹{discount.toLocaleString()}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span style={{ color: '#903E1D' }}>Shipping</span>
-                  <span style={{ color: '#642308' }}>
+                  <span style={{ color: '#363636' }}>Shipping</span>
+                  <span style={{ color: shipping === 0 ? '#347a07' : '#1c1c1c' }}>
                     {shipping === 0 ? 'FREE' : `₹${shipping}`}
                   </span>
                 </div>
               </div>
 
               <div className="flex justify-between items-center mt-4 pt-4 font-bold"
-                style={{ borderTop: '1px solid #EBEBCA' }}>
-                <span className="text-xs tracking-[0.15em] uppercase" style={{ color: '#642308' }}>Total</span>
-                <span className="text-lg" style={{ color: '#642308' }}>₹{total.toLocaleString()}</span>
+                style={{ borderTop: '1px solid #e1e1e1' }}>
+                <span className="text-xs tracking-[0.15em] uppercase" style={{ color: '#1c1c1c' }}>Total</span>
+                <span className="text-lg" style={{ color: '#1c1c1c' }}>₹{total.toLocaleString()}</span>
               </div>
 
-              <div className="mt-5 pt-4 space-y-2" style={{ borderTop: '1px solid #EBEBCA' }}>
-                <div className="flex items-center gap-2 text-xs" style={{ color: '#B68868' }}>
-                  <ShieldCheck size={12} style={{ color: '#903E1D' }} /> 100% Secure Payments
+              <div className="mt-5 pt-4 space-y-2" style={{ borderTop: '1px solid #e1e1e1' }}>
+                <div className="flex items-center gap-2 text-xs" style={{ color: '#9b9b9b' }}>
+                  <ShieldCheck size={12} style={{ color: '#1c1c1c' }} /> 100% Secure Payments
                 </div>
-                <div className="flex items-center gap-2 text-xs" style={{ color: '#B68868' }}>
-                  <Truck size={12} style={{ color: '#903E1D' }} /> Shipped via Shiprocket
+                <div className="flex items-center gap-2 text-xs" style={{ color: '#9b9b9b' }}>
+                  <Truck size={12} style={{ color: '#1c1c1c' }} /> Shipped via Shiprocket
                 </div>
               </div>
             </div>

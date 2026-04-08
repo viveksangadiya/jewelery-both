@@ -21,13 +21,13 @@ const RETURN_REASONS = [
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; icon: any; desc: string }> = {
-  pending:   { label: 'Request Submitted', bg: '#FFF8F5', color: '#B68868', icon: Clock,       desc: 'We are reviewing your request within 24 hours.' },
-  approved:  { label: 'Approved',          bg: '#FAF9EE', color: '#642308', icon: CheckCircle, desc: 'Our courier will schedule pickup within 24–48 hours.' },
-  rejected:  { label: 'Rejected',          bg: '#FFF0EE', color: '#b91c1c', icon: XCircle,     desc: 'Your return request was not approved.' },
-  picked_up: { label: 'Item Picked Up',    bg: '#FAF9EE', color: '#903E1D', icon: Truck,       desc: 'Item is on its way back to us.' },
-  received:  { label: 'Item Received',     bg: '#EBEBCA', color: '#642308', icon: Package,     desc: 'We received your item and are processing the refund.' },
-  refunded:  { label: 'Refunded',          bg: '#EBEBCA', color: '#642308', icon: CheckCircle, desc: 'Your refund has been processed successfully.' },
-  exchanged: { label: 'Exchanged',         bg: '#EBEBCA', color: '#642308', icon: RefreshCw,   desc: 'Exchange completed successfully.' },
+  pending:   { label: 'Request Submitted', bg: '#f5f5f5',  color: '#9b9b9b', icon: Clock,       desc: 'We are reviewing your request within 24 hours.' },
+  approved:  { label: 'Approved',          bg: '#d4e3cb', color: '#347a07', icon: CheckCircle, desc: 'Our courier will schedule pickup within 24–48 hours.' },
+  rejected:  { label: 'Rejected',          bg: '#fff0f0', color: '#e32c2b', icon: XCircle,     desc: 'Your return request was not approved.' },
+  picked_up: { label: 'Item Picked Up',    bg: '#f5f5f5',  color: '#363636', icon: Truck,       desc: 'Item is on its way back to us.' },
+  received:  { label: 'Item Received',     bg: '#d4e3cb', color: '#347a07', icon: Package,     desc: 'We received your item and are processing the refund.' },
+  refunded:  { label: 'Refunded',          bg: '#d4e3cb', color: '#347a07', icon: CheckCircle, desc: 'Your refund has been processed successfully.' },
+  exchanged: { label: 'Exchanged',         bg: '#d4e3cb', color: '#347a07', icon: RefreshCw,   desc: 'Exchange completed successfully.' },
 };
 
 const STEPS = ['pending', 'approved', 'picked_up', 'received', 'refunded'];
@@ -58,36 +58,36 @@ function MyReturns({ onInitiate }: { onInitiate: () => void }) {
 
   if (loading) return (
     <div className="space-y-3">
-      {[1, 2].map(i => <div key={i} className="h-28 animate-pulse" style={{ backgroundColor: '#EBEBCA' }} />)}
+      {[1, 2].map(i => <div key={i} className="h-28 animate-pulse" style={{ backgroundColor: '#f5f5f5' }} />)}
     </div>
   );
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+        <h2 className="text-xl font-bold" style={{ color: '#1c1c1c' }}>
           My Returns
         </h2>
         <button onClick={onInitiate}
           className="px-5 py-2.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-          style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#903E1D')}
-          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}
+          style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#363636')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#1c1c1c')}
         >
           + New Request
         </button>
       </div>
 
       {returns.length === 0 ? (
-        <div className="text-center py-14" style={{ border: '1px solid #EBEBCA' }}>
-          <RefreshCw size={32} className="mx-auto mb-4" style={{ color: '#EBEBCA' }} strokeWidth={1.5} />
-          <p className="text-sm font-semibold mb-1" style={{ color: '#642308' }}>No return requests yet</p>
-          <p className="text-xs mb-6" style={{ color: '#B68868' }}>Initiate a return from a recent order</p>
+        <div className="text-center py-14" style={{ border: '1px solid #e1e1e1' }}>
+          <RefreshCw size={32} className="mx-auto mb-4" style={{ color: '#e1e1e1' }} strokeWidth={1.5} />
+          <p className="text-sm font-semibold mb-1" style={{ color: '#1c1c1c' }}>No return requests yet</p>
+          <p className="text-xs mb-6" style={{ color: '#9b9b9b' }}>Initiate a return from a recent order</p>
           <button onClick={onInitiate}
             className="inline-flex items-center gap-2 px-7 py-3 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-            style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#903E1D')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}
+            style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#363636')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#1c1c1c')}
           >
             Initiate Return <ArrowRight size={12} />
           </button>
@@ -99,33 +99,33 @@ function MyReturns({ onInitiate }: { onInitiate: () => void }) {
             const Icon = cfg.icon;
             const currentStep = STEPS.indexOf(ret.status);
             return (
-              <div key={ret.id} style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
-                <div className="flex items-start justify-between px-5 py-4" style={{ borderBottom: '1px solid #EBEBCA' }}>
+              <div key={ret.id} style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
+                <div className="flex items-start justify-between px-5 py-4" style={{ borderBottom: '1px solid #e1e1e1' }}>
                   <div>
                     <div className="flex items-center gap-3 flex-wrap">
-                      <p className="font-mono text-sm font-bold" style={{ color: '#642308' }}>{ret.return_number}</p>
+                      <p className="font-mono text-sm font-bold" style={{ color: '#1c1c1c' }}>{ret.return_number}</p>
                       <span className="text-[10px] font-bold px-2.5 py-1 flex items-center gap-1.5 uppercase tracking-[0.1em]"
                         style={{ backgroundColor: cfg.bg, color: cfg.color }}>
                         <Icon size={10} /> {cfg.label}
                       </span>
                       <span className="text-[10px] font-bold px-2 py-0.5 uppercase tracking-[0.1em] capitalize"
-                        style={{ backgroundColor: '#EBEBCA', color: '#903E1D' }}>
+                        style={{ backgroundColor: '#f5f5f5', color: '#363636' }}>
                         {ret.type}
                       </span>
                     </div>
-                    <p className="text-[11px] mt-1" style={{ color: '#B68868' }}>
-                      Order: <span className="font-semibold" style={{ color: '#903E1D' }}>{ret.order_number}</span>
+                    <p className="text-[11px] mt-1" style={{ color: '#9b9b9b' }}>
+                      Order: <span className="font-semibold" style={{ color: '#363636' }}>{ret.order_number}</span>
                       {' · '}{new Date(ret.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0">
                     {ret.refund_amount && (
-                      <p className="font-bold text-sm" style={{ color: '#642308' }}>₹{parseFloat(ret.refund_amount).toLocaleString()}</p>
+                      <p className="font-bold text-sm" style={{ color: '#1c1c1c' }}>₹{parseFloat(ret.refund_amount).toLocaleString()}</p>
                     )}
                     {ret.status === 'pending' && (
                       <button onClick={() => handleCancel(ret.id)}
                         className="text-xs flex items-center gap-1 ml-auto mt-1 transition-colors"
-                        style={{ color: '#b91c1c' }}>
+                        style={{ color: '#e32c2b' }}>
                         <X size={10} /> Cancel
                       </button>
                     )}
@@ -133,7 +133,7 @@ function MyReturns({ onInitiate }: { onInitiate: () => void }) {
                 </div>
 
                 {ret.status !== 'rejected' && (
-                  <div className="px-5 py-3" style={{ borderBottom: '1px solid #EBEBCA' }}>
+                  <div className="px-5 py-3" style={{ borderBottom: '1px solid #e1e1e1' }}>
                     <div className="flex items-center mb-2">
                       {STEPS.map((step, i) => {
                         const done = currentStep >= i;
@@ -141,56 +141,56 @@ function MyReturns({ onInitiate }: { onInitiate: () => void }) {
                           <div key={step} className="flex items-center flex-1 last:flex-none">
                             <div className="w-6 h-6 flex items-center justify-center text-[10px] font-bold flex-shrink-0"
                               style={{
-                                backgroundColor: done ? '#642308' : '#EBEBCA',
-                                color: done ? '#FAF9EE' : '#B68868',
+                                backgroundColor: done ? '#1c1c1c' : '#f5f5f5',
+                                color: done ? '#ffffff' : '#9b9b9b',
                               }}>
                               {done ? '✓' : i + 1}
                             </div>
                             {i < STEPS.length - 1 && (
                               <div className="flex-1 h-px mx-1"
-                                style={{ backgroundColor: currentStep > i ? '#642308' : '#EBEBCA' }} />
+                                style={{ backgroundColor: currentStep > i ? '#1c1c1c' : '#e1e1e1' }} />
                             )}
                           </div>
                         );
                       })}
                     </div>
-                    <p className="text-xs" style={{ color: '#903E1D' }}>{cfg.desc}</p>
+                    <p className="text-xs" style={{ color: '#363636' }}>{cfg.desc}</p>
                   </div>
                 )}
 
                 {ret.status === 'rejected' && ret.rejection_reason && (
-                  <div className="px-5 py-3" style={{ borderBottom: '1px solid #EBEBCA', backgroundColor: '#FFF0EE' }}>
-                    <p className="text-xs" style={{ color: '#b91c1c' }}><strong>Reason:</strong> {ret.rejection_reason}</p>
+                  <div className="px-5 py-3" style={{ borderBottom: '1px solid #e1e1e1', backgroundColor: '#fff0f0' }}>
+                    <p className="text-xs" style={{ color: '#e32c2b' }}><strong>Reason:</strong> {ret.rejection_reason}</p>
                   </div>
                 )}
 
                 <div className="px-5 py-3">
-                  <p className="text-xs" style={{ color: '#903E1D' }}><strong>Reason:</strong> {ret.reason}</p>
+                  <p className="text-xs" style={{ color: '#363636' }}><strong>Reason:</strong> {ret.reason}</p>
                   {ret.admin_notes && (
-                    <p className="text-xs mt-1" style={{ color: '#642308' }}><strong>Note:</strong> {ret.admin_notes}</p>
+                    <p className="text-xs mt-1" style={{ color: '#1c1c1c' }}><strong>Note:</strong> {ret.admin_notes}</p>
                   )}
                   {ret.return_awb && (
                     <div className="mt-2 flex items-center gap-3">
                       <div className="flex items-center gap-2 px-3 py-1.5"
-                        style={{ border: '1px solid #EBEBCA', backgroundColor: '#FAF9EE' }}>
-                        <Truck size={11} style={{ color: '#B68868' }} />
-                        <span className="text-xs font-mono font-semibold" style={{ color: '#642308' }}>AWB: {ret.return_awb}</span>
+                        style={{ border: '1px solid #e1e1e1', backgroundColor: '#f5f5f5' }}>
+                        <Truck size={11} style={{ color: '#9b9b9b' }} />
+                        <span className="text-xs font-mono font-semibold" style={{ color: '#1c1c1c' }}>AWB: {ret.return_awb}</span>
                       </div>
                       <a href={`https://shiprocket.co/tracking/${ret.return_awb}`} target="_blank" rel="noreferrer"
-                        className="text-xs font-bold hover:underline" style={{ color: '#903E1D' }}>
+                        className="text-xs font-bold hover:underline" style={{ color: '#363636' }}>
                         Track Pickup →
                       </a>
                     </div>
                   )}
                   {ret.shiprocket_return_id && !ret.return_awb && ret.status === 'approved' && (
-                    <p className="text-xs mt-1.5" style={{ color: '#B68868' }}>Reverse pickup scheduled · AWB will be assigned shortly</p>
+                    <p className="text-xs mt-1.5" style={{ color: '#9b9b9b' }}>Reverse pickup scheduled · AWB will be assigned shortly</p>
                   )}
                   {ret.items?.filter((i: any) => i.product_name).length > 0 && (
                     <div className="flex gap-3 mt-2 flex-wrap">
                       {ret.items.filter((i: any) => i.product_name).map((item: any, idx: number) => (
                         <div key={idx} className="flex items-center gap-2">
                           {item.product_image && <img src={item.product_image} alt="" className="w-8 h-8 object-cover" />}
-                          <p className="text-xs" style={{ color: '#903E1D' }}>{item.product_name} × {item.quantity}</p>
+                          <p className="text-xs" style={{ color: '#363636' }}>{item.product_name} × {item.quantity}</p>
                         </div>
                       ))}
                     </div>
@@ -267,42 +267,42 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
   const selectedCount = Object.values(selectedItems).filter(v => v.selected).length;
 
   const inputStyle = {
-    border: '1px solid #EBEBCA',
-    color: '#642308',
-    backgroundColor: '#FAF9EE',
+    border: '1px solid #e1e1e1',
+    color: '#1c1c1c',
+    backgroundColor: '#ffffff',
   };
 
   return (
     <div>
       <button onClick={onBack}
         className="flex items-center gap-2 text-xs mb-6 transition-colors"
-        style={{ color: '#903E1D' }}
-        onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-        onMouseLeave={e => (e.currentTarget.style.color = '#903E1D')}
+        style={{ color: '#9b9b9b' }}
+        onMouseEnter={e => (e.currentTarget.style.color = '#1c1c1c')}
+        onMouseLeave={e => (e.currentTarget.style.color = '#9b9b9b')}
       >
         <ArrowLeft size={14} /> Back to My Returns
       </button>
-      <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+      <h2 className="text-xl font-bold mb-2" style={{ color: '#1c1c1c' }}>
         Initiate Return / Exchange
       </h2>
-      <p className="text-sm mb-8" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+      <p className="text-sm mb-8" style={{ color: '#363636' }}>
         Select your order and items you'd like to return or exchange.
       </p>
 
       {step === 1 && (
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-4" style={{ color: '#B68868' }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-4" style={{ color: '#9b9b9b' }}>
             Step 1 — Select Order
           </p>
           {loadingOrders ? (
             <div className="space-y-3">
-              {[1, 2, 3].map(i => <div key={i} className="h-20 animate-pulse" style={{ backgroundColor: '#EBEBCA' }} />)}
+              {[1, 2, 3].map(i => <div key={i} className="h-20 animate-pulse" style={{ backgroundColor: '#f5f5f5' }} />)}
             </div>
           ) : orders.length === 0 ? (
-            <div className="text-center py-14" style={{ border: '1px solid #EBEBCA' }}>
-              <Package size={28} className="mx-auto mb-3" style={{ color: '#EBEBCA' }} strokeWidth={1.5} />
-              <p className="text-sm mb-1" style={{ color: '#642308' }}>No eligible orders found</p>
-              <p className="text-xs" style={{ color: '#B68868' }}>Only delivered or confirmed orders within 7 days are eligible.</p>
+            <div className="text-center py-14" style={{ border: '1px solid #e1e1e1' }}>
+              <Package size={28} className="mx-auto mb-3" style={{ color: '#e1e1e1' }} strokeWidth={1.5} />
+              <p className="text-sm mb-1" style={{ color: '#1c1c1c' }}>No eligible orders found</p>
+              <p className="text-xs" style={{ color: '#9b9b9b' }}>Only delivered or confirmed orders within 7 days are eligible.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -310,14 +310,14 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
                 <button key={order.id} onClick={() => handleSelectOrder(order)}
                   disabled={loadingOrder}
                   className="w-full text-left p-5 transition-colors group disabled:opacity-50"
-                  style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = '#642308')}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = '#EBEBCA')}
+                  style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = '#1c1c1c')}
+                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = '#e1e1e1')}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-mono text-sm font-bold" style={{ color: '#642308' }}>{order.order_number}</p>
-                      <p className="text-xs mt-0.5" style={{ color: '#B68868' }}>
+                      <p className="font-mono text-sm font-bold" style={{ color: '#1c1c1c' }}>{order.order_number}</p>
+                      <p className="text-xs mt-0.5" style={{ color: '#9b9b9b' }}>
                         {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                         {' · '}{order.item_count} item{order.item_count > 1 ? 's' : ''}
                         {' · '}₹{parseFloat(order.total).toLocaleString()}
@@ -326,12 +326,12 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
                     <div className="flex items-center gap-3">
                       <span className="text-[10px] px-2.5 py-1 font-bold uppercase tracking-[0.1em] capitalize"
                         style={{
-                          backgroundColor: order.status === 'delivered' ? '#EBEBCA' : '#FAF9EE',
-                          color: '#642308',
+                          backgroundColor: order.status === 'delivered' ? '#d4e3cb' : '#f5f5f5',
+                          color: order.status === 'delivered' ? '#347a07' : '#1c1c1c',
                         }}>
                         {order.status}
                       </span>
-                      <ArrowRight size={14} style={{ color: '#B68868' }} />
+                      <ArrowRight size={14} style={{ color: '#9b9b9b' }} />
                     </div>
                   </div>
                 </button>
@@ -344,28 +344,30 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
       {step === 2 && selectedOrder && (
         <div className="space-y-7">
           <div className="px-5 py-3 flex items-center justify-between"
-            style={{ border: '1px solid #EBEBCA', backgroundColor: '#EBEBCA' }}>
-            <p className="text-xs font-bold" style={{ color: '#642308' }}>
+            style={{ border: '1px solid #e1e1e1', backgroundColor: '#f5f5f5' }}>
+            <p className="text-xs font-bold" style={{ color: '#1c1c1c' }}>
               Order: <span className="font-mono">{selectedOrder.order_number}</span> · ₹{parseFloat(selectedOrder.total).toLocaleString()}
             </p>
             <button onClick={() => setStep(1)}
               className="text-[10px] uppercase tracking-[0.1em] font-bold transition-colors"
-              style={{ color: '#903E1D' }}>
+              style={{ color: '#9b9b9b' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#1c1c1c')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#9b9b9b')}>
               Change
             </button>
           </div>
 
           {/* Type */}
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#B68868' }}>Request Type</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#9b9b9b' }}>Request Type</p>
             <div className="flex gap-3">
               {(['return', 'exchange'] as const).map(t => (
                 <button key={t} onClick={() => setType(t)}
                   className="flex-1 py-3 text-sm font-semibold transition-colors"
                   style={{
-                    border: `1px solid ${type === t ? '#642308' : '#EBEBCA'}`,
-                    backgroundColor: type === t ? '#642308' : 'transparent',
-                    color: type === t ? '#FAF9EE' : '#903E1D',
+                    border: `1px solid ${type === t ? '#1c1c1c' : '#e1e1e1'}`,
+                    backgroundColor: type === t ? '#1c1c1c' : 'transparent',
+                    color: type === t ? '#ffffff' : '#363636',
                   }}>
                   {t === 'return' ? '↩ Return & Refund' : '↔ Exchange'}
                 </button>
@@ -375,7 +377,7 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
 
           {/* Items */}
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#B68868' }}>Select Items</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#9b9b9b' }}>Select Items</p>
             <div className="space-y-3">
               {selectedOrder.items?.map((item: any) => {
                 const sel = selectedItems[item.id];
@@ -383,37 +385,37 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
                   <div key={item.id}
                     className="p-4 cursor-pointer transition-colors"
                     style={{
-                      border: `1px solid ${sel?.selected ? '#642308' : '#EBEBCA'}`,
-                      backgroundColor: sel?.selected ? '#FAF9EE' : '#ffffff',
+                      border: `1px solid ${sel?.selected ? '#1c1c1c' : '#e1e1e1'}`,
+                      backgroundColor: sel?.selected ? '#f5f5f5' : '#ffffff',
                     }}
                     onClick={() => toggleItem(item.id)}>
                     <div className="flex items-center gap-4">
                       <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 transition-colors"
                         style={{
-                          border: `2px solid ${sel?.selected ? '#642308' : '#EBEBCA'}`,
-                          backgroundColor: sel?.selected ? '#642308' : 'transparent',
+                          border: `2px solid ${sel?.selected ? '#1c1c1c' : '#e1e1e1'}`,
+                          backgroundColor: sel?.selected ? '#1c1c1c' : 'transparent',
                         }}>
-                        {sel?.selected && <span className="text-[10px] font-bold" style={{ color: '#FAF9EE' }}>✓</span>}
+                        {sel?.selected && <span className="text-[10px] font-bold" style={{ color: '#ffffff' }}>✓</span>}
                       </div>
                       {item.product_image && <img src={item.product_image} alt="" className="w-12 h-12 object-cover flex-shrink-0" />}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold truncate" style={{ color: '#642308' }}>{item.product_name}</p>
-                        <p className="text-xs mt-0.5" style={{ color: '#B68868' }}>Qty: {item.quantity} · ₹{parseFloat(item.price).toLocaleString()} each</p>
+                        <p className="text-sm font-semibold truncate" style={{ color: '#1c1c1c' }}>{item.product_name}</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#9b9b9b' }}>Qty: {item.quantity} · ₹{parseFloat(item.price).toLocaleString()} each</p>
                       </div>
                     </div>
                     {sel?.selected && (
                       <div className="mt-3 ml-9 flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                        <p className="text-[10px] uppercase tracking-[0.1em] font-bold" style={{ color: '#B68868' }}>Qty to return:</p>
-                        <div className="flex items-center" style={{ border: '1px solid #EBEBCA' }}>
+                        <p className="text-[10px] uppercase tracking-[0.1em] font-bold" style={{ color: '#9b9b9b' }}>Qty to return:</p>
+                        <div className="flex items-center" style={{ border: '1px solid #e1e1e1' }}>
                           <button onClick={() => setSelectedItems(prev => ({ ...prev, [item.id]: { ...prev[item.id], quantity: Math.max(1, prev[item.id].quantity - 1) } }))}
-                            className="px-2.5 py-1 transition-colors" style={{ color: '#903E1D' }}
-                            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#EBEBCA')}
+                            className="px-2.5 py-1 transition-colors" style={{ color: '#363636' }}
+                            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
                             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                           >−</button>
-                          <span className="px-3 py-1 text-sm font-semibold" style={{ color: '#642308' }}>{sel.quantity}</span>
+                          <span className="px-3 py-1 text-sm font-semibold" style={{ color: '#1c1c1c' }}>{sel.quantity}</span>
                           <button onClick={() => setSelectedItems(prev => ({ ...prev, [item.id]: { ...prev[item.id], quantity: Math.min(item.quantity, prev[item.id].quantity + 1) } }))}
-                            className="px-2.5 py-1 transition-colors" style={{ color: '#903E1D' }}
-                            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#EBEBCA')}
+                            className="px-2.5 py-1 transition-colors" style={{ color: '#363636' }}
+                            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
                             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                           >+</button>
                         </div>
@@ -427,24 +429,24 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
 
           {/* Reason */}
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#B68868' }}>Reason *</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#9b9b9b' }}>Reason *</p>
             <div className="relative">
               <select value={reason} onChange={e => setReason(e.target.value)}
                 className="w-full px-4 py-3 text-sm outline-none appearance-none transition-colors"
                 style={inputStyle}
-                onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+                onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+                onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
               >
                 <option value="">Select a reason</option>
                 {RETURN_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
               </select>
-              <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#B68868' }} />
+              <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#9b9b9b' }} />
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style={{ color: '#B68868' }}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style={{ color: '#9b9b9b' }}>
               Additional Details <span className="normal-case font-normal">(optional)</span>
             </p>
             <textarea value={description} onChange={e => setDescription(e.target.value)}
@@ -452,15 +454,15 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
               rows={3}
               className="w-full px-4 py-3 text-sm outline-none resize-none transition-colors"
               style={inputStyle}
-              onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-              onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')}
+              onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
             />
           </div>
 
           {/* Refund method */}
           {type === 'return' && (
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#B68868' }}>Refund Method</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#9b9b9b' }}>Refund Method</p>
               <div className="space-y-2">
                 {[
                   { value: 'original_payment', label: 'Original Payment Method', desc: 'Back to card/UPI used at purchase' },
@@ -470,14 +472,14 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
                   <label key={opt.value}
                     className="flex items-start gap-3 p-4 cursor-pointer transition-colors"
                     style={{
-                      border: `1px solid ${refundMethod === opt.value ? '#642308' : '#EBEBCA'}`,
-                      backgroundColor: refundMethod === opt.value ? '#FAF9EE' : '#ffffff',
+                      border: `1px solid ${refundMethod === opt.value ? '#1c1c1c' : '#e1e1e1'}`,
+                      backgroundColor: refundMethod === opt.value ? '#f5f5f5' : '#ffffff',
                     }}>
                     <input type="radio" name="refund_method" value={opt.value} checked={refundMethod === opt.value}
                       onChange={() => setRefundMethod(opt.value)} className="mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold" style={{ color: '#642308' }}>{opt.label}</p>
-                      <p className="text-xs mt-0.5" style={{ color: '#903E1D' }}>{opt.desc}</p>
+                      <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>{opt.label}</p>
+                      <p className="text-xs mt-0.5" style={{ color: '#363636' }}>{opt.desc}</p>
                     </div>
                   </label>
                 ))}
@@ -485,18 +487,18 @@ function InitiateReturn({ onBack, onSuccess }: { onBack: () => void; onSuccess: 
             </div>
           )}
 
-          <div className="p-4 flex gap-3" style={{ border: '1px solid #EBEBCA', backgroundColor: '#FFF8F5' }}>
-            <AlertCircle size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#B68868' }} />
-            <p className="text-xs leading-relaxed" style={{ color: '#903E1D' }}>
+          <div className="p-4 flex gap-3" style={{ border: '1px solid #e1e1e1', backgroundColor: '#f5f5f5' }}>
+            <AlertCircle size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#9b9b9b' }} />
+            <p className="text-xs leading-relaxed" style={{ color: '#363636' }}>
               Pack the item securely in its original packaging. Our courier will schedule free pickup within 24–48 hours of approval.
             </p>
           </div>
 
           <button onClick={handleSubmit} disabled={submitting || selectedCount === 0 || !reason}
             className="w-full py-4 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
-            style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-            onMouseEnter={e => { if (!submitting && selectedCount > 0 && reason) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
-            onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#642308'); }}
+            style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+            onMouseEnter={e => { if (!submitting && selectedCount > 0 && reason) (e.currentTarget.style.backgroundColor = '#363636'); }}
+            onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#1c1c1c'); }}
           >
             {submitting && <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />}
             Submit {type === 'return' ? 'Return' : 'Exchange'} Request
@@ -522,31 +524,31 @@ export default function ReturnsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAF9EE' }}>
+    <div className="min-h-screen bg-white">
 
       {/* Header */}
-      <div className="py-12 px-6" style={{ backgroundColor: '#EBEBCA', borderBottom: '1px solid #B68868' }}>
+      <div className="py-12 px-6" style={{ backgroundColor: '#f5f5f5', borderBottom: '1px solid #e1e1e1' }}>
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-11 h-11 flex items-center justify-center"
-              style={{ backgroundColor: '#FAF9EE', border: '1px solid #B68868' }}>
-              <RefreshCw size={18} style={{ color: '#642308' }} strokeWidth={1.5} />
+              style={{ backgroundColor: '#ffffff', border: '1px solid #e1e1e1' }}>
+              <RefreshCw size={18} style={{ color: '#1c1c1c' }} strokeWidth={1.5} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+              <h1 className="text-2xl font-bold" style={{ color: '#1c1c1c' }}>
                 Returns & Exchange
               </h1>
-              <p className="text-xs mt-0.5" style={{ color: '#903E1D' }}>7-day hassle-free return policy</p>
+              <p className="text-xs mt-0.5" style={{ color: '#9b9b9b' }}>7-day hassle-free return policy</p>
             </div>
           </div>
-          <div className="flex" style={{ borderBottom: '1px solid #B68868' }}>
+          <div className="flex" style={{ borderBottom: '1px solid #e1e1e1' }}>
             {[{ key: 'info', label: 'Policy' }, { key: 'my-returns', label: 'My Returns' }].map(tab => (
               <button key={tab.key} onClick={() => setView(tab.key as any)}
                 className="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors"
                 style={{
-                  color: (view === tab.key || (view === 'initiate' && tab.key === 'my-returns')) ? '#642308' : '#B68868',
+                  color: (view === tab.key || (view === 'initiate' && tab.key === 'my-returns')) ? '#1c1c1c' : '#9b9b9b',
                   borderBottom: (view === tab.key || (view === 'initiate' && tab.key === 'my-returns'))
-                    ? '2px solid #642308' : '2px solid transparent',
+                    ? '2px solid #1c1c1c' : '2px solid transparent',
                   marginBottom: '-1px',
                 }}>
                 {tab.label}
@@ -568,9 +570,9 @@ export default function ReturnsPage() {
                 { num: '04', title: 'Get Refund',     desc: 'Processed in 5–7 business days' },
               ].map(s => (
                 <div key={s.title}>
-                  <span className="text-3xl font-black block mb-3" style={{ color: '#EBEBCA', fontFamily: 'Georgia, serif' }}>{s.num}</span>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] mb-1" style={{ color: '#642308' }}>{s.title}</p>
-                  <p className="text-xs leading-relaxed" style={{ color: '#903E1D' }}>{s.desc}</p>
+                  <span className="text-3xl font-black block mb-3" style={{ color: '#e1e1e1' }}>{s.num}</span>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] mb-1" style={{ color: '#1c1c1c' }}>{s.title}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: '#363636' }}>{s.desc}</p>
                 </div>
               ))}
             </div>
@@ -578,25 +580,25 @@ export default function ReturnsPage() {
             {/* Eligible / Not eligible */}
             <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-4 flex items-center gap-2" style={{ color: '#642308' }}>
-                  <CheckCircle size={13} style={{ color: '#642308' }} /> Eligible for Return
+                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-4 flex items-center gap-2" style={{ color: '#347a07' }}>
+                  <CheckCircle size={13} style={{ color: '#347a07' }} /> Eligible for Return
                 </h3>
                 <ul className="space-y-2.5">
                   {['Damaged or defective items', 'Wrong item delivered', 'Does not match description', 'Unused items within 7 days'].map(i => (
-                    <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: '#903E1D' }}>
-                      <span className="w-1.5 h-1.5 flex-shrink-0 mt-1.5" style={{ backgroundColor: '#642308' }} />{i}
+                    <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: '#363636' }}>
+                      <span className="w-1.5 h-1.5 flex-shrink-0 mt-1.5" style={{ backgroundColor: '#347a07' }} />{i}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-4 flex items-center gap-2" style={{ color: '#b91c1c' }}>
-                  <XCircle size={13} style={{ color: '#b91c1c' }} /> Not Eligible
+                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-4 flex items-center gap-2" style={{ color: '#e32c2b' }}>
+                  <XCircle size={13} style={{ color: '#e32c2b' }} /> Not Eligible
                 </h3>
                 <ul className="space-y-2.5">
                   {['Used or altered items', 'Missing original packaging', 'Custom / personalized orders', 'Clearance / final sale items', 'After 7 days from delivery'].map(i => (
-                    <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: '#903E1D' }}>
-                      <span className="w-1.5 h-1.5 flex-shrink-0 mt-1.5" style={{ backgroundColor: '#b91c1c' }} />{i}
+                    <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: '#363636' }}>
+                      <span className="w-1.5 h-1.5 flex-shrink-0 mt-1.5" style={{ backgroundColor: '#e32c2b' }} />{i}
                     </li>
                   ))}
                 </ul>
@@ -606,9 +608,9 @@ export default function ReturnsPage() {
             <div className="text-center pt-2">
               <button onClick={() => setView('my-returns')}
                 className="inline-flex items-center gap-2 px-10 py-4 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-                style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#903E1D')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}
+                style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#363636')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#1c1c1c')}
               >
                 Initiate a Return <ArrowRight size={12} />
               </button>

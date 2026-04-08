@@ -24,19 +24,19 @@ export default function SizeGuidePage() {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAF9EE' }}>
+    <div className="min-h-screen bg-white">
 
       {/* Hero */}
-      <div className="py-14 px-6" style={{ backgroundColor: '#EBEBCA', borderBottom: '1px solid #B68868' }}>
+      <div className="py-14 px-6" style={{ backgroundColor: '#f5f5f5', borderBottom: '1px solid #e1e1e1' }}>
         <div className="max-w-3xl mx-auto text-center">
           <div className="w-12 h-12 flex items-center justify-center mx-auto mb-5"
-            style={{ backgroundColor: '#FAF9EE', border: '1px solid #B68868' }}>
-            <Ruler size={20} style={{ color: '#642308' }} strokeWidth={1.5} />
+            style={{ backgroundColor: '#ffffff', border: '1px solid #e1e1e1' }}>
+            <Ruler size={20} style={{ color: '#1c1c1c' }} strokeWidth={1.5} />
           </div>
-          <h1 className="text-4xl font-bold mb-3" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+          <h1 className="text-3xl font-bold mb-3" style={{ color: '#1c1c1c' }}>
             Size Guide
           </h1>
-          <p className="text-sm leading-relaxed max-w-xl mx-auto" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+          <p className="text-sm leading-relaxed max-w-xl mx-auto" style={{ color: '#363636' }}>
             Find the perfect size toran or wall hanging for your space.
           </p>
         </div>
@@ -45,13 +45,13 @@ export default function SizeGuidePage() {
       <div className="max-w-4xl mx-auto px-6 py-14">
 
         {/* Tabs */}
-        <div className="flex mb-10" style={{ borderBottom: '1px solid #EBEBCA' }}>
+        <div className="flex mb-10" style={{ borderBottom: '1px solid #e1e1e1' }}>
           {tabs.map((tab, i) => (
             <button key={tab} onClick={() => setActiveTab(i)}
               className="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors"
               style={{
-                color: activeTab === i ? '#642308' : '#B68868',
-                borderBottom: activeTab === i ? '2px solid #642308' : '2px solid transparent',
+                color: activeTab === i ? '#1c1c1c' : '#9b9b9b',
+                borderBottom: activeTab === i ? '2px solid #1c1c1c' : '2px solid transparent',
                 marginBottom: '-1px',
               }}>
               {tab}
@@ -63,29 +63,29 @@ export default function SizeGuidePage() {
         {activeTab === 0 && (
           <div className="space-y-10">
             <div>
-              <p className="text-sm leading-relaxed mb-6" style={{ color: '#903E1D' }}>
+              <p className="text-sm leading-relaxed mb-6" style={{ color: '#363636' }}>
                 Door torans are measured by width (left to right across the doorframe) and drop height (how far it hangs down). Use the table below to choose the right size for your door.
               </p>
-              <div style={{ border: '1px solid #EBEBCA' }}>
-                <div className="grid grid-cols-4 gap-4 px-5 py-3" style={{ backgroundColor: '#EBEBCA' }}>
+              <div style={{ border: '1px solid #e1e1e1' }}>
+                <div className="grid grid-cols-4 gap-4 px-5 py-3" style={{ backgroundColor: '#f5f5f5' }}>
                   {['Type', 'Width', 'Drop Height', 'Best For'].map(h => (
-                    <p key={h} className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: '#642308' }}>{h}</p>
+                    <p key={h} className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: '#1c1c1c' }}>{h}</p>
                   ))}
                 </div>
                 {doorSizes.map((row, idx) => (
                   <div key={row.name} className="grid grid-cols-4 gap-4 px-5 py-4 items-center"
-                    style={{ borderTop: idx > 0 ? '1px solid #EBEBCA' : 'none', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#FAF9EE' }}>
-                    <p className="text-sm font-semibold" style={{ color: '#642308' }}>{row.name}</p>
-                    <p className="text-sm font-mono" style={{ color: '#903E1D' }}>{row.width}</p>
-                    <p className="text-sm font-mono" style={{ color: '#903E1D' }}>{row.height}</p>
-                    <p className="text-xs" style={{ color: '#B68868' }}>{row.fits}</p>
+                    style={{ borderTop: idx > 0 ? '1px solid #e1e1e1' : 'none', backgroundColor: '#ffffff' }}>
+                    <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>{row.name}</p>
+                    <p className="text-sm font-mono" style={{ color: '#363636' }}>{row.width}</p>
+                    <p className="text-sm font-mono" style={{ color: '#363636' }}>{row.height}</p>
+                    <p className="text-xs" style={{ color: '#9b9b9b' }}>{row.fits}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="p-5" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: '#B68868' }}>Common Door Widths in India</p>
+            <div className="p-5" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: '#9b9b9b' }}>Common Door Widths in India</p>
               <div className="space-y-2">
                 {[
                   { type: 'Bathroom / side door', width: '60–75 cm' },
@@ -93,9 +93,9 @@ export default function SizeGuidePage() {
                   { type: 'Main entrance (single)', width: '80–90 cm' },
                   { type: 'Main entrance (double)', width: '120–150 cm' },
                 ].map(({ type, width }) => (
-                  <div key={type} className="flex justify-between text-xs py-1.5" style={{ borderBottom: '1px solid #EBEBCA' }}>
-                    <span style={{ color: '#903E1D' }}>{type}</span>
-                    <span className="font-mono font-semibold" style={{ color: '#642308' }}>{width}</span>
+                  <div key={type} className="flex justify-between text-xs py-1.5" style={{ borderBottom: '1px solid #e1e1e1' }}>
+                    <span style={{ color: '#363636' }}>{type}</span>
+                    <span className="font-mono font-semibold" style={{ color: '#1c1c1c' }}>{width}</span>
                   </div>
                 ))}
               </div>
@@ -106,21 +106,21 @@ export default function SizeGuidePage() {
         {/* Wall Hanging */}
         {activeTab === 1 && (
           <div className="space-y-10">
-            <p className="text-sm leading-relaxed" style={{ color: '#903E1D' }}>
+            <p className="text-sm leading-relaxed" style={{ color: '#363636' }}>
               Wall hangings are measured by width × height. Choose based on the wall space you want to fill — as a rule of thumb, the piece should cover 60–75% of the wall width.
             </p>
-            <div style={{ border: '1px solid #EBEBCA' }}>
-              <div className="grid grid-cols-3 gap-4 px-5 py-3" style={{ backgroundColor: '#EBEBCA' }}>
+            <div style={{ border: '1px solid #e1e1e1' }}>
+              <div className="grid grid-cols-3 gap-4 px-5 py-3" style={{ backgroundColor: '#f5f5f5' }}>
                 {['Size', 'Dimensions', 'Best For'].map(h => (
-                  <p key={h} className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: '#642308' }}>{h}</p>
+                  <p key={h} className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: '#1c1c1c' }}>{h}</p>
                 ))}
               </div>
               {wallHangingSizes.map((row, idx) => (
                 <div key={row.size} className="grid grid-cols-3 gap-4 px-5 py-4 items-center"
-                  style={{ borderTop: idx > 0 ? '1px solid #EBEBCA' : 'none', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#FAF9EE' }}>
-                  <p className="text-sm font-bold" style={{ color: '#642308' }}>{row.size}</p>
-                  <p className="text-sm font-mono" style={{ color: '#903E1D' }}>{row.dims}</p>
-                  <p className="text-xs" style={{ color: '#B68868' }}>{row.fits}</p>
+                  style={{ borderTop: idx > 0 ? '1px solid #e1e1e1' : 'none', backgroundColor: '#ffffff' }}>
+                  <p className="text-sm font-bold" style={{ color: '#1c1c1c' }}>{row.size}</p>
+                  <p className="text-sm font-mono" style={{ color: '#363636' }}>{row.dims}</p>
+                  <p className="text-xs" style={{ color: '#9b9b9b' }}>{row.fits}</p>
                 </div>
               ))}
             </div>
@@ -130,9 +130,9 @@ export default function SizeGuidePage() {
                 { title: 'Hanging Height',   desc: 'For best visual impact, hang the piece so its centre is at eye level — roughly 150–160 cm from the floor.' },
                 { title: 'Wall Proportion',  desc: 'Leave at least 15–20 cm of wall space on each side of the piece for a balanced, airy look.' },
               ].map(({ title, desc }) => (
-                <div key={title} className="p-5" style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#642308' }}>{title}</p>
-                  <p className="text-xs leading-relaxed" style={{ color: '#903E1D' }}>{desc}</p>
+                <div key={title} className="p-5" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#1c1c1c' }}>{title}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: '#363636' }}>{desc}</p>
                 </div>
               ))}
             </div>
@@ -144,7 +144,7 @@ export default function SizeGuidePage() {
           <div className="space-y-10">
             <div className="grid md:grid-cols-2 gap-10">
               <div>
-                <h2 className="text-xl font-bold mb-5" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+                <h2 className="text-lg font-bold mb-5" style={{ color: '#1c1c1c' }}>
                   Measuring Your Door
                 </h2>
                 <div className="space-y-4">
@@ -156,10 +156,10 @@ export default function SizeGuidePage() {
                   ].map(s => (
                     <div key={s.n} className="flex gap-4">
                       <span className="w-6 h-6 flex items-center justify-center text-[10px] font-bold flex-shrink-0"
-                        style={{ backgroundColor: '#642308', color: '#FAF9EE' }}>{s.n}</span>
+                        style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}>{s.n}</span>
                       <div>
-                        <p className="text-sm font-semibold" style={{ color: '#642308' }}>{s.t}</p>
-                        <p className="text-xs mt-0.5" style={{ color: '#903E1D' }}>{s.d}</p>
+                        <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>{s.t}</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#363636' }}>{s.d}</p>
                       </div>
                     </div>
                   ))}
@@ -167,7 +167,7 @@ export default function SizeGuidePage() {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold mb-5" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+                <h2 className="text-lg font-bold mb-5" style={{ color: '#1c1c1c' }}>
                   Measuring Your Wall
                 </h2>
                 <div className="space-y-4">
@@ -179,10 +179,10 @@ export default function SizeGuidePage() {
                   ].map(s => (
                     <div key={s.n} className="flex gap-4">
                       <span className="w-6 h-6 flex items-center justify-center text-[10px] font-bold flex-shrink-0"
-                        style={{ backgroundColor: '#642308', color: '#FAF9EE' }}>{s.n}</span>
+                        style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}>{s.n}</span>
                       <div>
-                        <p className="text-sm font-semibold" style={{ color: '#642308' }}>{s.t}</p>
-                        <p className="text-xs mt-0.5" style={{ color: '#903E1D' }}>{s.d}</p>
+                        <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>{s.t}</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#363636' }}>{s.d}</p>
                       </div>
                     </div>
                   ))}
@@ -190,9 +190,9 @@ export default function SizeGuidePage() {
               </div>
             </div>
 
-            <div className="p-4 flex gap-3" style={{ border: '1px solid #EBEBCA', backgroundColor: '#EBEBCA' }}>
-              <Ruler size={14} className="flex-shrink-0 mt-0.5" style={{ color: '#642308' }} />
-              <p className="text-xs leading-relaxed" style={{ color: '#642308' }}>
+            <div className="p-4 flex gap-3" style={{ border: '1px solid #e1e1e1', backgroundColor: '#f5f5f5' }}>
+              <Ruler size={14} className="flex-shrink-0 mt-0.5" style={{ color: '#1c1c1c' }} />
+              <p className="text-xs leading-relaxed" style={{ color: '#1c1c1c' }}>
                 <strong>Tip:</strong> If your door width falls between two sizes, choose the larger size — a slightly wider toran always looks more generous and festive.
               </p>
             </div>
@@ -200,13 +200,13 @@ export default function SizeGuidePage() {
         )}
 
         {/* CTA */}
-        <div className="pt-10 text-center" style={{ borderTop: '1px solid #EBEBCA', marginTop: '3rem' }}>
-          <p className="text-sm mb-4" style={{ color: '#903E1D' }}>Still unsure about your size?</p>
+        <div className="pt-10 text-center" style={{ borderTop: '1px solid #e1e1e1', marginTop: '3rem' }}>
+          <p className="text-sm mb-4" style={{ color: '#363636' }}>Still unsure about your size?</p>
           <Link href="/contact"
             className="inline-flex items-center gap-2 px-8 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-            style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#903E1D')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#642308')}
+            style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#363636')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#1c1c1c')}
           >
             Ask Our Team <ArrowRight size={13} />
           </Link>

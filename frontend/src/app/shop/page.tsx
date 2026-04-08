@@ -21,13 +21,13 @@ function FilterSection({ title, children, defaultOpen = true }: {
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="py-5" style={{ borderBottom: '1px solid #EBEBCA' }}>
+    <div className="py-5" style={{ borderBottom: '1px solid #e1e1e1' }}>
       <button onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between text-left">
-        <span className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: '#642308' }}>{title}</span>
+        <span className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: '#1c1c1c' }}>{title}</span>
         {open
-          ? <ChevronUp size={13} style={{ color: '#B68868' }} />
-          : <ChevronDown size={13} style={{ color: '#B68868' }} />}
+          ? <ChevronUp size={13} style={{ color: '#9b9b9b' }} />
+          : <ChevronDown size={13} style={{ color: '#9b9b9b' }} />}
       </button>
       {open && <div className="mt-4">{children}</div>}
     </div>
@@ -51,12 +51,12 @@ function PriceRange({ min, max, value, onChange }: {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs" style={{ color: '#903E1D' }}>₹{local[0].toLocaleString()}</span>
-        <span className="text-xs" style={{ color: '#903E1D' }}>₹{local[1].toLocaleString()}</span>
+        <span className="text-xs" style={{ color: '#363636' }}>₹{local[0].toLocaleString()}</span>
+        <span className="text-xs" style={{ color: '#363636' }}>₹{local[1].toLocaleString()}</span>
       </div>
-      <div className="relative h-1" style={{ backgroundColor: '#EBEBCA', borderRadius: 0 }}>
+      <div className="relative h-1" style={{ backgroundColor: '#e1e1e1', borderRadius: 0 }}>
         <div className="absolute h-full" style={{
-          backgroundColor: '#903E1D',
+          backgroundColor: '#1c1c1c',
           left: `${((local[0] - min) / (max - min)) * 100}%`,
           right: `${100 - ((local[1] - min) / (max - min)) * 100}%`,
         }} />
@@ -67,9 +67,9 @@ function PriceRange({ min, max, value, onChange }: {
           onChange={e => { const v = parseInt(e.target.value); if (v > local[0]) update([local[0], v]); }}
           className="absolute w-full h-full opacity-0 cursor-pointer" style={{ zIndex: 4 }} />
         <div className="absolute w-3.5 h-3.5 -translate-y-1/2 -translate-x-1/2 top-1/2 pointer-events-none"
-          style={{ left: `${((local[0] - min) / (max - min)) * 100}%`, zIndex: 2, backgroundColor: '#FAF9EE', border: '2px solid #903E1D' }} />
+          style={{ left: `${((local[0] - min) / (max - min)) * 100}%`, zIndex: 2, backgroundColor: '#ffffff', border: '2px solid #1c1c1c' }} />
         <div className="absolute w-3.5 h-3.5 -translate-y-1/2 -translate-x-1/2 top-1/2 pointer-events-none"
-          style={{ left: `${((local[1] - min) / (max - min)) * 100}%`, zIndex: 2, backgroundColor: '#FAF9EE', border: '2px solid #903E1D' }} />
+          style={{ left: `${((local[1] - min) / (max - min)) * 100}%`, zIndex: 2, backgroundColor: '#ffffff', border: '2px solid #1c1c1c' }} />
       </div>
     </div>
   );
@@ -129,14 +129,14 @@ export default function ShopPage() {
 
   const Sidebar = () => (
     <aside className="w-full lg:w-52 xl:w-56 flex-shrink-0">
-      <div className="flex items-center justify-between pb-4" style={{ borderBottom: '1px solid #EBEBCA' }}>
-        <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: '#642308' }}>Filters</h2>
+      <div className="flex items-center justify-between pb-4" style={{ borderBottom: '1px solid #e1e1e1' }}>
+        <h2 className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: '#1c1c1c' }}>Filters</h2>
         {activeFiltersCount > 0 && (
           <button onClick={clearAll}
             className="text-[9px] tracking-[0.15em] uppercase transition-colors"
-            style={{ color: '#903E1D' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#903E1D')}>
+            style={{ color: '#9b9b9b' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#1c1c1c')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#9b9b9b')}>
             Clear All
           </button>
         )}
@@ -156,19 +156,18 @@ export default function ShopPage() {
 
       <FilterSection title="Category">
         <div className="space-y-2">
-          {/* All */}
           <label className="flex items-center gap-3 cursor-pointer group">
             <div
               onClick={() => updateFilter('category', '')}
               className="w-3.5 h-3.5 flex items-center justify-center flex-shrink-0 transition-colors"
               style={{
-                border: `1px solid ${!filters.category ? '#642308' : '#EBEBCA'}`,
-                backgroundColor: !filters.category ? '#642308' : 'transparent',
+                border: `1px solid ${!filters.category ? '#1c1c1c' : '#e1e1e1'}`,
+                backgroundColor: !filters.category ? '#1c1c1c' : 'transparent',
               }}>
-              {!filters.category && <span style={{ color: '#FAF9EE', fontSize: '8px' }}>✓</span>}
+              {!filters.category && <span style={{ color: '#ffffff', fontSize: '8px' }}>✓</span>}
             </div>
             <span className="text-sm transition-colors"
-              style={{ color: !filters.category ? '#642308' : '#903E1D', fontWeight: !filters.category ? 500 : 400 }}>
+              style={{ color: !filters.category ? '#1c1c1c' : '#363636', fontWeight: !filters.category ? 500 : 400 }}>
               All Products
             </span>
           </label>
@@ -178,16 +177,16 @@ export default function ShopPage() {
                 onClick={() => updateFilter('category', filters.category === cat.slug ? '' : cat.slug)}
                 className="w-3.5 h-3.5 flex items-center justify-center flex-shrink-0 transition-colors"
                 style={{
-                  border: `1px solid ${filters.category === cat.slug ? '#642308' : '#EBEBCA'}`,
-                  backgroundColor: filters.category === cat.slug ? '#642308' : 'transparent',
+                  border: `1px solid ${filters.category === cat.slug ? '#1c1c1c' : '#e1e1e1'}`,
+                  backgroundColor: filters.category === cat.slug ? '#1c1c1c' : 'transparent',
                 }}>
-                {filters.category === cat.slug && <span style={{ color: '#FAF9EE', fontSize: '8px' }}>✓</span>}
+                {filters.category === cat.slug && <span style={{ color: '#ffffff', fontSize: '8px' }}>✓</span>}
               </div>
               <span className="text-sm flex-1 transition-colors"
-                style={{ color: filters.category === cat.slug ? '#642308' : '#903E1D', fontWeight: filters.category === cat.slug ? 500 : 400 }}>
+                style={{ color: filters.category === cat.slug ? '#1c1c1c' : '#363636', fontWeight: filters.category === cat.slug ? 500 : 400 }}>
                 {cat.name}
               </span>
-              <span className="text-[10px]" style={{ color: '#B68868' }}>({cat.product_count || 0})</span>
+              <span className="text-[10px]" style={{ color: '#9b9b9b' }}>({cat.product_count || 0})</span>
             </label>
           ))}
         </div>
@@ -196,18 +195,17 @@ export default function ShopPage() {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAF9EE' }}>
+    <div className="min-h-screen bg-white">
 
       {/* Mobile filter drawer */}
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0" style={{ backgroundColor: 'rgba(100,35,8,0.35)' }}
+          <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
             onClick={() => setMobileFiltersOpen(false)} />
-          <div className="absolute left-0 inset-y-0 w-72 overflow-y-auto p-6 shadow-xl"
-            style={{ backgroundColor: '#FAF9EE' }}>
+          <div className="absolute left-0 inset-y-0 w-72 overflow-y-auto p-6 shadow-xl bg-white">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xs font-bold tracking-[0.25em] uppercase" style={{ color: '#642308' }}>Filters</h2>
-              <button onClick={() => setMobileFiltersOpen(false)} style={{ color: '#B68868' }}>
+              <h2 className="text-xs font-bold tracking-[0.25em] uppercase" style={{ color: '#1c1c1c' }}>Filters</h2>
+              <button onClick={() => setMobileFiltersOpen(false)} style={{ color: '#9b9b9b' }}>
                 <X size={18} />
               </button>
             </div>
@@ -222,10 +220,10 @@ export default function ShopPage() {
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div>
             {!loading && (
-              <p className="text-xs font-bold tracking-[0.3em] uppercase" style={{ color: '#642308' }}>
+              <p className="text-xs font-bold tracking-[0.3em] uppercase" style={{ color: '#1c1c1c' }}>
                 {pagination.total} Products
                 {currentCategoryName && (
-                  <span className="font-normal ml-2" style={{ color: '#B68868' }}>in {currentCategoryName}</span>
+                  <span className="font-normal ml-2" style={{ color: '#9b9b9b' }}>in {currentCategoryName}</span>
                 )}
               </p>
             )}
@@ -236,9 +234,9 @@ export default function ShopPage() {
             <button
               onClick={() => setMobileFiltersOpen(true)}
               className="lg:hidden flex items-center gap-2 px-4 py-2.5 text-xs tracking-[0.15em] uppercase transition-colors"
-              style={{ border: '1px solid #EBEBCA', color: '#642308' }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = '#B68868')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = '#EBEBCA')}>
+              style={{ border: '1px solid #e1e1e1', color: '#1c1c1c' }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = '#e1e1e1')}>
               <SlidersHorizontal size={13} />
               Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
             </button>
@@ -250,15 +248,15 @@ export default function ShopPage() {
                 onChange={e => updateFilter('sort', e.target.value)}
                 className="appearance-none px-5 py-2.5 pr-8 text-xs tracking-[0.15em] uppercase outline-none cursor-pointer transition-colors bg-transparent"
                 style={{
-                  border: '1px solid #EBEBCA',
-                  color: '#642308',
+                  border: '1px solid #e1e1e1',
+                  color: '#1c1c1c',
                 }}>
                 {SORT_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value}>SORT: {opt.label.toUpperCase()}</option>
                 ))}
               </select>
               <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: '#B68868' }} />
+                style={{ color: '#9b9b9b' }} />
             </div>
           </div>
         </div>
@@ -270,7 +268,7 @@ export default function ShopPage() {
               <button
                 onClick={() => updateFilter('category', '')}
                 className="flex items-center gap-1.5 text-[10px] px-3 py-1.5 tracking-[0.1em] uppercase transition-colors"
-                style={{ backgroundColor: '#642308', color: '#FAF9EE' }}>
+                style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}>
                 {currentCategoryName} <X size={9} />
               </button>
             )}
@@ -278,7 +276,7 @@ export default function ShopPage() {
               <button
                 onClick={() => { updateFilter('min_price', ''); updateFilter('max_price', ''); setActivePriceRange([0, 50000]); }}
                 className="flex items-center gap-1.5 text-[10px] px-3 py-1.5 tracking-[0.1em] uppercase transition-colors"
-                style={{ backgroundColor: '#642308', color: '#FAF9EE' }}>
+                style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}>
                 ₹{filters.min_price || '0'} – ₹{filters.max_price || 'Any'} <X size={9} />
               </button>
             )}
@@ -307,20 +305,20 @@ export default function ShopPage() {
               </div>
             ) : products.length === 0 ? (
               <div className="text-center py-24">
-                <p className="text-4xl mb-5" style={{ color: '#EBEBCA' }}>🪢</p>
-                <h3 className="font-display text-2xl font-normal mb-2" style={{ color: '#642308' }}>No products found</h3>
-                <p className="text-sm mb-8" style={{ color: '#B68868' }}>Try adjusting your filters</p>
+                <p className="text-4xl mb-5" style={{ color: '#e1e1e1' }}>🪢</p>
+                <h3 className="text-2xl font-normal mb-2" style={{ color: '#1c1c1c' }}>No products found</h3>
+                <p className="text-sm mb-8" style={{ color: '#9b9b9b' }}>Try adjusting your filters</p>
                 <button
                   onClick={clearAll}
                   className="text-[10px] tracking-[0.2em] uppercase px-8 py-3 transition-colors"
-                  style={{ border: '1px solid #642308', color: '#642308' }}
+                  style={{ border: '1px solid #1c1c1c', color: '#1c1c1c' }}
                   onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = '#642308';
-                    (e.currentTarget as HTMLElement).style.color = '#FAF9EE';
+                    (e.currentTarget as HTMLElement).style.backgroundColor = '#1c1c1c';
+                    (e.currentTarget as HTMLElement).style.color = '#ffffff';
                   }}
                   onMouseLeave={e => {
                     (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                    (e.currentTarget as HTMLElement).style.color = '#642308';
+                    (e.currentTarget as HTMLElement).style.color = '#1c1c1c';
                   }}>
                   Clear All Filters
                 </button>
@@ -338,14 +336,14 @@ export default function ShopPage() {
                       onClick={() => setFilters(f => ({ ...f, page: Math.max(1, f.page - 1) }))}
                       disabled={filters.page === 1}
                       className="w-9 h-9 flex items-center justify-center text-sm transition-colors disabled:opacity-30"
-                      style={{ border: '1px solid #EBEBCA', color: '#B68868' }}
+                      style={{ border: '1px solid #e1e1e1', color: '#9b9b9b' }}
                       onMouseEnter={e => {
-                        (e.currentTarget as HTMLElement).style.borderColor = '#642308';
-                        (e.currentTarget as HTMLElement).style.color = '#642308';
+                        (e.currentTarget as HTMLElement).style.borderColor = '#1c1c1c';
+                        (e.currentTarget as HTMLElement).style.color = '#1c1c1c';
                       }}
                       onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.borderColor = '#EBEBCA';
-                        (e.currentTarget as HTMLElement).style.color = '#B68868';
+                        (e.currentTarget as HTMLElement).style.borderColor = '#e1e1e1';
+                        (e.currentTarget as HTMLElement).style.color = '#9b9b9b';
                       }}>
                       ‹
                     </button>
@@ -361,9 +359,9 @@ export default function ShopPage() {
                           onClick={() => setFilters(f => ({ ...f, page }))}
                           className="w-9 h-9 text-sm transition-colors"
                           style={{
-                            border: `1px solid ${filters.page === page ? '#642308' : '#EBEBCA'}`,
-                            backgroundColor: filters.page === page ? '#642308' : 'transparent',
-                            color: filters.page === page ? '#FAF9EE' : '#903E1D',
+                            border: `1px solid ${filters.page === page ? '#1c1c1c' : '#e1e1e1'}`,
+                            backgroundColor: filters.page === page ? '#1c1c1c' : 'transparent',
+                            color: filters.page === page ? '#ffffff' : '#363636',
                           }}>
                           {page}
                         </button>
@@ -373,14 +371,14 @@ export default function ShopPage() {
                       onClick={() => setFilters(f => ({ ...f, page: Math.min(pagination.pages, f.page + 1) }))}
                       disabled={filters.page === pagination.pages}
                       className="w-9 h-9 flex items-center justify-center text-sm transition-colors disabled:opacity-30"
-                      style={{ border: '1px solid #EBEBCA', color: '#B68868' }}
+                      style={{ border: '1px solid #e1e1e1', color: '#9b9b9b' }}
                       onMouseEnter={e => {
-                        (e.currentTarget as HTMLElement).style.borderColor = '#642308';
-                        (e.currentTarget as HTMLElement).style.color = '#642308';
+                        (e.currentTarget as HTMLElement).style.borderColor = '#1c1c1c';
+                        (e.currentTarget as HTMLElement).style.color = '#1c1c1c';
                       }}
                       onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.borderColor = '#EBEBCA';
-                        (e.currentTarget as HTMLElement).style.color = '#B68868';
+                        (e.currentTarget as HTMLElement).style.borderColor = '#e1e1e1';
+                        (e.currentTarget as HTMLElement).style.color = '#9b9b9b';
                       }}>
                       ›
                     </button>

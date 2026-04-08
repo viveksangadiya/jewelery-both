@@ -17,9 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <title>HastKala — Handmade Torans &amp; Craft Decor</title>
         <meta name="description" content="Handcrafted torans, wall hangings & festive decor made by artisans across India. Shop traditional, wedding & festival collections." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#FAF9EE" />
+        <meta name="theme-color" content="#ffffff" />
       </head>
-      <body style={{ backgroundColor: '#FAF9EE', color: '#642308' }}>
+      <body>
         {!isAdmin && <AnnouncementBar />}
         {!isAdmin && <Navbar />}
         <main>{children}</main>
@@ -29,16 +29,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           position="top-right"
           toastOptions={{
             style: {
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
               fontSize: '13px',
-              backgroundColor: '#FAF9EE',
-              color: '#642308',
-              border: '1px solid #EBEBCA',
-              borderRadius: '2px',
-              boxShadow: '0 4px 16px rgba(100,35,8,0.08)',
+              backgroundColor: '#ffffff',
+              color: '#1c1c1c',
+              border: '1px solid #e1e1e1',
+              borderRadius: '0px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
             },
-            success: { iconTheme: { primary: '#903E1D', secondary: '#FAF9EE' } },
-            error:   { iconTheme: { primary: '#b91c1c', secondary: '#FAF9EE' } },
+            success: { iconTheme: { primary: '#347a07', secondary: '#ffffff' } },
+            error:   { iconTheme: { primary: '#e32c2b', secondary: '#ffffff' } },
           }}
         />
       </body>

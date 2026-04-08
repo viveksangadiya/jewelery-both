@@ -9,21 +9,39 @@ module.exports = {
     extend: {
       colors: {
         craft: {
-          50:  '#ffffff', // White — main background
-          100: '#f5f5f5', // Light gray — secondary panels
-          200: '#e8e8e8', // Border gray
-          300: '#9b9b9b', // Muted text / icons
-          400: '#6b6b6b', // Medium gray
-          500: '#4a4a4a', // Secondary text
-          600: '#363636', // Dark secondary
-          700: '#1c1c1c', // Primary text / brand
-          800: '#141414', // Near-black headings
-          900: '#000000', // Black
+          50:  '#ffffff',
+          100: '#f5f5f5',
+          200: '#e1e1e1',
+          300: '#9b9b9b',
+          400: '#6b6b6b',
+          500: '#4a4a4a',
+          600: '#363636',
+          700: '#1c1c1c',
+          800: '#141414',
+          900: '#000000',
         },
+        sale: '#e32c2b',
+        success: '#347a07',
+        'success-light': '#d4e3cb',
+        star: '#ed8a00',
       },
       fontFamily: {
-        display: ['Inter', 'system-ui', 'sans-serif'],
-        body:    ['Inter', 'system-ui', 'sans-serif'],
+        sans:    ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        body:    ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        mono:    ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      },
+      fontSize: {
+        'fluid-h1': 'clamp(1.375rem, 1.15rem + 0.98vw, 2rem)',
+        'fluid-h2': 'clamp(1.25rem, 1.07rem + 0.78vw, 1.75rem)',
+        'fluid-h3': 'clamp(1.125rem, 1.03rem + 0.39vw, 1.375rem)',
+      },
+      maxWidth: {
+        'container': '85rem',
+      },
+      spacing: {
+        'section': '3.75rem',
+        'section-sm': '2.5rem',
       },
       animation: {
         'fade-in':  'fadeIn 0.5s ease-in-out',
