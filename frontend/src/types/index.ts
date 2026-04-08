@@ -9,6 +9,8 @@ export interface User {
   phone?: string;
   role: 'customer' | 'admin';
   is_verified?: boolean;
+  avatar_url?: string;
+  auth_provider?: string;
   created_at?: string;
 }
 
@@ -54,6 +56,15 @@ export interface Review {
   created_at: string;
 }
 
+export interface ProductSize {
+  id: number;
+  product_id: number;
+  label: string;
+  price_modifier: number;
+  stock: number;
+  sort_order?: number;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -75,8 +86,12 @@ export interface Product {
   primary_image?: string;
   avg_rating?: number;
   review_count?: number;
+  allow_custom_text?: boolean;
+  custom_text_label?: string;
+  custom_text_max_length?: number;
   images?: ProductImage[];
   variants?: ProductVariant[];
+  sizes?: ProductSize[];
   reviews?: Review[];
   created_at?: string;
   updated_at?: string;
@@ -88,11 +103,15 @@ export interface CartItem {
   name: string;
   image?: string;
   price: number;
+  effective_price?: number;
   quantity: number;
   slug: string;
   variant_id?: number;
   variant_name?: string;
   variant_value?: string;
+  size_label?: string;
+  custom_text?: string;
+  price_modifier?: number;
 }
 
 export interface Address {

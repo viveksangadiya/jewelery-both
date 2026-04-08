@@ -32,7 +32,7 @@ api.interceptors.response.use(
 // ── Auth ──────────────────────────────────────────────────
 interface LoginPayload { email: string; password: string; }
 interface RegisterPayload { name: string; email: string; password: string; phone?: string; }
-interface AuthData { user: import('@/types').User; token: string; }
+interface AuthData { user: import('@/types').User; token: string; is_new_user?: boolean; }
 
 export const authApi = {
   register: (data: RegisterPayload): Promise<AxiosResponse<ApiResponse<AuthData>>> =>

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { ShoppingBag, Package, Users, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, CheckCircle, Truck, XCircle } from 'lucide-react';
 import { ordersApi, productsApi } from '@/lib/api';
 
-const StatCard = ({ title, value, icon: Icon, change, color, bg }) => (
+const StatCard = ({ title, value, icon: Icon, change, color, bg }: any) => (
   <div className="bg-white rounded-2xl p-6 border border-gray-100 flex items-start justify-between">
     <div>
       <p className="text-sm text-gray-500 font-medium mb-1">{title}</p>
@@ -21,7 +21,7 @@ const StatCard = ({ title, value, icon: Icon, change, color, bg }) => (
   </div>
 );
 
-const statusConfig = {
+const statusConfig: Record<string, { label: string; icon: any; color: string; bg: string }> = {
   pending:    { label: 'Pending',    icon: Clock,         color: 'text-yellow-600', bg: 'bg-yellow-50' },
   confirmed:  { label: 'Confirmed',  icon: CheckCircle,   color: 'text-blue-600',   bg: 'bg-blue-50' },
   processing: { label: 'Processing', icon: Package,       color: 'text-purple-600', bg: 'bg-purple-50' },
@@ -31,8 +31,8 @@ const statusConfig = {
 };
 
 export default function AdminDashboard() {
-  const [orders, setOrders] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

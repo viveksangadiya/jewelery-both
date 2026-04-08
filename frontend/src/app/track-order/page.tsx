@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useState } from 'react';
 import { Search, Package, Truck, CheckCircle, Clock, XCircle, MapPin, ExternalLink } from 'lucide-react';
 import api from '@/lib/api';
@@ -37,7 +38,7 @@ interface TrackingData {
   };
 }
 
-const statusSteps: { key: OrderStatus; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
+const statusSteps: { key: OrderStatus; label: string; icon: React.ComponentType<any> }[] = [
   { key: 'pending',    label: 'Order Placed', icon: Clock },
   { key: 'confirmed',  label: 'Confirmed',    icon: CheckCircle },
   { key: 'processing', label: 'Processing',   icon: Package },

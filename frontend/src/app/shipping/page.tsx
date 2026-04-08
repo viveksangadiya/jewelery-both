@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import { Truck, Clock, MapPin, Shield, Package, ArrowRight } from 'lucide-react';
 

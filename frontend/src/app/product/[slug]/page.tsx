@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Heart, Share2, Star, Plus, Minus, Shield, Truck, RefreshCw, ChevronLeft, ChevronRight, X, ZoomIn, Package, ShoppingBag as SBag, CheckCircle2 } from 'lucide-react';

@@ -4,7 +4,7 @@ import { Search, User, Shield } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function AdminCustomers() {
-  const [customers, setCustomers] = useState([]);
+  const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 

@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:saadaa.in)"
+      "WebFetch(domain:saadaa.in)",
+      "Bash(npm run:*)"
     ]
   }
 }
