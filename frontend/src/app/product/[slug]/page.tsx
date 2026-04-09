@@ -221,81 +221,101 @@ export default function ProductPage() {
         <div className="lg:grid lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px] gap-12 xl:gap-16 items-start">
 
           {/* LEFT: Gallery ── sticky */}
-          <div className="lg:sticky lg:top-6 space-y-3">
-            {/* Main image */}
-            <div
-              className="relative overflow-hidden cursor-zoom-in group aspect-square"
-              style={{ backgroundColor: '#EBEBCA' }}
-              onClick={() => setLightbox(true)}>
+          <div className="lg:sticky lg:top-6">
+            <div className="flex gap-3">
 
-              {/* Badges */}
-              <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-                {discount > 0 && (
-                  <span className="text-[9px] font-bold px-2.5 py-1 tracking-[0.2em] uppercase"
-                    style={{ backgroundColor: '#642308', color: '#FAF9EE' }}>
-                    −{discount}%
-                  </span>
-                )}
-                {product.is_featured && !discount && (
-                  <span className="text-[9px] font-bold px-2.5 py-1 tracking-[0.2em] uppercase"
-                    style={{ backgroundColor: '#FAF9EE', color: '#642308' }}>
-                    New
-                  </span>
-                )}
-              </div>
-
-              <img
-                src={images[activeImg]?.image_url || images[activeImg]}
-                alt={images[activeImg]?.alt_text || product.name}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-              />
-
-              {/* Zoom hint */}
-              <div className="absolute bottom-4 right-4 w-9 h-9 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ backgroundColor: 'rgba(250,249,238,0.85)' }}>
-                <ZoomIn size={14} style={{ color: '#642308' }} />
-              </div>
-
-              {/* Prev/next arrows */}
-              {images.length > 1 && activeImg > 0 && (
-                <button onClick={e => { e.stopPropagation(); setActiveImg(i => i - 1); }}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ backgroundColor: 'rgba(250,249,238,0.85)', color: '#642308' }}>
-                  <ChevronLeft size={16} />
-                </button>
-              )}
-              {images.length > 1 && activeImg < images.length - 1 && (
-                <button onClick={e => { e.stopPropagation(); setActiveImg(i => i + 1); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ backgroundColor: 'rgba(250,249,238,0.85)', color: '#642308' }}>
-                  <ChevronRight size={16} />
-                </button>
-              )}
-
-              {/* Counter */}
+              {/* Vertical thumbnail strip */}
               {images.length > 1 && (
-                <div className="absolute bottom-4 left-4 px-2.5 py-1"
-                  style={{ backgroundColor: 'rgba(250,249,238,0.75)' }}>
-                  <span className="text-[9px] font-mono tracking-widest" style={{ color: '#642308' }}>
-                    {String(activeImg + 1).padStart(2,'0')}/{String(images.length).padStart(2,'0')}
-                  </span>
+                <div className="hidden sm:flex flex-col gap-2 w-[72px] flex-shrink-0">
+                  {images.map((img: any, i: number) => (
+                    <button key={i} onClick={() => setActiveImg(i)}
+                      className="w-full aspect-square overflow-hidden flex-shrink-0 transition-all duration-200"
+                      style={{
+                        outline: i === activeImg ? `2px solid #642308` : '2px solid transparent',
+                        outlineOffset: '1px',
+                        opacity: i === activeImg ? 1 : 0.55,
+                      }}
+                      onMouseEnter={e => { if (i !== activeImg) (e.currentTarget.style.opacity = '0.8'); }}
+                      onMouseLeave={e => { if (i !== activeImg) (e.currentTarget.style.opacity = '0.55'); }}>
+                      <img src={img.image_url || img} alt="" className="w-full h-full object-cover"
+                        style={{ backgroundColor: '#EBEBCA' }} />
+                    </button>
+                  ))}
                 </div>
               )}
+
+              {/* Main image */}
+              <div className="flex-1 relative overflow-hidden cursor-zoom-in group"
+                style={{ backgroundColor: '#EBEBCA', aspectRatio: '3/4' }}
+                onClick={() => setLightbox(true)}>
+
+                {/* Badges */}
+                <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+                  {discount > 0 && (
+                    <span className="text-[9px] font-bold px-2.5 py-1 tracking-[0.2em] uppercase"
+                      style={{ backgroundColor: '#642308', color: '#FAF9EE' }}>
+                      −{discount}%
+                    </span>
+                  )}
+                  {product.is_featured && !discount && (
+                    <span className="text-[9px] font-bold px-2.5 py-1 tracking-[0.2em] uppercase"
+                      style={{ backgroundColor: '#FAF9EE', color: '#642308' }}>
+                      New
+                    </span>
+                  )}
+                </div>
+
+                <img
+                  src={images[activeImg]?.image_url || images[activeImg]}
+                  alt={images[activeImg]?.alt_text || product.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                />
+
+                {/* Zoom hint */}
+                <div className="absolute bottom-4 right-4 w-9 h-9 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ backgroundColor: 'rgba(250,249,238,0.85)' }}>
+                  <ZoomIn size={14} style={{ color: '#642308' }} />
+                </div>
+
+                {/* Prev/next arrows */}
+                {images.length > 1 && activeImg > 0 && (
+                  <button onClick={e => { e.stopPropagation(); setActiveImg(i => i - 1); }}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ backgroundColor: 'rgba(250,249,238,0.85)', color: '#642308' }}>
+                    <ChevronLeft size={16} />
+                  </button>
+                )}
+                {images.length > 1 && activeImg < images.length - 1 && (
+                  <button onClick={e => { e.stopPropagation(); setActiveImg(i => i + 1); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ backgroundColor: 'rgba(250,249,238,0.85)', color: '#642308' }}>
+                    <ChevronRight size={16} />
+                  </button>
+                )}
+
+                {/* Counter */}
+                {images.length > 1 && (
+                  <div className="absolute bottom-4 left-4 px-2.5 py-1"
+                    style={{ backgroundColor: 'rgba(250,249,238,0.75)' }}>
+                    <span className="text-[9px] font-mono tracking-widest" style={{ color: '#642308' }}>
+                      {String(activeImg + 1).padStart(2,'0')}/{String(images.length).padStart(2,'0')}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Thumbnails */}
+            {/* Mobile thumbnails (bottom row) */}
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1">
+              <div className="flex sm:hidden gap-2 overflow-x-auto pb-1 mt-2">
                 {images.map((img: any, i: number) => (
                   <button key={i} onClick={() => setActiveImg(i)}
-                    className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden transition-all duration-200"
+                    className="flex-shrink-0 w-14 h-14 overflow-hidden transition-all duration-200"
                     style={{
-                      outline: i === activeImg ? `2px solid #B68868` : 'none',
-                      outlineOffset: '2px',
-                      opacity: i === activeImg ? 1 : 0.5,
-                    }}
-                    onMouseEnter={e => { if (i !== activeImg) (e.currentTarget.style.opacity = '0.75'); }}
-                    onMouseLeave={e => { if (i !== activeImg) (e.currentTarget.style.opacity = '0.5'); }}>
+                      outline: i === activeImg ? `2px solid #642308` : '2px solid transparent',
+                      outlineOffset: '1px',
+                      opacity: i === activeImg ? 1 : 0.55,
+                    }}>
                     <img src={img.image_url || img} alt="" className="w-full h-full object-cover"
                       style={{ backgroundColor: '#EBEBCA' }} />
                   </button>
@@ -609,7 +629,7 @@ export default function ProductPage() {
           )}
 
           {/* Reviews */}
-          <div id="reviews-section" className="p-6 sm:p-10"
+          <div id="reviews-section" className="px-6 sm:px-10 pt-10 pb-12"
             style={{ backgroundColor: '#FAF9EE', border: '1px solid #EBEBCA' }}>
             <ReviewsSection productId={product.id} productName={product.name} />
           </div>
