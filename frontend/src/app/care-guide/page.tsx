@@ -5,7 +5,6 @@ import { Sparkles, ArrowRight, AlertTriangle } from 'lucide-react';
 const materials = [
   {
     name: 'Fabric & Thread Torans',
-    headerBg: '#EBEBCA',
     dos: [
       'Dust gently with a soft dry cloth or feather duster',
       'Store folded in a cotton muslin bag away from moisture',
@@ -22,7 +21,6 @@ const materials = [
   },
   {
     name: 'Beaded & Mirror Work Torans',
-    headerBg: '#FAF9EE',
     dos: [
       'Wipe mirrors with a slightly damp cloth to restore shine',
       'Store in a box so beads do not tangle or break',
@@ -38,7 +36,6 @@ const materials = [
   },
   {
     name: 'Brass & Metal Accents',
-    headerBg: '#EBEBCA',
     dos: [
       'Polish brass elements with a dry soft cloth after handling',
       'Use a mild brass cleaner once a year for deep shine',
@@ -54,7 +51,6 @@ const materials = [
   },
   {
     name: 'Natural Material Torans',
-    headerBg: '#FAF9EE',
     dos: [
       'Keep in a cool, dry, well-ventilated area',
       'Mist dry flowers lightly with hairspray to preserve shape',
@@ -81,19 +77,18 @@ const generalTips = [
 
 export default function CareGuidePage() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAF9EE' }}>
+    <div className="min-h-screen bg-brand-bg">
 
       {/* Hero */}
-      <div className="py-14 px-6" style={{ backgroundColor: '#EBEBCA', borderBottom: '1px solid #B68868' }}>
+      <div className="py-14 px-6 bg-brand-hover border-b border-brand-border">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="w-12 h-12 flex items-center justify-center mx-auto mb-5"
-            style={{ backgroundColor: '#FAF9EE', border: '1px solid #B68868' }}>
-            <Sparkles size={20} style={{ color: '#642308' }} strokeWidth={1.5} />
+          <div className="w-12 h-12 flex items-center justify-center mx-auto mb-5 bg-white border border-brand-border">
+            <Sparkles size={20} className="text-brand-text" strokeWidth={1.5} />
           </div>
-          <h1 className="text-4xl font-bold mb-3" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+          <h1 className="font-display text-4xl font-semibold mb-3 text-brand-text">
             Care Guide
           </h1>
-          <p className="text-sm leading-relaxed max-w-xl mx-auto" style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+          <p className="text-sm leading-relaxed max-w-xl mx-auto text-brand-secondary italic">
             Handcrafted torans are made to be cherished for years. A little care keeps them as beautiful as the day they arrived.
           </p>
         </div>
@@ -103,20 +98,17 @@ export default function CareGuidePage() {
 
         {/* General tips */}
         <section>
-          <h2 className="text-2xl font-bold mb-8" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+          <h2 className="font-display text-2xl font-semibold mb-8 text-brand-text">
             General Care Tips
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {generalTips.map(tip => (
-              <div key={tip.title} className="p-5 transition-colors"
-                style={{ border: '1px solid #EBEBCA', backgroundColor: '#ffffff' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = '#B68868')}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = '#EBEBCA')}
-              >
-                <span className="text-3xl font-black block mb-3 leading-none"
-                  style={{ color: '#EBEBCA', fontFamily: 'Georgia, serif' }}>{tip.num}</span>
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#642308' }}>{tip.title}</p>
-                <p className="text-xs leading-relaxed" style={{ color: '#903E1D' }}>{tip.desc}</p>
+              <div key={tip.title} className="p-5 bg-white border border-brand-border hover:border-brand-text transition-colors">
+                <span className="text-3xl font-black block mb-3 leading-none text-brand-border font-display">
+                  {tip.num}
+                </span>
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] mb-2 text-brand-text">{tip.title}</p>
+                <p className="text-xs leading-relaxed text-brand-secondary">{tip.desc}</p>
               </div>
             ))}
           </div>
@@ -124,34 +116,34 @@ export default function CareGuidePage() {
 
         {/* By material */}
         <section>
-          <h2 className="text-2xl font-bold mb-8" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+          <h2 className="font-display text-2xl font-semibold mb-8 text-brand-text">
             Care by Material
           </h2>
           <div className="space-y-4">
-            {materials.map(mat => (
-              <div key={mat.name} style={{ border: '1px solid #EBEBCA', overflow: 'hidden' }}>
-                <div className="px-6 py-3 flex items-center gap-3" style={{ backgroundColor: mat.headerBg }}>
-                  <span className="w-2 h-2 flex-shrink-0" style={{ backgroundColor: '#642308' }} />
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: '#642308' }}>{mat.name}</h3>
+            {materials.map((mat, idx) => (
+              <div key={mat.name} className="border border-brand-border overflow-hidden">
+                <div className="px-6 py-3 flex items-center gap-3 bg-brand-hover">
+                  <span className="w-2 h-2 flex-shrink-0 bg-brand-text" />
+                  <h3 className="text-[11px] font-medium uppercase tracking-[0.2em] text-brand-text">{mat.name}</h3>
                 </div>
-                <div className="grid md:grid-cols-2" style={{ backgroundColor: '#ffffff' }}>
-                  <div className="p-5" style={{ borderRight: '1px solid #EBEBCA' }}>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: '#642308' }}>✓ Do</p>
+                <div className="grid md:grid-cols-2 bg-white">
+                  <div className="p-5 border-r border-brand-border">
+                    <p className="text-[10px] font-medium uppercase tracking-[0.2em] mb-3 text-green-700">✓ Do</p>
                     <ul className="space-y-2">
                       {mat.dos.map(d => (
-                        <li key={d} className="flex items-start gap-2.5 text-xs" style={{ color: '#903E1D' }}>
-                          <span className="w-1 h-1 flex-shrink-0 mt-1.5" style={{ backgroundColor: '#642308' }} />
+                        <li key={d} className="flex items-start gap-2.5 text-xs text-brand-secondary">
+                          <span className="w-1 h-1 flex-shrink-0 mt-1.5 bg-green-600" />
                           {d}
                         </li>
                       ))}
                     </ul>
                   </div>
                   <div className="p-5">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: '#b91c1c' }}>✗ Don't</p>
+                    <p className="text-[10px] font-medium uppercase tracking-[0.2em] mb-3 text-red-600">✗ Don't</p>
                     <ul className="space-y-2">
                       {mat.donts.map(d => (
-                        <li key={d} className="flex items-start gap-2.5 text-xs" style={{ color: '#903E1D' }}>
-                          <span className="w-1 h-1 flex-shrink-0 mt-1.5" style={{ backgroundColor: '#b91c1c' }} />
+                        <li key={d} className="flex items-start gap-2.5 text-xs text-brand-secondary">
+                          <span className="w-1 h-1 flex-shrink-0 mt-1.5 bg-red-500" />
                           {d}
                         </li>
                       ))}
@@ -163,9 +155,9 @@ export default function CareGuidePage() {
           </div>
         </section>
 
-        {/* Cleaning instructions */}
-        <section style={{ borderTop: '1px solid #EBEBCA', paddingTop: '3rem' }}>
-          <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#642308' }}>
+        {/* Spot cleaning instructions */}
+        <section className="border-t border-brand-border pt-12">
+          <h2 className="font-display text-2xl font-semibold mb-6 text-brand-text">
             Spot Cleaning Instructions
           </h2>
           <div className="space-y-5">
@@ -177,10 +169,10 @@ export default function CareGuidePage() {
               { step: '05', title: 'Dry in shade',             desc: 'Hang in a shaded, well-ventilated spot. Never use a hair dryer — heat warps beads and loosens glue on mirror work.' },
             ].map(s => (
               <div key={s.step} className="flex gap-5">
-                <span className="font-mono text-3xl font-black leading-none flex-shrink-0 w-12" style={{ color: '#EBEBCA' }}>{s.step}</span>
-                <div className="pt-1 flex-1 pb-4" style={{ borderBottom: '1px solid #EBEBCA' }}>
-                  <p className="text-sm font-bold mb-1" style={{ color: '#642308' }}>{s.title}</p>
-                  <p className="text-sm leading-relaxed" style={{ color: '#903E1D' }}>{s.desc}</p>
+                <span className="font-display text-3xl font-black leading-none flex-shrink-0 w-12 text-brand-border">{s.step}</span>
+                <div className="pt-1 flex-1 pb-4 border-b border-brand-border">
+                  <p className="text-sm font-semibold mb-1 text-brand-text">{s.title}</p>
+                  <p className="text-sm leading-relaxed text-brand-secondary">{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -188,24 +180,19 @@ export default function CareGuidePage() {
         </section>
 
         {/* Warning */}
-        <div className="p-5 flex gap-4" style={{ border: '1px solid #EBEBCA', backgroundColor: '#FFF8F5' }}>
-          <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" style={{ color: '#B68868' }} />
+        <div className="p-5 flex gap-4 bg-brand-hover border border-brand-border">
+          <AlertTriangle size={16} className="flex-shrink-0 mt-0.5 text-brand-muted" />
           <div>
-            <p className="text-sm font-bold mb-1" style={{ color: '#642308' }}>When in Doubt, Contact Us</p>
-            <p className="text-xs leading-relaxed" style={{ color: '#903E1D' }}>
+            <p className="text-sm font-semibold mb-1 text-brand-text">When in Doubt, Contact Us</p>
+            <p className="text-xs leading-relaxed text-brand-secondary">
               If your toran has a stubborn stain or structural damage (broken bead strand, torn fabric), reach out to us before attempting a repair. We may be able to advise or arrange a restoration for HastKala pieces.
             </p>
           </div>
         </div>
 
         <div className="text-center pt-2">
-          <p className="text-sm mb-4" style={{ color: '#903E1D' }}>Have questions about caring for your toran?</p>
-          <Link href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-            style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#903E1D')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#642308')}
-          >
+          <p className="text-sm mb-4 text-brand-secondary">Have questions about caring for your toran?</p>
+          <Link href="/contact" className="btn-brand h-11 px-8 inline-flex">
             Contact Us <ArrowRight size={13} />
           </Link>
         </div>

@@ -2,44 +2,127 @@
 export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, User, Heart, LogOut, ChevronRight, Trash2, ShoppingBag, ExternalLink, Save, X } from 'lucide-react';
+import {
+  Package, User, Heart, LogOut, ChevronRight, Trash2,
+  ShoppingBag, Save, X, Settings, Bell, MapPin,
+} from 'lucide-react';
+import Link from 'next/link';
 import { useAuthStore, useWishlistStore } from '@/lib/store';
 import { ordersApi, wishlistApi, authApi } from '@/lib/api';
+import ProductCard from '@/components/product/ProductCard';
 import toast from 'react-hot-toast';
 
-const statusStyle: Record<string, { bg: string; color: string }> = {
-  pending:    { bg: '#f5f5f5',  color: '#9b9b9b' },
-  confirmed:  { bg: '#f5f5f5',  color: '#1c1c1c' },
-  processing: { bg: '#f5f5f5',  color: '#363636' },
-  shipped:    { bg: '#f5f5f5',  color: '#1c1c1c' },
-  delivered:  { bg: '#d4e3cb', color: '#347a07' },
-  cancelled:  { bg: '#fff0f0', color: '#e32c2b' },
-  refunded:   { bg: '#f5f5f5',  color: '#363636' },
+type Tab = 'overview' | 'orders' | 'wishlist' | 'details' | 'preferences';
+
+const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
+  pending:    { bg: '#F5F0EB', color: '#999',     label: 'Pending'    },
+  confirmed:  { bg: '#F5F0EB', color: '#000',     label: 'Confirmed'  },
+  processing: { bg: '#F5F0EB', color: '#6B6B6B',  label: 'Processing' },
+  shipped:    { bg: '#000',    color: '#fff',     label: 'Shipped'    },
+  delivered:  { bg: '#000',    color: '#fff',     label: 'Delivered'  },
+  cancelled:  { bg: '#fff0f0', color: '#b91c1c',  label: 'Cancelled'  },
+  refunded:   { bg: '#F5F0EB', color: '#6B6B6B',  label: 'Refunded'   },
 };
 
+// ── Tab bar ───────────────────────────────────────────────
+function AccountTabs({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'overview',     label: 'Overview'         },
+    { id: 'orders',       label: 'My Orders'        },
+    { id: 'wishlist',     label: 'Wishlist'         },
+    { id: 'details',      label: 'Account Details'  },
+    { id: 'preferences',  label: 'Preferences'      },
+  ];
+  return (
+    <div className="flex overflow-x-auto scrollbar-hide border-b border-brand-border mb-8 -mx-4 sm:-mx-6 lg:-mx-10 px-4 sm:px-6 lg:px-10">
+      {tabs.map(t => (
+        <button
+          key={t.id}
+          onClick={() => setTab(t.id)}
+          className="flex-shrink-0 px-4 py-3 text-[11px] font-medium tracking-[0.15em] uppercase transition-colors border-b-2 -mb-px"
+          style={{
+            borderBottomColor: tab === t.id ? '#000' : 'transparent',
+            color: tab === t.id ? '#000' : '#999',
+          }}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── Overview section cards ────────────────────────────────
+function OverviewCard({
+  icon: Icon, title, sub, onClick,
+}: { icon: any; title: string; sub: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="group flex flex-col items-start p-6 bg-white border border-brand-border hover:border-brand-text transition-all text-left"
+    >
+      <Icon size={20} className="text-brand-muted mb-4 group-hover:text-brand-text transition-colors" strokeWidth={1.5} />
+      <p className="text-sm font-medium text-brand-text mb-1">{title}</p>
+      <p className="text-[11px] text-brand-muted leading-snug">{sub}</p>
+      <ChevronRight size={13} className="text-brand-muted group-hover:text-brand-text transition-colors mt-3" />
+    </button>
+  );
+}
+
+// ── Field label wrapper ───────────────────────────────────
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-[10px] tracking-[0.2em] uppercase text-brand-muted mb-2">{label}</p>
+      {children}
+    </div>
+  );
+}
+
+const inputCls = "w-full px-4 py-3 text-sm border border-brand-border bg-white text-brand-text placeholder:text-brand-muted outline-none focus:border-brand-text transition-colors";
+
 export default function AccountPage() {
-  const router = useRouter();
-  const user = useAuthStore(s => s.user);
-  const logout = useAuthStore(s => s.logout);
+  const router  = useRouter();
+  const user    = useAuthStore(s => s.user);
+  const logout  = useAuthStore(s => s.logout);
   const { toggle, clear: clearWishlist } = useWishlistStore();
 
-  const [orders, setOrders] = useState<any[]>([]);
+  const [tab, setTab]                         = useState<Tab>('overview');
+  const [orders, setOrders]                   = useState<any[]>([]);
+  const [loadingOrders, setLoadingOrders]     = useState(false);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
-  const [loadingOrders, setLoadingOrders] = useState(true);
   const [loadingWishlist, setLoadingWishlist] = useState(false);
-  const [tab, setTab] = useState('orders');
-  const [profileEdit, setProfileEdit] = useState(false);
-  const [profileForm, setProfileForm] = useState({ name: '', phone: '' });
-  const [savingProfile, setSavingProfile] = useState(false);
+
+  // Profile edit
+  const [editMode, setEditMode]               = useState(false);
+  const [profileForm, setProfileForm]         = useState({ name: '', phone: '' });
+  const [saving, setSaving]                   = useState(false);
+
+  // Preferences
+  const [prefs, setPrefs] = useState({
+    emailMarketing: true,
+    smsMarketing: false,
+    whatsapp: true,
+    newArrivals: true,
+    offers: true,
+    orderUpdates: true,
+  });
 
   useEffect(() => {
     if (!user) { router.push('/account/login'); return; }
+  }, [user]);
+
+  // Load orders when tab is opened
+  useEffect(() => {
+    if (tab !== 'orders' || !user || orders.length) return;
+    setLoadingOrders(true);
     ordersApi.getAll()
       .then(r => setOrders(r.data.data))
       .catch(console.error)
       .finally(() => setLoadingOrders(false));
-  }, [user]);
+  }, [tab, user]);
 
+  // Load wishlist when tab opened
   useEffect(() => {
     if (tab !== 'wishlist' || !user) return;
     setLoadingWishlist(true);
@@ -49,383 +132,493 @@ export default function AccountPage() {
       .finally(() => setLoadingWishlist(false));
   }, [tab, user]);
 
+  // Also load orders for overview count
+  useEffect(() => {
+    if (!user) return;
+    ordersApi.getAll()
+      .then(r => setOrders(r.data.data))
+      .catch(() => {});
+  }, [user]);
+
   const handleLogout = () => {
-    logout();
-    clearWishlist();
-    router.push('/');
+    logout(); clearWishlist(); router.push('/');
   };
 
-  const handleRemoveFromWishlist = async (productId: number) => {
-    await toggle(productId);
-    setWishlistProducts(prev => prev.filter(p => p.id !== productId));
-    toast.success('Removed from wishlist');
-  };
-
-  const startEditProfile = () => {
+  const startEdit = () => {
     setProfileForm({ name: user?.name || '', phone: user?.phone || '' });
-    setProfileEdit(true);
+    setEditMode(true);
   };
 
-  const handleSaveProfile = async () => {
+  const handleSave = async () => {
     if (!profileForm.name.trim()) { toast.error('Name is required'); return; }
-    setSavingProfile(true);
+    setSaving(true);
     try {
       const res = await authApi.updateProfile(profileForm);
       useAuthStore.getState().setUser(res.data.data);
-      setProfileEdit(false);
+      setEditMode(false);
       toast.success('Profile updated!');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to update profile');
-    } finally {
-      setSavingProfile(false);
-    }
+      toast.error(err.response?.data?.message || 'Failed to update');
+    } finally { setSaving(false); }
   };
 
-  const handleClearWishlist = async () => {
-    try {
-      await wishlistApi.clear();
-      clearWishlist();
-      setWishlistProducts([]);
-      toast.success('Wishlist cleared');
-    } catch {
-      toast.error('Failed to clear wishlist');
-    }
+  const handleRemoveWishlist = async (productId: number) => {
+    await toggle(productId);
+    setWishlistProducts(p => p.filter(x => x.id !== productId));
+    toast.success('Removed from wishlist');
   };
 
   if (!user) return null;
 
-  const navItems = [
-    { id: 'orders', icon: Package, label: 'My Orders' },
-    { id: 'profile', icon: User, label: 'Profile' },
-    { id: 'wishlist', icon: Heart, label: 'Wishlist' },
-  ];
+  const memberSince = user.created_at
+    ? new Date(user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
+    : '—';
+  const initials = user.name?.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2) || '?';
 
   return (
-    <div className="min-h-screen py-10 bg-white">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="grid md:grid-cols-4 gap-6">
+    <div className="min-h-screen bg-brand-bg">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
 
-          {/* Sidebar */}
-          <div className="md:col-span-1">
-            {/* User card */}
-            <div className="p-5 text-center mb-3" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-              {user.avatar_url
-                ? <img src={user.avatar_url} alt="" className="w-16 h-16 object-cover mx-auto mb-3" style={{ outline: '2px solid #e1e1e1' }} />
-                : (
-                  <div className="w-16 h-16 flex items-center justify-center mx-auto mb-3"
-                    style={{ backgroundColor: '#f5f5f5' }}>
-                    <span className="text-2xl font-bold" style={{ color: '#1c1c1c' }}>{user.name?.[0]?.toUpperCase()}</span>
-                  </div>
-                )
-              }
-              <h3 className="font-semibold text-sm" style={{ color: '#1c1c1c' }}>{user.name}</h3>
-              <p className="text-[11px] mt-1" style={{ color: '#9b9b9b' }}>{user.email}</p>
-              {user.auth_provider === 'google' && (
-                <span className="text-[10px] tracking-[0.15em] uppercase font-medium px-2 py-0.5 mt-2 inline-block"
-                  style={{ backgroundColor: '#f5f5f5', color: '#363636' }}>
-                  Google Account
-                </span>
+        {/* ── Profile banner ── */}
+        <div className="bg-white border border-brand-border mb-8">
+          <div className="px-6 sm:px-8 py-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 justify-between">
+            <div className="flex items-center gap-5">
+              {/* Avatar */}
+              {user.avatar_url ? (
+                <img
+                  src={user.avatar_url}
+                  alt=""
+                  className="w-16 h-16 object-cover border border-brand-border flex-shrink-0"
+                />
+              ) : (
+                <div className="w-16 h-16 flex items-center justify-center bg-brand-hover border border-brand-border flex-shrink-0">
+                  <span className="text-xl font-medium text-brand-text">{initials}</span>
+                </div>
+              )}
+
+              {/* Info */}
+              <div>
+                <h1 className="text-lg font-medium text-brand-text">{user.name}</h1>
+                <p className="text-sm text-brand-muted">{user.email}</p>
+                <div className="flex items-center gap-3 mt-1.5">
+                  <span className="text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 border border-brand-border text-brand-muted">
+                    Member since {memberSince}
+                  </span>
+                  {user.auth_provider === 'google' && (
+                    <span className="text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 border border-brand-border text-brand-muted">
+                      Google Account
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Logout */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-text transition-colors"
+            >
+              <LogOut size={13} /> Sign Out
+            </button>
+          </div>
+        </div>
+
+        {/* ── Tab navigation ── */}
+        <AccountTabs tab={tab} setTab={setTab} />
+
+        {/* ══ OVERVIEW ══ */}
+        {tab === 'overview' && (
+          <div className="space-y-8">
+            {/* Quick stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: 'Total Orders',     value: orders.length,                            suffix: '' },
+                { label: 'Delivered',        value: orders.filter(o => o.status === 'delivered').length, suffix: '' },
+                { label: 'Wishlist Items',   value: useWishlistStore.getState().getCount(),   suffix: '' },
+                { label: 'Member Since',     value: memberSince,                              suffix: '' },
+              ].map(({ label, value }) => (
+                <div key={label} className="bg-white border border-brand-border px-5 py-4">
+                  <p className="text-[10px] tracking-[0.15em] uppercase text-brand-muted mb-1">{label}</p>
+                  <p className="text-xl font-medium text-brand-text">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Section cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <OverviewCard icon={Package}  title="My Orders"       sub="Track and manage your purchases"    onClick={() => setTab('orders')} />
+              <OverviewCard icon={Heart}    title="Wishlist"        sub="Products you've saved for later"    onClick={() => setTab('wishlist')} />
+              <OverviewCard icon={User}     title="Account Details" sub="Personal info, phone, address"      onClick={() => setTab('details')} />
+              <OverviewCard icon={Settings} title="Preferences"     sub="Notifications and communication"    onClick={() => setTab('preferences')} />
+            </div>
+
+            {/* Recent orders preview */}
+            {orders.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-[11px] font-medium tracking-[0.2em] uppercase text-brand-text">
+                    Recent Orders
+                  </h2>
+                  <button
+                    onClick={() => setTab('orders')}
+                    className="text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-text transition-colors underline underline-offset-2"
+                  >
+                    View All
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {orders.slice(0, 3).map((order: any) => {
+                    const st = STATUS_STYLE[order.status] || STATUS_STYLE.pending;
+                    return (
+                      <div key={order.id} className="bg-white border border-brand-border px-5 py-4 flex items-center justify-between gap-4">
+                        <div>
+                          <p className="text-xs font-mono font-medium text-brand-text">{order.order_number}</p>
+                          <p className="text-[10px] text-brand-muted mt-0.5">
+                            {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            {' · '}{order.item_count} item{order.item_count > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span
+                            className="text-[9px] font-medium tracking-[0.1em] uppercase px-2.5 py-1"
+                            style={{ backgroundColor: st.bg, color: st.color }}
+                          >
+                            {st.label}
+                          </span>
+                          <span className="text-sm font-medium text-brand-text">
+                            ₹{parseFloat(order.total).toLocaleString('en-IN')}
+                          </span>
+                          <Link
+                            href={`/account/orders/${order.id}`}
+                            className="text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-text transition-colors"
+                          >
+                            <ChevronRight size={14} />
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══ ORDERS ══ */}
+        {tab === 'orders' && (
+          <div>
+            <h2 className="font-display text-2xl font-normal text-brand-text mb-6">My Orders</h2>
+            {loadingOrders ? (
+              <div className="space-y-3">
+                {[1,2,3].map(i => <div key={i} className="h-20 skeleton" />)}
+              </div>
+            ) : orders.length === 0 ? (
+              <div className="py-20 text-center border border-brand-border bg-white">
+                <Package size={36} className="text-brand-border mx-auto mb-4" strokeWidth={1.5} />
+                <h3 className="font-display text-xl text-brand-text mb-2">No orders yet</h3>
+                <p className="text-sm text-brand-muted mb-8">Your order history will appear here</p>
+                <Link href="/shop" className="btn-brand px-10 h-11">Continue Shopping</Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {orders.map((order: any) => {
+                  const st = STATUS_STYLE[order.status] || STATUS_STYLE.pending;
+                  return (
+                    <div key={order.id} className="bg-white border border-brand-border px-6 py-5">
+                      <div className="flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 flex-wrap mb-1">
+                            <p className="text-sm font-mono font-medium text-brand-text">{order.order_number}</p>
+                            <span
+                              className="text-[9px] font-medium tracking-[0.1em] uppercase px-2.5 py-1"
+                              style={{ backgroundColor: st.bg, color: st.color }}
+                            >
+                              {st.label}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-brand-muted">
+                            {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            {' · '}{order.item_count} item{order.item_count > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-6 flex-shrink-0">
+                          <p className="text-base font-medium text-brand-text">
+                            ₹{parseFloat(order.total).toLocaleString('en-IN')}
+                          </p>
+                          <Link
+                            href={`/account/orders/${order.id}`}
+                            className="text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-text transition-colors flex items-center gap-1"
+                          >
+                            View Details <ChevronRight size={12} />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══ WISHLIST ══ */}
+        {tab === 'wishlist' && (
+          <div>
+            <div className="flex items-end justify-between mb-6">
+              <div>
+                <h2 className="font-display text-2xl font-normal text-brand-text">Wishlist</h2>
+                {wishlistProducts.length > 0 && (
+                  <p className="text-sm text-brand-muted mt-0.5">{wishlistProducts.length} saved {wishlistProducts.length === 1 ? 'item' : 'items'}</p>
+                )}
+              </div>
+              {wishlistProducts.length > 0 && (
+                <button
+                  onClick={async () => {
+                    try {
+                      await wishlistApi.clear();
+                      clearWishlist();
+                      setWishlistProducts([]);
+                      toast.success('Wishlist cleared');
+                    } catch { toast.error('Failed to clear'); }
+                  }}
+                  className="flex items-center gap-1.5 text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-text transition-colors"
+                >
+                  <Trash2 size={11} /> Clear All
+                </button>
               )}
             </div>
 
-            {/* Nav */}
-            <nav style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-              {navItems.map((item, idx) => (
-                <button
-                  key={item.id}
-                  onClick={() => setTab(item.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3.5 text-xs font-medium transition-colors"
-                  style={{
-                    backgroundColor: tab === item.id ? '#f5f5f5' : 'transparent',
-                    color: tab === item.id ? '#1c1c1c' : '#363636',
-                    borderBottom: '1px solid #e1e1e1',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  <item.icon size={14} />
-                  {item.label}
-                  <ChevronRight size={12} className="ml-auto" style={{ opacity: 0.5 }} />
+            {loadingWishlist ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {[1,2,3,4].map(i => (
+                  <div key={i}>
+                    <div className="skeleton aspect-[3/4] mb-3" />
+                    <div className="skeleton h-3 w-4/5 mb-2 rounded" />
+                    <div className="skeleton h-3 w-1/2 rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : wishlistProducts.length === 0 ? (
+              <div className="py-20 text-center border border-brand-border bg-white">
+                <Heart size={36} className="text-brand-border mx-auto mb-4" strokeWidth={1.5} />
+                <h3 className="font-display text-xl text-brand-text mb-2">Your wishlist is empty</h3>
+                <p className="text-sm text-brand-muted mb-8">Save your favourite pieces to find them easily later</p>
+                <Link href="/shop" className="btn-brand px-10 h-11">Browse Collections</Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {wishlistProducts.map((product: any) => (
+                  <div key={product.id} className="relative">
+                    <ProductCard product={product} />
+                    <button
+                      onClick={() => handleRemoveWishlist(product.id)}
+                      className="absolute top-2 left-2 z-20 w-7 h-7 flex items-center justify-center bg-white/90 hover:bg-white border border-brand-border text-brand-muted hover:text-brand-text transition-colors"
+                      title="Remove from wishlist"
+                    >
+                      <X size={11} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══ ACCOUNT DETAILS ══ */}
+        {tab === 'details' && (
+          <div className="max-w-2xl space-y-5">
+            <h2 className="font-display text-2xl font-normal text-brand-text">Account Details</h2>
+
+            {/* Personal info card */}
+            <div className="bg-white border border-brand-border">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-brand-border">
+                <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-brand-text">
+                  Personal Information
+                </p>
+                {!editMode && (
+                  <button
+                    onClick={startEdit}
+                    className="text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-text transition-colors underline underline-offset-2"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+
+              <div className="px-6 py-6">
+                {editMode ? (
+                  <div className="space-y-4">
+                    <Field label="Full Name *">
+                      <input
+                        value={profileForm.name}
+                        onChange={e => setProfileForm(p => ({ ...p, name: e.target.value }))}
+                        className={inputCls}
+                        placeholder="Your full name"
+                      />
+                    </Field>
+                    <Field label="Phone Number">
+                      <input
+                        value={profileForm.phone}
+                        onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))}
+                        className={inputCls}
+                        placeholder="+91 98765 43210"
+                        maxLength={13}
+                      />
+                    </Field>
+                    <Field label="Email Address">
+                      <p className="text-sm text-brand-secondary py-3 px-4 border border-brand-border bg-brand-hover">
+                        {user.email}
+                        <span className="ml-2 text-[10px] text-brand-muted">(cannot be changed)</span>
+                      </p>
+                    </Field>
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="btn-brand h-11 px-6 text-[11px]"
+                      >
+                        {saving
+                          ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          : <><Save size={13} /> Save Changes</>
+                        }
+                      </button>
+                      <button
+                        onClick={() => setEditMode(false)}
+                        className="btn-brand-outline h-11 px-6 text-[11px]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    {[
+                      { label: 'Full Name',     value: user.name },
+                      { label: 'Email',         value: user.email },
+                      { label: 'Phone',         value: user.phone || '—' },
+                      { label: 'Member Since',  value: memberSince },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="border-b border-brand-border pb-4">
+                        <p className="text-[10px] tracking-[0.2em] uppercase text-brand-muted mb-1.5">{label}</p>
+                        <p className="text-sm font-medium text-brand-text">{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Address card placeholder */}
+            <div className="bg-white border border-brand-border">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-brand-border">
+                <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-brand-text">
+                  Saved Addresses
+                </p>
+                <button className="text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-text transition-colors underline underline-offset-2">
+                  Add New
                 </button>
-              ))}
+              </div>
+              <div className="px-6 py-10 text-center">
+                <MapPin size={28} className="text-brand-border mx-auto mb-3" strokeWidth={1.5} />
+                <p className="text-sm text-brand-muted">No saved addresses yet</p>
+                <p className="text-[11px] text-brand-muted mt-1">
+                  Addresses are saved automatically at checkout
+                </p>
+              </div>
+            </div>
+
+            {/* Danger zone */}
+            <div className="bg-white border border-brand-border px-6 py-5 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-brand-text">Sign out of your account</p>
+                <p className="text-[11px] text-brand-muted mt-0.5">You can sign back in at any time</p>
+              </div>
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3.5 text-xs font-medium transition-colors"
-                style={{ color: '#e32c2b', borderTop: '1px solid #e1e1e1' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#fff0f0')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                className="btn-brand-outline h-10 px-5 text-[11px]"
               >
-                <LogOut size={14} />
-                <span className="tracking-[0.05em]">Logout</span>
+                <LogOut size={13} /> Sign Out
               </button>
-            </nav>
+            </div>
           </div>
+        )}
 
-          {/* Content */}
-          <div className="md:col-span-3">
+        {/* ══ PREFERENCES ══ */}
+        {tab === 'preferences' && (
+          <div className="max-w-2xl space-y-5">
+            <h2 className="font-display text-2xl font-normal text-brand-text">Preferences</h2>
 
-            {/* ── Orders ─────────────────────────────── */}
-            {tab === 'orders' && (
-              <div>
-                <h2 className="text-xl font-bold mb-6" style={{ color: '#1c1c1c' }}>
-                  My Orders
-                </h2>
-                {loadingOrders ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="h-24 animate-pulse" style={{ backgroundColor: '#f5f5f5' }} />
-                    ))}
-                  </div>
-                ) : orders.length === 0 ? (
-                  <div className="p-12 text-center" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-                    <Package size={40} className="mx-auto mb-4" style={{ color: '#e1e1e1' }} />
-                    <h3 className="font-semibold mb-2 text-sm" style={{ color: '#1c1c1c' }}>No orders yet</h3>
-                    <p className="text-xs mb-6" style={{ color: '#9b9b9b' }}>Start shopping to see your orders here</p>
-                    <button
-                      onClick={() => router.push('/shop')}
-                      className="btn-craft px-6"
-                    >
-                      Shop Now
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {orders.map((order: any) => {
-                      const st = statusStyle[order.status] || statusStyle.pending;
-                      return (
-                        <div key={order.id} className="p-5 transition-colors"
-                          style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-                          <div className="flex items-start justify-between mb-3">
-                            <div>
-                              <p className="font-bold text-sm font-mono" style={{ color: '#1c1c1c' }}>{order.order_number}</p>
-                              <p className="text-[11px] mt-0.5" style={{ color: '#9b9b9b' }}>
-                                {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                              </p>
-                            </div>
-                            <span className="text-[10px] px-2.5 py-1 font-bold uppercase tracking-[0.1em] capitalize"
-                              style={{ backgroundColor: st.bg, color: st.color, border: `1px solid ${st.bg}` }}>
-                              {order.status}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-xs" style={{ color: '#363636' }}>{order.item_count} item{order.item_count > 1 ? 's' : ''}</p>
-                              <p className="font-bold text-base mt-0.5" style={{ color: '#1c1c1c' }}>₹{parseFloat(order.total).toLocaleString()}</p>
-                            </div>
-                            <button
-                              onClick={() => router.push(`/account/orders/${order.id}`)}
-                              className="text-[10px] font-bold tracking-[0.15em] uppercase flex items-center gap-1 transition-colors"
-                              style={{ color: '#9b9b9b' }}
-                              onMouseEnter={e => (e.currentTarget.style.color = '#1c1c1c')}
-                              onMouseLeave={e => (e.currentTarget.style.color = '#9b9b9b')}
-                            >
-                              View Details <ChevronRight size={12} />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+            {/* Communication channels */}
+            <div className="bg-white border border-brand-border">
+              <div className="px-6 py-4 border-b border-brand-border flex items-center gap-3">
+                <Bell size={14} className="text-brand-muted" strokeWidth={1.5} />
+                <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-brand-text">
+                  Communication Preferences
+                </p>
               </div>
-            )}
-
-            {/* ── Profile ──────────────────────────────── */}
-            {tab === 'profile' && (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold" style={{ color: '#1c1c1c' }}>
-                    My Profile
-                  </h2>
-                  {!profileEdit && (
-                    <button
-                      onClick={startEditProfile}
-                      className="text-[10px] font-bold tracking-[0.15em] uppercase px-4 py-2 transition-colors"
-                      style={{ border: '1px solid #e1e1e1', color: '#1c1c1c' }}
-                      onMouseEnter={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-                      onMouseLeave={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
-                    >
-                      Edit Profile
-                    </button>
-                  )}
-                </div>
-                <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-                  {profileEdit ? (
-                    <div className="space-y-5">
-                      <div>
-                        <label className="block text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#9b9b9b' }}>Full Name *</label>
-                        <input
-                          value={profileForm.name}
-                          onChange={e => setProfileForm(p => ({ ...p, name: e.target.value }))}
-                          className="w-full px-4 py-3 text-sm outline-none transition-colors"
-                          style={{ border: '1px solid #e1e1e1', color: '#1c1c1c', backgroundColor: '#ffffff' }}
-                          onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-                          onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
-                          placeholder="Your full name"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#9b9b9b' }}>Phone</label>
-                        <input
-                          value={profileForm.phone}
-                          onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))}
-                          className="w-full px-4 py-3 text-sm outline-none transition-colors"
-                          style={{ border: '1px solid #e1e1e1', color: '#1c1c1c', backgroundColor: '#ffffff' }}
-                          onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-                          onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
-                          placeholder="+91 98765 43210"
-                        />
-                      </div>
-                      <div style={{ borderTop: '1px solid #e1e1e1', paddingTop: '1rem' }}>
-                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#9b9b9b' }}>Email</p>
-                        <p className="text-sm" style={{ color: '#9b9b9b' }}>{user.email} <span className="text-[10px]">(cannot be changed)</span></p>
-                      </div>
-                      <div className="flex gap-3 pt-2">
-                        <button
-                          onClick={handleSaveProfile}
-                          disabled={savingProfile}
-                          className="flex items-center gap-2 px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] uppercase transition-colors disabled:opacity-50"
-                          style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
-                          onMouseEnter={e => { if (!savingProfile) (e.currentTarget.style.backgroundColor = '#363636'); }}
-                          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#1c1c1c')}
-                        >
-                          {savingProfile ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <Save size={11} />}
-                          Save Changes
-                        </button>
-                        <button
-                          onClick={() => setProfileEdit(false)}
-                          className="flex items-center gap-2 px-5 py-2.5 text-[10px] font-bold tracking-[0.15em] uppercase transition-colors"
-                          style={{ border: '1px solid #e1e1e1', color: '#363636' }}
-                          onMouseEnter={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-                          onMouseLeave={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
-                        >
-                          <X size={11} /> Cancel
-                        </button>
-                      </div>
+              <div className="px-6 py-5 divide-y divide-brand-border">
+                {[
+                  { key: 'emailMarketing', label: 'Email newsletters',    sub: 'Collections, offers, and brand stories' },
+                  { key: 'smsMarketing',   label: 'SMS notifications',    sub: 'Order updates and exclusive SMS offers' },
+                  { key: 'whatsapp',       label: 'WhatsApp messages',    sub: 'Order alerts and personalised picks' },
+                ].map(({ key, label, sub }) => (
+                  <label key={key} className="flex items-center justify-between py-4 cursor-pointer group">
+                    <div>
+                      <p className="text-sm text-brand-text group-hover:text-brand-secondary transition-colors">{label}</p>
+                      <p className="text-[11px] text-brand-muted mt-0.5">{sub}</p>
                     </div>
-                  ) : (
-                    <div className="grid sm:grid-cols-2 gap-6">
-                      {[
-                        { label: 'Full Name', value: user.name },
-                        { label: 'Email', value: user.email },
-                        { label: 'Phone', value: user.phone || 'Not set' },
-                        { label: 'Member Since', value: user.created_at ? new Date(user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : '—' },
-                      ].map(({ label, value }) => (
-                        <div key={label} style={{ borderBottom: '1px solid #e1e1e1', paddingBottom: '1rem' }}>
-                          <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5" style={{ color: '#9b9b9b' }}>{label}</p>
-                          <p className="text-sm font-medium" style={{ color: '#1c1c1c' }}>{value}</p>
-                        </div>
-                      ))}
+                    <input
+                      type="checkbox"
+                      checked={prefs[key as keyof typeof prefs]}
+                      onChange={e => setPrefs(p => ({ ...p, [key]: e.target.checked }))}
+                      className="w-4 h-4 accent-black flex-shrink-0 ml-4"
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Marketing interests */}
+            <div className="bg-white border border-brand-border">
+              <div className="px-6 py-4 border-b border-brand-border">
+                <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-brand-text">
+                  Interests
+                </p>
+                <p className="text-[11px] text-brand-muted mt-0.5">
+                  Tell us what you love to receive relevant recommendations
+                </p>
+              </div>
+              <div className="px-6 py-5 divide-y divide-brand-border">
+                {[
+                  { key: 'newArrivals',  label: 'New Arrivals',      sub: 'Be the first to know about new collections' },
+                  { key: 'offers',       label: 'Offers & Discounts', sub: 'Sale events and exclusive member pricing'   },
+                  { key: 'orderUpdates', label: 'Order Updates',      sub: 'Shipping and delivery notifications'        },
+                ].map(({ key, label, sub }) => (
+                  <label key={key} className="flex items-center justify-between py-4 cursor-pointer group">
+                    <div>
+                      <p className="text-sm text-brand-text group-hover:text-brand-secondary transition-colors">{label}</p>
+                      <p className="text-[11px] text-brand-muted mt-0.5">{sub}</p>
                     </div>
-                  )}
-                </div>
+                    <input
+                      type="checkbox"
+                      checked={prefs[key as keyof typeof prefs]}
+                      onChange={e => setPrefs(p => ({ ...p, [key]: e.target.checked }))}
+                      className="w-4 h-4 accent-black flex-shrink-0 ml-4"
+                    />
+                  </label>
+                ))}
               </div>
-            )}
+            </div>
 
-            {/* ── Wishlist ─────────────────────────────── */}
-            {tab === 'wishlist' && (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold" style={{ color: '#1c1c1c' }}>
-                    My Wishlist
-                    {wishlistProducts.length > 0 && (
-                      <span className="ml-2 text-sm font-normal" style={{ color: '#9b9b9b' }}>({wishlistProducts.length})</span>
-                    )}
-                  </h2>
-                  {wishlistProducts.length > 0 && (
-                    <button
-                      onClick={handleClearWishlist}
-                      className="text-[10px] font-bold tracking-[0.15em] uppercase flex items-center gap-1.5 px-3 py-1.5 transition-colors"
-                      style={{ color: '#e32c2b', border: '1px solid #f5c6c6' }}
-                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#fff0f0')}
-                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                    >
-                      <Trash2 size={11} /> Clear All
-                    </button>
-                  )}
-                </div>
-
-                {loadingWishlist ? (
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {[1, 2, 3, 4].map(i => (
-                      <div key={i} className="h-32 animate-pulse" style={{ backgroundColor: '#f5f5f5' }} />
-                    ))}
-                  </div>
-                ) : wishlistProducts.length === 0 ? (
-                  <div className="p-12 text-center" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-                    <Heart size={40} className="mx-auto mb-4" style={{ color: '#e1e1e1' }} />
-                    <h3 className="font-semibold text-sm mb-2" style={{ color: '#1c1c1c' }}>Your wishlist is empty</h3>
-                    <p className="text-xs mb-6" style={{ color: '#9b9b9b' }}>Save your favourite pieces here</p>
-                    <button
-                      onClick={() => router.push('/shop')}
-                      className="btn-craft px-6"
-                    >
-                      Browse Torans
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {wishlistProducts.map((product: any) => {
-                      const price = parseFloat(product.sale_price || product.base_price);
-                      const discount = product.sale_price
-                        ? Math.round((1 - product.sale_price / product.base_price) * 100) : 0;
-                      return (
-                        <div key={product.id} style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-                          <div className="flex gap-4 p-4">
-                            <div className="w-24 h-24 flex-shrink-0 overflow-hidden" style={{ backgroundColor: '#f5f5f5' }}>
-                              {product.primary_image
-                                ? <img src={product.primary_image} alt={product.name} className="w-full h-full object-cover" />
-                                : <div className="w-full h-full flex items-center justify-center" style={{ color: '#9b9b9b' }}><ShoppingBag size={24} /></div>
-                              }
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-sm truncate" style={{ color: '#1c1c1c' }}>{product.name}</p>
-                              {product.material && (
-                                <p className="text-[11px] mt-0.5" style={{ color: '#9b9b9b' }}>{product.material}</p>
-                              )}
-                              <div className="flex items-center gap-2 mt-2">
-                                <span className="font-bold text-sm" style={{ color: '#1c1c1c' }}>₹{price.toLocaleString()}</span>
-                                {discount > 0 && (
-                                  <span className="text-[10px] font-bold px-1.5 py-0.5"
-                                    style={{ backgroundColor: '#e32c2b', color: '#ffffff' }}>
-                                    -{discount}%
-                                  </span>
-                                )}
-                              </div>
-                              {product.stock === 0 && (
-                                <span className="text-[10px] font-bold mt-1 block" style={{ color: '#e32c2b' }}>Out of stock</span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex" style={{ borderTop: '1px solid #e1e1e1' }}>
-                            <a
-                              href={`/product/${product.slug}`}
-                              className="flex-1 py-2.5 text-[10px] font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-1.5 transition-colors"
-                              style={{ color: '#1c1c1c' }}
-                              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
-                              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                            >
-                              <ExternalLink size={11} /> View
-                            </a>
-                            <div style={{ width: 1, backgroundColor: '#e1e1e1' }} />
-                            <button
-                              onClick={() => handleRemoveFromWishlist(product.id)}
-                              className="flex-1 py-2.5 text-[10px] font-bold tracking-[0.15em] uppercase flex items-center justify-center gap-1.5 transition-colors"
-                              style={{ color: '#e32c2b' }}
-                              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#fff0f0')}
-                              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                            >
-                              <Trash2 size={11} /> Remove
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
+            <button
+              onClick={() => toast.success('Preferences saved!')}
+              className="btn-brand h-12 px-10 text-[11px]"
+            >
+              Save Preferences
+            </button>
           </div>
-        </div>
+        )}
+
       </div>
     </div>
   );

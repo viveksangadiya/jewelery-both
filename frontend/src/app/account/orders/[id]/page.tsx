@@ -4,21 +4,22 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, Package, Truck, CheckCircle, Clock, XCircle,
-  MapPin, CreditCard, RefreshCw, Copy, ExternalLink
+  MapPin, CreditCard, RefreshCw, Copy, ExternalLink,
 } from 'lucide-react';
+import Link from 'next/link';
 import { ordersApi } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/lib/store';
 import type { Order } from '@/types';
 
 const statusConfig: Record<string, { label: string; bg: string; color: string; icon: any; step: number }> = {
-  pending:    { label: 'Order Placed', bg: '#f5f5f5',  color: '#9b9b9b', icon: Clock,       step: 1 },
-  confirmed:  { label: 'Confirmed',    bg: '#f5f5f5',  color: '#1c1c1c', icon: CheckCircle, step: 2 },
-  processing: { label: 'Processing',   bg: '#f5f5f5',  color: '#363636', icon: RefreshCw,   step: 2 },
-  shipped:    { label: 'Shipped',      bg: '#f5f5f5',  color: '#1c1c1c', icon: Truck,       step: 3 },
-  delivered:  { label: 'Delivered',    bg: '#d4e3cb', color: '#347a07', icon: CheckCircle, step: 4 },
-  cancelled:  { label: 'Cancelled',    bg: '#fff0f0', color: '#e32c2b', icon: XCircle,     step: 0 },
-  refunded:   { label: 'Refunded',     bg: '#f5f5f5',  color: '#363636', icon: RefreshCw,   step: 0 },
+  pending:    { label: 'Order Placed', bg: '#F5F0EB', color: '#999',    icon: Clock,        step: 1 },
+  confirmed:  { label: 'Confirmed',   bg: '#F5F0EB', color: '#000',    icon: CheckCircle,  step: 2 },
+  processing: { label: 'Processing',  bg: '#F5F0EB', color: '#6B6B6B', icon: RefreshCw,    step: 2 },
+  shipped:    { label: 'Shipped',     bg: '#000',    color: '#fff',    icon: Truck,        step: 3 },
+  delivered:  { label: 'Delivered',   bg: '#000',    color: '#fff',    icon: CheckCircle,  step: 4 },
+  cancelled:  { label: 'Cancelled',   bg: '#fff0f0', color: '#b91c1c', icon: XCircle,      step: 0 },
+  refunded:   { label: 'Refunded',    bg: '#F5F0EB', color: '#6B6B6B', icon: RefreshCw,    step: 0 },
 };
 
 const paymentLabel: Record<string, string> = {
@@ -27,20 +28,21 @@ const paymentLabel: Record<string, string> = {
   upi: 'UPI',
 };
 
-const steps = [
-  { label: 'Order Placed', icon: Clock },
+const STEPS = [
+  { label: 'Order Placed', icon: Clock       },
   { label: 'Confirmed',    icon: CheckCircle },
-  { label: 'Shipped',      icon: Truck },
+  { label: 'Shipped',      icon: Truck       },
   { label: 'Delivered',    icon: CheckCircle },
 ];
 
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const user = useAuthStore(s => s.user);
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
+  const user   = useAuthStore(s => s.user);
+
+  const [order, setOrder]         = useState<Order | null>(null);
+  const [loading, setLoading]     = useState(true);
+  const [copied, setCopied]       = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
@@ -52,36 +54,34 @@ export default function OrderDetailPage() {
   }, [params.id, user]);
 
   if (loading) return (
-    <div className="min-h-screen py-10 bg-white">
+    <div className="min-h-screen bg-brand-bg py-10">
       <div className="max-w-3xl mx-auto px-4 space-y-4">
-        <div className="h-8 w-48 animate-pulse" style={{ backgroundColor: '#f5f5f5' }} />
-        <div className="h-32 animate-pulse" style={{ backgroundColor: '#f5f5f5' }} />
-        <div className="h-48 animate-pulse" style={{ backgroundColor: '#f5f5f5' }} />
-        <div className="h-40 animate-pulse" style={{ backgroundColor: '#f5f5f5' }} />
+        <div className="h-5 skeleton w-36 rounded" />
+        <div className="h-40 skeleton" />
+        <div className="h-48 skeleton" />
       </div>
     </div>
   );
 
   if (!order) return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center bg-brand-bg">
       <div className="text-center">
-        <Package size={40} className="mx-auto mb-4" style={{ color: '#e1e1e1' }} />
-        <h2 className="text-lg font-semibold mb-2" style={{ color: '#1c1c1c' }}>Order not found</h2>
-        <button
-          onClick={() => router.push('/account')}
-          className="btn-craft px-6 mt-4"
-        >
+        <Package size={36} className="text-brand-border mx-auto mb-4" strokeWidth={1.5} />
+        <h2 className="font-display text-xl text-brand-text mb-2">Order not found</h2>
+        <Link href="/account" className="btn-brand px-8 h-11 mt-4 inline-flex">
           Back to Account
-        </button>
+        </Link>
       </div>
     </div>
   );
 
-  const status = statusConfig[order.status] || statusConfig.pending;
+  const status     = statusConfig[order.status] || statusConfig.pending;
   const StatusIcon = status.icon;
   const isCancelled = ['cancelled', 'refunded'].includes(order.status);
-  const address = typeof order.shipping_address === 'string'
-    ? JSON.parse(order.shipping_address) : order.shipping_address;
+  const canCancel   = ['pending', 'confirmed'].includes(order.status);
+  const address     = typeof order.shipping_address === 'string'
+    ? JSON.parse(order.shipping_address)
+    : order.shipping_address;
 
   const copyOrder = () => {
     navigator.clipboard.writeText(order.order_number);
@@ -98,81 +98,81 @@ export default function OrderDetailPage() {
       setOrder(prev => prev ? { ...prev, status: 'cancelled' } : prev);
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Failed to cancel order');
-    } finally {
-      setCancelling(false);
-    }
+    } finally { setCancelling(false); }
   };
 
-  const canCancel = ['pending', 'confirmed'].includes(order.status);
-
   return (
-    <div className="min-h-screen py-10 bg-white">
+    <div className="min-h-screen bg-brand-bg py-10">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
 
-        <button
-          onClick={() => router.push('/account')}
-          className="flex items-center gap-2 text-xs mb-6 transition-colors"
-          style={{ color: '#9b9b9b' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#1c1c1c')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#9b9b9b')}
+        {/* Back link */}
+        <Link
+          href="/account"
+          className="inline-flex items-center gap-2 text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-text transition-colors mb-6"
         >
-          <ArrowLeft size={14} /> Back to Account
-        </button>
+          <ArrowLeft size={13} /> Back to Account
+        </Link>
 
-        {/* ── Header ─────────────────────────────── */}
-        <div className="p-6 mb-4" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-          <div className="flex items-start justify-between flex-wrap gap-4">
+        {/* ── Order header ── */}
+        <div className="bg-white border border-brand-border px-6 py-6 mb-4">
+          <div className="flex items-start justify-between flex-wrap gap-4 mb-5">
             <div>
-              <p className="text-[10px] tracking-[0.25em] uppercase font-bold mb-1" style={{ color: '#9b9b9b' }}>Order Number</p>
+              <p className="text-[10px] tracking-[0.25em] uppercase text-brand-muted mb-1">Order Number</p>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold font-mono" style={{ color: '#1c1c1c' }}>{order.order_number}</h1>
+                <h1 className="text-lg font-mono font-medium text-brand-text">{order.order_number}</h1>
                 <button
                   onClick={copyOrder}
-                  className="p-1.5 transition-colors"
-                  style={{ color: '#9b9b9b' }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  className="p-1.5 text-brand-muted hover:text-brand-text hover:bg-brand-hover transition-colors"
+                  title="Copy order number"
                 >
-                  {copied ? <CheckCircle size={14} style={{ color: '#347a07' }} /> : <Copy size={14} />}
+                  {copied
+                    ? <CheckCircle size={13} className="text-green-700" />
+                    : <Copy size={13} />
+                  }
                 </button>
               </div>
-              <p className="text-xs mt-1" style={{ color: '#9b9b9b' }}>
+              <p className="text-[11px] text-brand-muted mt-0.5">
                 Placed on {new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             </div>
-            <span className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase"
-              style={{ backgroundColor: status.bg, color: status.color, border: `1px solid ${status.bg}` }}>
-              <StatusIcon size={13} /> {status.label}
+            <span
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium tracking-[0.15em] uppercase"
+              style={{ backgroundColor: status.bg, color: status.color }}
+            >
+              <StatusIcon size={12} /> {status.label}
             </span>
           </div>
 
           {/* Progress tracker */}
           {!isCancelled && (
-            <div className="mt-6 pt-6" style={{ borderTop: '1px solid #e1e1e1' }}>
+            <div className="border-t border-brand-border pt-5">
               <div className="flex items-start justify-between relative">
-                <div className="absolute top-4 left-4 right-4 h-px" style={{ backgroundColor: '#e1e1e1' }} />
-                <div className="absolute top-4 left-4 h-px transition-all duration-500"
-                  style={{
-                    backgroundColor: '#1c1c1c',
-                    width: `calc(${((status.step - 1) / (steps.length - 1)) * 100}% - 2rem)`,
-                  }} />
-                {steps.map((step, i) => {
-                  const done = status.step > i + 1;
+                <div className="absolute top-4 left-4 right-4 h-px bg-brand-border" />
+                <div
+                  className="absolute top-4 left-4 h-px bg-brand-text transition-all duration-500"
+                  style={{ width: `calc(${((status.step - 1) / (STEPS.length - 1)) * 100}% - 2rem)` }}
+                />
+                {STEPS.map((s, i) => {
+                  const done   = status.step > i + 1;
                   const active = status.step === i + 1;
-                  const StepIcon = step.icon;
+                  const Icon   = s.icon;
                   return (
-                    <div key={step.label} className="flex flex-col items-center gap-2 z-10 flex-1">
-                      <div className="w-8 h-8 flex items-center justify-center transition-all"
+                    <div key={s.label} className="flex flex-col items-center gap-2 z-10 flex-1">
+                      <div
+                        className="w-8 h-8 flex items-center justify-center transition-all"
                         style={{
-                          backgroundColor: done ? '#1c1c1c' : '#ffffff',
-                          border: `2px solid ${done ? '#1c1c1c' : active ? '#1c1c1c' : '#e1e1e1'}`,
-                          color: done ? '#ffffff' : active ? '#1c1c1c' : '#e1e1e1',
-                        }}>
-                        <StepIcon size={13} />
+                          backgroundColor: done ? '#000' : '#fff',
+                          border: `2px solid ${done ? '#000' : active ? '#000' : '#E0D9D0'}`,
+                          color: done ? '#fff' : active ? '#000' : '#E0D9D0',
+                        }}
+                      >
+                        <Icon size={13} />
                       </div>
-                      <span className="text-[10px] font-medium text-center leading-tight"
-                        style={{ color: done || active ? '#1c1c1c' : '#9b9b9b' }}>
-                        {step.label}
+                      <span
+                        className="text-[9px] font-medium text-center leading-tight tracking-[0.05em] uppercase"
+                        style={{ color: done || active ? '#000' : '#999' }}
+                      >
+                        {s.label}
                       </span>
                     </div>
                   );
@@ -182,8 +182,8 @@ export default function OrderDetailPage() {
           )}
 
           {isCancelled && (
-            <div className="mt-4 pt-4" style={{ borderTop: '1px solid #e1e1e1' }}>
-              <p className="text-sm font-medium" style={{ color: '#e32c2b' }}>
+            <div className="border-t border-brand-border pt-4 mt-1">
+              <p className="text-sm text-red-600 font-medium">
                 This order has been {order.status}.
                 {order.status === 'refunded' && ' Your refund will be processed in 5–7 business days.'}
               </p>
@@ -191,154 +191,166 @@ export default function OrderDetailPage() {
           )}
 
           {canCancel && (
-            <div className="mt-4 pt-4" style={{ borderTop: '1px solid #e1e1e1' }}>
+            <div className="border-t border-brand-border pt-4 mt-4 flex items-center justify-between">
+              <p className="text-[11px] text-brand-muted">Orders can be cancelled before they are shipped.</p>
               <button
                 onClick={handleCancel}
                 disabled={cancelling}
-                className="text-[10px] font-bold tracking-[0.15em] uppercase px-4 py-2 transition-colors disabled:opacity-50"
-                style={{ border: '1px solid #f5c6c6', color: '#e32c2b' }}
-                onMouseEnter={e => { if (!cancelling) (e.currentTarget as HTMLElement).style.backgroundColor = '#fff0f0'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
+                className="text-[10px] tracking-[0.15em] uppercase px-4 py-2 border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
               >
-                {cancelling ? 'Cancelling...' : 'Cancel Order'}
+                {cancelling ? 'Cancelling…' : 'Cancel Order'}
               </button>
-              <p className="text-[10px] mt-2" style={{ color: '#9b9b9b' }}>Orders can be cancelled before they are shipped.</p>
             </div>
           )}
         </div>
 
-        {/* ── Items ──────────────────────────────── */}
-        <div className="p-6 mb-4" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-          <h2 className="font-semibold text-sm mb-4 flex items-center gap-2" style={{ color: '#1c1c1c' }}>
-            <Package size={15} style={{ color: '#9b9b9b' }} />
+        {/* ── Items ── */}
+        <div className="bg-white border border-brand-border px-6 py-6 mb-4">
+          <h2 className="text-[11px] font-medium tracking-[0.2em] uppercase text-brand-text mb-5 flex items-center gap-2">
+            <Package size={13} className="text-brand-muted" />
             Items Ordered ({order.items?.length || 0})
           </h2>
-          <div className="space-y-4">
-            {order.items?.map((item: any) => (
-              <div key={item.id} className="flex gap-4 py-3" style={{ borderBottom: '1px solid #e1e1e1' }}>
-                <div className="w-16 h-16 flex-shrink-0 overflow-hidden" style={{ backgroundColor: '#f5f5f5' }}>
+          <div className="space-y-0">
+            {order.items?.map((item: any, idx: number) => (
+              <div
+                key={item.id}
+                className="flex gap-4 py-4"
+                style={{ borderBottom: idx < (order.items?.length ?? 0) - 1 ? '1px solid #E0D9D0' : 'none' }}
+              >
+                <div className="w-16 h-20 flex-shrink-0 bg-brand-hover overflow-hidden">
                   {item.product_image
                     ? <img src={item.product_image} alt={item.product_name} className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center" style={{ color: '#9b9b9b' }}><Package size={20} /></div>
+                    : <div className="w-full h-full flex items-center justify-center">
+                        <Package size={18} className="text-brand-muted" />
+                      </div>
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm" style={{ color: '#1c1c1c' }}>{item.product_name}</p>
+                  <p className="text-sm font-medium text-brand-text">{item.product_name}</p>
                   {item.size_label && (
-                    <p className="text-xs mt-0.5" style={{ color: '#363636' }}>Size: <span className="font-medium">{item.size_label}</span></p>
+                    <p className="text-[11px] text-brand-muted mt-0.5">Size: {item.size_label}</p>
                   )}
                   {item.custom_text && (
-                    <p className="text-xs mt-0.5" style={{ color: '#363636' }}>Note: <span className="font-medium">"{item.custom_text}"</span></p>
+                    <p className="text-[11px] text-brand-muted mt-0.5">Note: "{item.custom_text}"</p>
                   )}
-                  <p className="text-xs mt-1" style={{ color: '#9b9b9b' }}>Qty: {item.quantity}</p>
+                  <p className="text-[11px] text-brand-muted mt-0.5">Qty: {item.quantity}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="font-semibold text-sm" style={{ color: '#1c1c1c' }}>₹{(parseFloat(item.price) * item.quantity).toLocaleString()}</p>
-                  <p className="text-[11px] mt-0.5" style={{ color: '#9b9b9b' }}>₹{parseFloat(item.price).toLocaleString()} each</p>
+                  <p className="text-sm font-medium text-brand-text">
+                    ₹{(parseFloat(item.price) * item.quantity).toLocaleString('en-IN')}
+                  </p>
+                  <p className="text-[10px] text-brand-muted mt-0.5">
+                    ₹{parseFloat(item.price).toLocaleString('en-IN')} each
+                  </p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Price summary */}
-          <div className="mt-4 pt-4 space-y-2" style={{ borderTop: '1px solid #e1e1e1' }}>
-            <div className="flex justify-between text-sm" style={{ color: '#363636' }}>
-              <span>Subtotal</span><span>₹{parseFloat(String(order.subtotal)).toLocaleString()}</span>
+          {/* Price breakdown */}
+          <div className="border-t border-brand-border pt-4 mt-4 space-y-2">
+            <div className="flex justify-between text-sm text-brand-secondary">
+              <span>Subtotal</span>
+              <span>₹{parseFloat(String(order.subtotal)).toLocaleString('en-IN')}</span>
             </div>
             {parseFloat(String(order.discount)) > 0 && (
-              <div className="flex justify-between text-sm" style={{ color: '#1c1c1c' }}>
-                <span>Discount</span><span>−₹{parseFloat(String(order.discount)).toLocaleString()}</span>
+              <div className="flex justify-between text-sm text-green-700">
+                <span>Discount</span>
+                <span>−₹{parseFloat(String(order.discount)).toLocaleString('en-IN')}</span>
               </div>
             )}
-            <div className="flex justify-between text-sm" style={{ color: '#363636' }}>
+            <div className="flex justify-between text-sm text-brand-secondary">
               <span>Shipping</span>
               <span>
                 {parseFloat(String(order.shipping_charge)) === 0
-                  ? <span className="font-semibold" style={{ color: '#347a07' }}>Free</span>
-                  : `₹${parseFloat(String(order.shipping_charge)).toLocaleString()}`
+                  ? <span className="text-green-700 font-medium">Free</span>
+                  : `₹${parseFloat(String(order.shipping_charge)).toLocaleString('en-IN')}`
                 }
               </span>
             </div>
-            <div className="flex justify-between text-base font-bold pt-2" style={{ borderTop: '1px solid #e1e1e1', color: '#1c1c1c' }}>
-              <span>Total</span>
-              <span>₹{parseFloat(String(order.total)).toLocaleString()}</span>
+            <div className="flex justify-between text-sm font-medium text-brand-text border-t border-brand-border pt-3 mt-1">
+              <span className="text-[10px] tracking-[0.15em] uppercase">Total</span>
+              <span className="text-base">₹{parseFloat(String(order.total)).toLocaleString('en-IN')}</span>
             </div>
           </div>
         </div>
 
-        {/* ── Address + Payment ──────────────────── */}
+        {/* ── Address + Payment ── */}
         <div className="grid sm:grid-cols-2 gap-4 mb-4">
-          <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-            <h2 className="font-semibold text-sm mb-4 flex items-center gap-2" style={{ color: '#1c1c1c' }}>
-              <MapPin size={14} style={{ color: '#9b9b9b' }} /> Delivery Address
+          <div className="bg-white border border-brand-border px-6 py-5">
+            <h2 className="text-[11px] font-medium tracking-[0.2em] uppercase text-brand-text mb-4 flex items-center gap-2">
+              <MapPin size={13} className="text-brand-muted" /> Delivery Address
             </h2>
             {address ? (
-              <div className="text-xs space-y-1 leading-relaxed" style={{ color: '#363636' }}>
-                <p className="font-semibold" style={{ color: '#1c1c1c' }}>{address.name}</p>
+              <div className="text-xs space-y-1 leading-relaxed text-brand-secondary">
+                <p className="font-medium text-brand-text">{address.name}</p>
                 <p>{address.address_line1}</p>
                 {address.address_line2 && <p>{address.address_line2}</p>}
                 <p>{address.city}, {address.state} – {address.pincode}</p>
                 <p>{address.country || 'India'}</p>
-                {address.phone && <p className="mt-2" style={{ color: '#9b9b9b' }}>📞 {address.phone}</p>}
+                {address.phone && <p className="mt-2 text-brand-muted">{address.phone}</p>}
               </div>
-            ) : <p className="text-xs" style={{ color: '#9b9b9b' }}>Address not available</p>}
+            ) : (
+              <p className="text-xs text-brand-muted">Address not available</p>
+            )}
           </div>
 
-          <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-            <h2 className="font-semibold text-sm mb-4 flex items-center gap-2" style={{ color: '#1c1c1c' }}>
-              <CreditCard size={14} style={{ color: '#9b9b9b' }} /> Payment
+          <div className="bg-white border border-brand-border px-6 py-5">
+            <h2 className="text-[11px] font-medium tracking-[0.2em] uppercase text-brand-text mb-4 flex items-center gap-2">
+              <CreditCard size={13} className="text-brand-muted" /> Payment
             </h2>
-            <div className="text-sm space-y-3">
+            <div className="space-y-3">
               <div>
-                <p className="text-[10px] tracking-[0.2em] uppercase font-bold mb-1" style={{ color: '#9b9b9b' }}>Method</p>
-                <p className="font-medium text-sm" style={{ color: '#1c1c1c' }}>{paymentLabel[order.payment_method || ''] || order.payment_method || '—'}</p>
+                <p className="text-[10px] tracking-[0.2em] uppercase text-brand-muted mb-1">Method</p>
+                <p className="text-sm font-medium text-brand-text">
+                  {paymentLabel[order.payment_method || ''] || order.payment_method || '—'}
+                </p>
               </div>
               <div>
-                <p className="text-[10px] tracking-[0.2em] uppercase font-bold mb-1" style={{ color: '#9b9b9b' }}>Status</p>
-                <span className="text-[10px] font-bold tracking-[0.1em] uppercase px-2.5 py-1 capitalize"
+                <p className="text-[10px] tracking-[0.2em] uppercase text-brand-muted mb-1">Status</p>
+                <span
+                  className="text-[9px] font-medium tracking-[0.1em] uppercase px-2.5 py-1 capitalize"
                   style={{
-                    backgroundColor: order.payment_status === 'paid' ? '#d4e3cb' : order.payment_status === 'failed' ? '#fff0f0' : '#f5f5f5',
-                    color: order.payment_status === 'paid' ? '#347a07' : order.payment_status === 'failed' ? '#e32c2b' : '#9b9b9b',
-                  }}>
+                    backgroundColor: order.payment_status === 'paid' ? '#000' : order.payment_status === 'failed' ? '#fff0f0' : '#F5F0EB',
+                    color: order.payment_status === 'paid' ? '#fff' : order.payment_status === 'failed' ? '#b91c1c' : '#999',
+                  }}
+                >
                   {order.payment_status}
                 </span>
               </div>
               {order.payment_id && (
                 <div>
-                  <p className="text-[10px] tracking-[0.2em] uppercase font-bold mb-1" style={{ color: '#9b9b9b' }}>Transaction ID</p>
-                  <p className="font-mono text-xs break-all" style={{ color: '#363636' }}>{order.payment_id}</p>
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-brand-muted mb-1">Transaction ID</p>
+                  <p className="font-mono text-[11px] break-all text-brand-secondary">{order.payment_id}</p>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* ── Track banner ────────────────────────── */}
+        {/* Track banner */}
         {order.status === 'shipped' && (
-          <div className="p-5 flex items-center justify-between gap-4 mb-4"
-            style={{ border: '1px solid #e1e1e1', backgroundColor: '#f5f5f5' }}>
+          <div className="bg-white border border-brand-border px-5 py-4 flex items-center justify-between gap-4 mb-4">
             <div>
-              <p className="font-semibold text-sm flex items-center gap-2" style={{ color: '#1c1c1c' }}>
-                <Truck size={15} /> Your order is on the way!
+              <p className="text-sm font-medium text-brand-text flex items-center gap-2">
+                <Truck size={14} /> Your order is on its way
               </p>
-              <p className="text-xs mt-1" style={{ color: '#363636' }}>Track your shipment for live updates</p>
+              <p className="text-[11px] text-brand-muted mt-0.5">Track your shipment for live updates</p>
             </div>
             <a
               href={`/track-order?order=${order.order_number}`}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 text-[10px] font-bold tracking-[0.15em] uppercase transition-colors"
-              style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#363636')}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#1c1c1c')}
+              className="btn-brand h-10 px-5 text-[10px] flex-shrink-0"
             >
-              Track <ExternalLink size={12} />
+              Track <ExternalLink size={11} />
             </a>
           </div>
         )}
 
+        {/* Notes */}
         {order.notes && (
-          <div className="p-5" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-            <p className="text-[10px] tracking-[0.25em] uppercase font-bold mb-1.5" style={{ color: '#9b9b9b' }}>Order Notes</p>
-            <p className="text-sm" style={{ color: '#363636' }}>"{order.notes}"</p>
+          <div className="bg-white border border-brand-border px-6 py-5">
+            <p className="text-[10px] tracking-[0.25em] uppercase text-brand-muted mb-2">Order Notes</p>
+            <p className="text-sm text-brand-secondary">"{order.notes}"</p>
           </div>
         )}
       </div>

@@ -1,46 +1,31 @@
-'use client';
+import type { Metadata, Viewport } from 'next';
+import { Playfair_Display } from 'next/font/google';
 import './globals.css';
-import { usePathname } from 'next/navigation';
-import { Toaster } from 'react-hot-toast';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import CartDrawer from '@/components/layout/CartDrawer';
-import AnnouncementBar from '@/components/layout/AnnouncementBar';
+import ClientLayout from '@/components/layout/ClientLayout';
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
+
+export const metadata: Metadata = {
+  title: 'HastKala — Handmade Jewelry & Craft Decor',
+  description: 'Handcrafted jewelry, torans, wall hangings & festive decor made by artisans across India.',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#F5F0EB',
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isAdmin  = pathname?.startsWith('/admin');
-
   return (
-    <html lang="en">
-      <head>
-        <title>HastKala — Handmade Torans &amp; Craft Decor</title>
-        <meta name="description" content="Handcrafted torans, wall hangings & festive decor made by artisans across India. Shop traditional, wedding & festival collections." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#ffffff" />
-      </head>
+    <html lang="en" className={playfair.variable}>
       <body>
-        {!isAdmin && <AnnouncementBar />}
-        {!isAdmin && <Navbar />}
-        <main>{children}</main>
-        {!isAdmin && <Footer />}
-        {!isAdmin && <CartDrawer />}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: {
-              fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-              fontSize: '13px',
-              backgroundColor: '#ffffff',
-              color: '#1c1c1c',
-              border: '1px solid #e1e1e1',
-              borderRadius: '0px',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-            },
-            success: { iconTheme: { primary: '#347a07', secondary: '#ffffff' } },
-            error:   { iconTheme: { primary: '#e32c2b', secondary: '#ffffff' } },
-          }}
-        />
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

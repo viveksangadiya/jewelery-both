@@ -1,7 +1,8 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState } from 'react';
-import { Search, Package, Truck, CheckCircle, Clock, XCircle, MapPin, ExternalLink } from 'lucide-react';
+import { Search, Package, Truck, CheckCircle, Clock, XCircle, MapPin, ExternalLink, Mail, RefreshCw, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import api from '@/lib/api';
 import type { OrderStatus } from '@/types';
 
@@ -48,6 +49,13 @@ const statusSteps: { key: OrderStatus; label: string; icon: React.ComponentType<
 
 const statusOrder: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
 
+const quickLinks = [
+  { href: '/contact',  icon: Mail,       label: 'Contact Us',   desc: 'Get help from our team' },
+  { href: '/returns',  icon: RefreshCw,  label: 'Returns',      desc: 'Initiate a return or exchange' },
+  { href: '/shipping', icon: Truck,      label: 'Shipping Info', desc: 'Delivery times & policies' },
+  { href: '/account',  icon: Package,    label: 'My Orders',    desc: 'View all your orders' },
+];
+
 export default function TrackOrderPage(): JSX.Element {
   const [orderNumber, setOrderNumber] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -78,26 +86,25 @@ export default function TrackOrderPage(): JSX.Element {
   const shipmentInfo = tracking?.tracking?.tracking_data?.shipment_track?.[0];
 
   return (
-    <div className="min-h-screen py-14 bg-white">
+    <div className="min-h-screen py-14 bg-brand-bg">
       <div className="max-w-2xl mx-auto px-4">
 
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="w-16 h-16 flex items-center justify-center mx-auto mb-5"
-            style={{ backgroundColor: '#f5f5f5', border: '1px solid #e1e1e1' }}>
-            <Truck size={28} style={{ color: '#1c1c1c' }} />
+          <div className="w-16 h-16 flex items-center justify-center mx-auto mb-5 bg-brand-hover border border-brand-border">
+            <Truck size={28} className="text-brand-text" />
           </div>
-          <h1 className="text-3xl font-bold mb-2" style={{ color: '#1c1c1c' }}>
+          <h1 className="font-display text-3xl font-semibold mb-2 text-brand-text">
             Track Your Order
           </h1>
-          <p className="text-sm" style={{ color: '#363636' }}>
+          <p className="text-sm text-brand-secondary">
             Enter your order number to get live shipping updates
           </p>
         </div>
 
         {/* Search box */}
-        <div className="p-6 mb-5" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-          <p className="text-[10px] tracking-[0.2em] uppercase font-bold mb-2" style={{ color: '#9b9b9b' }}>Order Number</p>
+        <div className="p-6 mb-5 bg-white border border-brand-border">
+          <p className="text-[10px] tracking-[0.2em] uppercase font-medium mb-2 text-brand-muted">Order Number</p>
           <div className="flex gap-0">
             <input
               type="text"
@@ -105,18 +112,12 @@ export default function TrackOrderPage(): JSX.Element {
               onChange={(e) => setOrderNumber(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleTrack()}
               placeholder="e.g. HK-ABC123-XY"
-              className="flex-1 px-4 py-3 text-sm outline-none font-mono transition-colors"
-              style={{ border: '1px solid #e1e1e1', borderRight: 'none', color: '#1c1c1c', backgroundColor: '#ffffff' }}
-              onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-              onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
+              className="flex-1 px-4 py-3 text-sm outline-none font-mono transition-colors border border-brand-border border-r-0 bg-white text-brand-text placeholder:text-brand-muted focus:border-brand-text"
             />
             <button
               onClick={handleTrack}
               disabled={loading || !orderNumber.trim()}
-              className="px-5 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 flex-shrink-0 transition-colors disabled:opacity-50"
-              style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
-              onMouseEnter={e => { if (!loading && orderNumber.trim()) (e.currentTarget.style.backgroundColor = '#363636'); }}
-              onMouseLeave={e => { (e.currentTarget.style.backgroundColor = '#1c1c1c'); }}
+              className="btn-brand px-5 flex-shrink-0 disabled:opacity-50"
             >
               {loading
                 ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -125,7 +126,7 @@ export default function TrackOrderPage(): JSX.Element {
             </button>
           </div>
           {error && (
-            <p className="mt-3 text-xs flex items-center gap-1.5" style={{ color: '#e32c2b' }}>
+            <p className="mt-3 text-xs flex items-center gap-1.5 text-red-600">
               <XCircle size={13} /> {error}
             </p>
           )}
@@ -136,45 +137,45 @@ export default function TrackOrderPage(): JSX.Element {
           <div className="space-y-4">
 
             {/* Order summary */}
-            <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
+            <div className="p-6 bg-white border border-brand-border">
               <div className="flex items-start justify-between mb-5">
                 <div>
-                  <p className="text-[10px] tracking-[0.25em] uppercase font-bold mb-1" style={{ color: '#9b9b9b' }}>Order Number</p>
-                  <p className="font-mono font-bold text-lg" style={{ color: '#1c1c1c' }}>{tracking.order_number}</p>
+                  <p className="text-[10px] tracking-[0.25em] uppercase font-medium mb-1 text-brand-muted">Order Number</p>
+                  <p className="font-mono font-bold text-lg text-brand-text">{tracking.order_number}</p>
                 </div>
-                <span className="text-[10px] px-2.5 py-1 font-bold tracking-[0.15em] uppercase capitalize"
+                <span className="text-[10px] px-2.5 py-1 font-medium tracking-[0.15em] uppercase capitalize border"
                   style={{
-                    backgroundColor: isCancelled ? '#fff0f0' : tracking.status === 'delivered' ? '#d4e3cb' : '#f5f5f5',
-                    color: isCancelled ? '#e32c2b' : '#1c1c1c',
-                    border: `1px solid ${isCancelled ? '#f5c6c6' : '#e1e1e1'}`,
+                    backgroundColor: isCancelled ? '#fff0f0' : tracking.status === 'delivered' ? '#d4e3cb' : '#EDE8E2',
+                    color: isCancelled ? '#e32c2b' : '#000',
+                    borderColor: isCancelled ? '#f5c6c6' : '#E0D9D0',
                   }}>
                   {tracking.status}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div style={{ borderBottom: '1px solid #e1e1e1', paddingBottom: '0.75rem' }}>
-                  <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#9b9b9b' }}>Order Date</p>
-                  <p className="font-medium text-sm" style={{ color: '#1c1c1c' }}>
+                <div className="border-b border-brand-border pb-3">
+                  <p className="text-[10px] tracking-[0.15em] uppercase font-medium mb-0.5 text-brand-muted">Order Date</p>
+                  <p className="font-medium text-sm text-brand-text">
                     {new Date(tracking.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
-                <div style={{ borderBottom: '1px solid #e1e1e1', paddingBottom: '0.75rem' }}>
-                  <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#9b9b9b' }}>Payment</p>
-                  <p className="font-medium text-sm capitalize" style={{ color: tracking.payment_status === 'paid' ? '#347a07' : '#9b9b9b' }}>
+                <div className="border-b border-brand-border pb-3">
+                  <p className="text-[10px] tracking-[0.15em] uppercase font-medium mb-0.5 text-brand-muted">Payment</p>
+                  <p className={`font-medium text-sm capitalize ${tracking.payment_status === 'paid' ? 'text-green-700' : 'text-brand-muted'}`}>
                     {tracking.payment_status}
                   </p>
                 </div>
                 {tracking.courier_name && (
                   <div>
-                    <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#9b9b9b' }}>Courier</p>
-                    <p className="font-medium text-sm" style={{ color: '#1c1c1c' }}>{tracking.courier_name}</p>
+                    <p className="text-[10px] tracking-[0.15em] uppercase font-medium mb-0.5 text-brand-muted">Courier</p>
+                    <p className="font-medium text-sm text-brand-text">{tracking.courier_name}</p>
                   </div>
                 )}
                 {tracking.awb_code && (
                   <div>
-                    <p className="text-[10px] tracking-[0.15em] uppercase font-bold mb-0.5" style={{ color: '#9b9b9b' }}>AWB Number</p>
-                    <p className="font-mono font-medium text-sm" style={{ color: '#1c1c1c' }}>{tracking.awb_code}</p>
+                    <p className="text-[10px] tracking-[0.15em] uppercase font-medium mb-0.5 text-brand-muted">AWB Number</p>
+                    <p className="font-mono font-medium text-sm text-brand-text">{tracking.awb_code}</p>
                   </div>
                 )}
               </div>
@@ -184,18 +185,16 @@ export default function TrackOrderPage(): JSX.Element {
                   href={tracking.tracking_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 flex items-center gap-2 text-xs font-bold tracking-[0.1em] uppercase hover:underline"
-                  style={{ color: '#363636' }}
+                  className="mt-4 flex items-center gap-2 text-xs font-medium tracking-[0.1em] uppercase hover:underline text-brand-secondary"
                 >
                   <ExternalLink size={12} /> Track on courier website
                 </a>
               )}
 
               {shipmentInfo?.eta && (
-                <div className="mt-4 px-4 py-3 flex items-center gap-2 text-sm"
-                  style={{ backgroundColor: '#d4e3cb', border: '1px solid #347a07' }}>
-                  <Clock size={14} style={{ color: '#347a07' }} />
-                  <span style={{ color: '#1c1c1c' }}>
+                <div className="mt-4 px-4 py-3 flex items-center gap-2 text-sm bg-green-50 border border-green-200">
+                  <Clock size={14} className="text-green-700" />
+                  <span className="text-brand-text">
                     Estimated delivery: <strong>{shipmentInfo.eta}</strong>
                   </span>
                 </div>
@@ -204,16 +203,15 @@ export default function TrackOrderPage(): JSX.Element {
 
             {/* Progress steps */}
             {!isCancelled && (
-              <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-                <h3 className="text-[10px] tracking-[0.25em] uppercase font-bold mb-6" style={{ color: '#9b9b9b' }}>
+              <div className="p-6 bg-white border border-brand-border">
+                <h3 className="text-[10px] tracking-[0.25em] uppercase font-medium mb-6 text-brand-muted">
                   Shipment Progress
                 </h3>
                 <div className="relative">
-                  <div className="absolute top-4 left-5 right-5 h-px" style={{ backgroundColor: '#e1e1e1' }} />
+                  <div className="absolute top-4 left-5 right-5 h-px bg-brand-border" />
                   <div
-                    className="absolute top-4 left-5 h-px transition-all duration-500"
+                    className="absolute top-4 left-5 h-px bg-brand-text transition-all duration-500"
                     style={{
-                      backgroundColor: '#1c1c1c',
                       width: currentStepIndex >= 0
                         ? `calc(${(currentStepIndex / (statusSteps.length - 1)) * 100}% - 2.5rem)`
                         : '0%',
@@ -228,16 +226,16 @@ export default function TrackOrderPage(): JSX.Element {
                         <div key={step.key} className="flex flex-col items-center gap-2 flex-1">
                           <div className="w-9 h-9 flex items-center justify-center z-10 transition-all"
                             style={{
-                              backgroundColor: done ? '#1c1c1c' : '#ffffff',
-                              border: `2px solid ${done ? '#1c1c1c' : active ? '#1c1c1c' : '#e1e1e1'}`,
-                              color: done ? '#ffffff' : active ? '#1c1c1c' : '#e1e1e1',
-                              outline: active ? '3px solid #e1e1e1' : 'none',
+                              backgroundColor: done ? '#000' : '#fff',
+                              border: `2px solid ${done ? '#000' : active ? '#000' : '#E0D9D0'}`,
+                              color: done ? '#fff' : active ? '#000' : '#E0D9D0',
+                              outline: active ? '3px solid #E0D9D0' : 'none',
                               outlineOffset: '2px',
                             }}>
                             <Icon size={14} />
                           </div>
-                          <p className="text-[10px] font-bold tracking-[0.05em] text-center leading-tight uppercase"
-                            style={{ color: done ? '#1c1c1c' : '#9b9b9b' }}>
+                          <p className="text-[10px] font-medium tracking-[0.05em] text-center leading-tight uppercase"
+                            style={{ color: done ? '#000' : '#999' }}>
                             {step.label}
                           </p>
                         </div>
@@ -250,8 +248,8 @@ export default function TrackOrderPage(): JSX.Element {
 
             {/* Live activity timeline */}
             {activities.length > 0 && (
-              <div className="p-6" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-                <h3 className="text-[10px] tracking-[0.25em] uppercase font-bold mb-5" style={{ color: '#9b9b9b' }}>
+              <div className="p-6 bg-white border border-brand-border">
+                <h3 className="text-[10px] tracking-[0.25em] uppercase font-medium mb-5 text-brand-muted">
                   Tracking Activity
                 </h3>
                 <div className="space-y-0">
@@ -259,21 +257,21 @@ export default function TrackOrderPage(): JSX.Element {
                     <div key={idx} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div className="w-2.5 h-2.5 flex-shrink-0 mt-1.5"
-                          style={{ backgroundColor: idx === 0 ? '#1c1c1c' : '#e1e1e1' }} />
+                          style={{ backgroundColor: idx === 0 ? '#000' : '#E0D9D0' }} />
                         {idx < Math.min(activities.length, 8) - 1 && (
-                          <div className="w-px flex-1 my-1" style={{ backgroundColor: '#e1e1e1' }} />
+                          <div className="w-px flex-1 my-1 bg-brand-border" />
                         )}
                       </div>
                       <div className="pb-4 flex-1">
-                        <p className="text-sm font-semibold" style={{ color: idx === 0 ? '#1c1c1c' : '#363636' }}>
+                        <p className={`text-sm font-semibold ${idx === 0 ? 'text-brand-text' : 'text-brand-secondary'}`}>
                           {activity.sr_status_label || activity.activity}
                         </p>
                         {activity.location && (
-                          <p className="text-xs flex items-center gap-1 mt-0.5" style={{ color: '#9b9b9b' }}>
+                          <p className="text-xs flex items-center gap-1 mt-0.5 text-brand-muted">
                             <MapPin size={10} /> {activity.location}
                           </p>
                         )}
-                        <p className="text-xs mt-0.5" style={{ color: '#9b9b9b' }}>{activity.date}</p>
+                        <p className="text-xs mt-0.5 text-brand-muted">{activity.date}</p>
                       </div>
                     </div>
                   ))}
@@ -283,10 +281,10 @@ export default function TrackOrderPage(): JSX.Element {
 
             {/* Not yet shipped */}
             {!tracking.shipment_id && !isCancelled && (
-              <div className="p-5 text-center" style={{ border: '1px solid #e1e1e1', backgroundColor: '#f5f5f5' }}>
-                <Package size={28} className="mx-auto mb-2" style={{ color: '#9b9b9b' }} />
-                <p className="text-sm font-bold tracking-[0.1em] uppercase" style={{ color: '#1c1c1c' }}>Your order is being prepared</p>
-                <p className="text-xs mt-1" style={{ color: '#363636' }}>
+              <div className="p-5 text-center bg-brand-hover border border-brand-border">
+                <Package size={28} className="mx-auto mb-2 text-brand-muted" />
+                <p className="text-sm font-medium tracking-[0.1em] uppercase text-brand-text">Your order is being prepared</p>
+                <p className="text-xs mt-1 text-brand-secondary">
                   Live tracking will be available once your order is shipped
                 </p>
               </div>
@@ -294,10 +292,39 @@ export default function TrackOrderPage(): JSX.Element {
           </div>
         )}
 
-        <p className="text-center text-[10px] mt-8" style={{ color: '#9b9b9b' }}>
-          Can't find your order?{' '}
-          <a href="/contact" className="hover:underline" style={{ color: '#363636' }}>Contact us</a> for help.
-        </p>
+        {/* Check other sections */}
+        <div className="mt-12">
+          <p className="text-[10px] tracking-[0.25em] uppercase font-medium text-brand-muted text-center mb-5">
+            Helpful Links
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {quickLinks.map(({ href, icon: Icon, label, desc }) => (
+              <Link
+                key={href}
+                href={href}
+                className="group flex items-start gap-3 p-4 bg-white border border-brand-border hover:border-brand-text transition-colors"
+              >
+                <div className="w-8 h-8 flex items-center justify-center flex-shrink-0 bg-brand-hover border border-brand-border group-hover:border-brand-text transition-colors">
+                  <Icon size={13} className="text-brand-muted" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-brand-text">{label}</p>
+                  <p className="text-[10px] mt-0.5 text-brand-muted leading-tight">{desc}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Not yet solved CTA */}
+        <div className="mt-10 text-center">
+          <p className="text-xs text-brand-secondary mb-3">
+            Still having trouble with your order?
+          </p>
+          <Link href="/contact" className="btn-brand h-11 px-8 inline-flex">
+            Contact Us <ArrowRight size={13} />
+          </Link>
+        </div>
       </div>
     </div>
   );

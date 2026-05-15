@@ -11,6 +11,8 @@ declare global {
   interface Window { google?: any; }
 }
 
+const inputCls = 'w-full pl-10 pr-4 py-3 text-sm outline-none transition-colors bg-white text-brand-text placeholder:text-brand-muted border border-brand-border focus:border-brand-text';
+
 export default function LoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore(s => s.setAuth);
@@ -83,34 +85,31 @@ export default function LoginPage() {
     }
   };
 
-  const inputCls = "w-full pl-10 pr-4 py-3 text-sm outline-none transition-colors bg-white text-[#1c1c1c] placeholder:text-[#9b9b9b]";
-  const inputStyle = { border: '1px solid #e1e1e1' };
-
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16 bg-white">
+    <div className="min-h-screen flex items-center justify-center px-4 py-16 bg-brand-bg">
       <div className="w-full max-w-sm">
 
         {/* Brand mark */}
         <div className="text-center mb-10">
-          <h1 className="text-2xl font-bold tracking-tight text-[#1c1c1c] mb-1">HastKala</h1>
-          <p className="text-[10px] tracking-[0.3em] uppercase text-[#9b9b9b]">
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-brand-text mb-1">HastKala</h1>
+          <p className="text-[10px] tracking-[0.3em] uppercase text-brand-muted">
             Handmade Craft Since 2020
           </p>
         </div>
 
-        <div style={{ border: '1px solid #e1e1e1' }}>
+        <div className="border border-brand-border bg-white">
 
           {/* Mode tabs */}
-          <div className="flex" style={{ borderBottom: '1px solid #e1e1e1' }}>
+          <div className="flex border-b border-brand-border">
             {(['login', 'register'] as const).map((m, i) => (
               <button
                 key={m}
                 onClick={() => setMode(m)}
-                className="flex-1 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
+                className="flex-1 py-3.5 text-[10px] font-medium tracking-[0.2em] uppercase transition-colors"
                 style={{
-                  backgroundColor: mode === m ? '#1c1c1c' : 'transparent',
-                  color: mode === m ? '#ffffff' : '#9b9b9b',
-                  borderRight: i === 0 ? '1px solid #e1e1e1' : 'none',
+                  backgroundColor: mode === m ? '#000' : 'transparent',
+                  color: mode === m ? '#fff' : '#999',
+                  borderRight: i === 0 ? '1px solid #E0D9D0' : 'none',
                 }}
               >
                 {m === 'login' ? 'Sign In' : 'Create Account'}
@@ -124,8 +123,7 @@ export default function LoginPage() {
               <>
                 <div className="mb-4">
                   {googleLoading ? (
-                    <div className="w-full h-11 flex items-center justify-center gap-2 text-sm text-[#363636]"
-                      style={{ border: '1px solid #e1e1e1' }}>
+                    <div className="w-full h-11 flex items-center justify-center gap-2 text-sm text-brand-secondary border border-brand-border">
                       <Loader2 size={14} className="animate-spin" />
                       Signing in with Google...
                     </div>
@@ -134,11 +132,11 @@ export default function LoginPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="flex-1 h-px bg-[#e1e1e1]" />
-                  <span className="text-[10px] tracking-[0.2em] uppercase font-medium text-[#9b9b9b]">
+                  <div className="flex-1 h-px bg-brand-border" />
+                  <span className="text-[10px] tracking-[0.2em] uppercase font-medium text-brand-muted">
                     or continue with email
                   </span>
-                  <div className="flex-1 h-px bg-[#e1e1e1]" />
+                  <div className="flex-1 h-px bg-brand-border" />
                 </div>
               </>
             )}
@@ -146,56 +144,48 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-3">
               {mode === 'register' && (
                 <div className="relative">
-                  <User size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b]" />
+                  <User size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted" />
                   <input type="text" required placeholder="Full Name"
                     value={form.name} onChange={e => set('name', e.target.value)}
-                    className={inputCls} style={inputStyle}
-                    onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-                    onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
+                    className={inputCls}
                   />
                 </div>
               )}
 
               <div className="relative">
-                <Mail size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b]" />
+                <Mail size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted" />
                 <input type="email" required placeholder="Email Address"
                   value={form.email} onChange={e => set('email', e.target.value)}
-                  className={inputCls} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-                  onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
+                  className={inputCls}
                 />
               </div>
 
               {mode === 'register' && (
                 <div className="relative">
-                  <Phone size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b]" />
+                  <Phone size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted" />
                   <input type="tel" placeholder="Phone (optional)"
                     value={form.phone} onChange={e => set('phone', e.target.value)}
-                    className={inputCls} style={inputStyle}
-                    onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-                    onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
+                    className={inputCls}
                   />
                 </div>
               )}
 
               <div className="relative">
-                <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b]" />
+                <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted" />
                 <input
                   type={showPw ? 'text' : 'password'} required placeholder="Password"
                   value={form.password} onChange={e => set('password', e.target.value)}
-                  className={inputCls} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
-                  onBlur={e => (e.currentTarget.style.borderColor = '#e1e1e1')}
+                  className={inputCls}
                 />
                 <button type="button" onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9b9b9b] hover:text-[#1c1c1c] transition-colors">
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-brand-muted hover:text-brand-text transition-colors">
                   {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
 
               <button
                 type="submit" disabled={loading}
-                className="btn-craft w-full mt-1 disabled:opacity-60"
+                className="btn-brand w-full h-11 mt-1 disabled:opacity-60"
               >
                 {loading
                   ? <Loader2 size={14} className="animate-spin" />
@@ -204,14 +194,14 @@ export default function LoginPage() {
             </form>
 
             {mode === 'login' && (
-              <p className="text-center text-xs mt-4 text-[#9b9b9b]">
-                <a href="#" className="hover:text-[#1c1c1c] transition-colors">Forgot your password?</a>
+              <p className="text-center text-xs mt-4 text-brand-muted">
+                <a href="#" className="hover:text-brand-text transition-colors">Forgot your password?</a>
               </p>
             )}
           </div>
         </div>
 
-        <p className="text-center text-[10px] mt-5 text-[#9b9b9b]">
+        <p className="text-center text-[10px] mt-5 text-brand-muted">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
       </div>

@@ -1,34 +1,82 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import Link from 'next/link';
+import { useAuthStore } from '@/lib/store';
 
-const announcements: string[] = [
-  'Free shipping on orders above ₹499 | Handcrafted with love across India',
-  'New Arrival: Diwali Festival Torans — Limited Stock! Shop Now',
-  'Buy any 2 Torans, get 15% off | Use code TORAN15 at checkout',
+const ANNOUNCEMENTS = [
+  'Free standard shipping over: ₹9,590',
+  'New Arrivals: Festival Collection — Limited Stock!',
+  'Members get early access to sales — Join the Club',
 ];
 
 export default function AnnouncementBar(): JSX.Element | null {
-  const [current, setCurrent] = useState<number>(0);
-  const [visible, setVisible] = useState<boolean>(true);
+  const [current, setCurrent] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const user = useAuthStore(s => s.user);
+  const logout = useAuthStore(s => s.logout);
 
   useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % announcements.length);
-    }, 4000);
+      setCurrent(prev => (prev + 1) % ANNOUNCEMENTS.length);
+    }, 4500);
     return () => clearInterval(timer);
   }, []);
 
-  if (!visible) return null;
-
   return (
-    <div className="announcement-bar text-white text-xs py-2.5 px-4 flex items-center justify-between">
-      <div className="flex-1 text-center font-medium tracking-wide animate-fade-in" key={current}>
-        {announcements[current]}
+    <>
+      {/* ── Utility row ──────────────────────────────── */}
+      <div className="utility-bar hidden sm:block">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 flex items-center justify-between h-9 text-[11px] text-brand-secondary">
+
+          {/* Left */}
+          <div className="flex items-center gap-4">
+            <Link href="/store-finder" className="hover:text-brand-text transition-colors">
+              Stores
+            </Link>
+          </div>
+
+          {/* Center */}
+          <div className="absolute left-1/2 -translate-x-1/2 font-medium text-brand-text animate-fade-in" key={current}>
+            {ANNOUNCEMENTS[current]}
+          </div>
+
+          {/* Right */}
+          <div className="flex items-center gap-4 relative">
+            <Link href="/account" className="hover:text-brand-text transition-colors whitespace-nowrap">
+              HastKala Club
+            </Link>
+            {mounted && (
+              <>
+                <span className="text-brand-border">|</span>
+                {user ? (
+                  <>
+                    <Link href="/account" className="hover:text-brand-text transition-colors">
+                      My Account
+                    </Link>
+                    <span className="text-brand-border">|</span>
+                    <button
+                      onClick={logout}
+                      className="hover:text-brand-text transition-colors flex items-center gap-1"
+                    >
+                      Log out
+                    </button>
+                  </>
+                ) : (
+                  <Link href="/account/login" className="hover:text-brand-text transition-colors">
+                    Sign In
+                  </Link>
+                )}
+              </>
+            )}
+          </div>
+        </div>
       </div>
-      <button onClick={() => setVisible(false)} className="ml-4 hover:opacity-60 transition-opacity flex-shrink-0">
-        <X size={13} />
-      </button>
-    </div>
+
+      {/* ── Mobile announcement strip ─────────────────── */}
+      <div className="sm:hidden bg-black text-white text-[11px] text-center py-2 px-4 font-medium animate-fade-in" key={`m-${current}`}>
+        {ANNOUNCEMENTS[current]}
+      </div>
+    </>
   );
 }

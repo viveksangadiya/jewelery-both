@@ -34,46 +34,45 @@ export default function OrderSuccessPage(): JSX.Element {
   const isCOD = method === 'cod' || order?.payment_method === 'cod';
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-white">
+    <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-brand-bg">
       <div className="max-w-lg w-full text-center">
 
         {/* Success mark */}
-        <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6"
-          style={{ backgroundColor: '#d4e3cb', border: '2px solid #347a07' }}>
-          <CheckCircle size={40} style={{ color: '#347a07' }} />
+        <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6 bg-green-50 border-2 border-green-300">
+          <CheckCircle size={40} className="text-green-700" />
         </div>
 
-        <h1 className="text-3xl font-bold mb-2" style={{ color: '#1c1c1c' }}>
+        <h1 className="font-display text-3xl font-semibold mb-2 text-brand-text">
           Order Placed!
         </h1>
-        <p className="text-sm mb-8" style={{ color: '#363636' }}>
+        <p className="text-sm mb-8 text-brand-secondary">
           {isCOD
             ? 'Your order is confirmed. Pay when it arrives at your door.'
             : 'Payment successful! Your order is being prepared with care.'}
         </p>
 
         {/* Order info */}
-        <div className="p-6 text-left mb-5 space-y-3" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-          <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid #e1e1e1' }}>
-            <span className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: '#9b9b9b' }}>Order Number</span>
-            <span className="font-mono font-bold text-sm" style={{ color: '#1c1c1c' }}>{orderNumber}</span>
+        <div className="p-6 text-left mb-5 space-y-3 bg-white border border-brand-border">
+          <div className="flex items-center justify-between pb-3 border-b border-brand-border">
+            <span className="text-[10px] tracking-[0.2em] uppercase font-medium text-brand-muted">Order Number</span>
+            <span className="font-mono font-bold text-sm text-brand-text">{orderNumber}</span>
           </div>
           {order && (
             <>
-              <div className="flex items-center justify-between py-2" style={{ borderBottom: '1px solid #e1e1e1' }}>
-                <span className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: '#9b9b9b' }}>Total</span>
-                <span className="font-bold text-sm" style={{ color: '#1c1c1c' }}>₹{parseFloat(String(order.total)).toLocaleString()}</span>
+              <div className="flex items-center justify-between py-2 border-b border-brand-border">
+                <span className="text-[10px] tracking-[0.2em] uppercase font-medium text-brand-muted">Total</span>
+                <span className="font-bold text-sm text-brand-text">₹{parseFloat(String(order.total)).toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between py-2" style={{ borderBottom: '1px solid #e1e1e1' }}>
-                <span className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: '#9b9b9b' }}>Payment</span>
-                <span className="text-sm font-semibold capitalize" style={{ color: '#1c1c1c' }}>
+              <div className="flex items-center justify-between py-2 border-b border-brand-border">
+                <span className="text-[10px] tracking-[0.2em] uppercase font-medium text-brand-muted">Payment</span>
+                <span className="text-sm font-semibold capitalize text-brand-text">
                   {isCOD ? 'Cash on Delivery' : `Paid via ${order.payment_method}`}
                 </span>
               </div>
               {order.courier_name && (
                 <div className="flex items-center justify-between pt-2">
-                  <span className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: '#9b9b9b' }}>Courier</span>
-                  <span className="text-sm font-medium" style={{ color: '#1c1c1c' }}>{order.courier_name}</span>
+                  <span className="text-[10px] tracking-[0.2em] uppercase font-medium text-brand-muted">Courier</span>
+                  <span className="text-sm font-medium text-brand-text">{order.courier_name}</span>
                 </div>
               )}
             </>
@@ -89,12 +88,13 @@ export default function OrderSuccessPage(): JSX.Element {
           ].map(({ icon: Icon, label, done }) => (
             <div key={label} className="p-3 text-center"
               style={{
-                border: `1px solid ${done ? '#1c1c1c' : '#e1e1e1'}`,
-                backgroundColor: done ? '#f5f5f5' : '#ffffff',
+                border: `1px solid ${done ? '#000' : '#E0D9D0'}`,
+                backgroundColor: done ? '#EDE8E2' : '#fff',
               }}>
-              <Icon size={18} className="mx-auto mb-1.5" style={{ color: done ? '#1c1c1c' : '#e1e1e1' }} />
-              <p className="text-[10px] font-bold tracking-[0.1em] uppercase leading-tight"
-                style={{ color: done ? '#1c1c1c' : '#9b9b9b' }}>
+              <Icon size={18} className="mx-auto mb-1.5"
+                style={{ color: done ? '#000' : '#E0D9D0' }} />
+              <p className="text-[10px] font-medium tracking-[0.1em] uppercase leading-tight"
+                style={{ color: done ? '#000' : '#999' }}>
                 {label}
               </p>
             </div>
@@ -103,20 +103,20 @@ export default function OrderSuccessPage(): JSX.Element {
 
         {/* Status note */}
         {order?.shipment_id ? (
-          <div className="p-4 mb-5 text-sm" style={{ border: '1px solid #e1e1e1', backgroundColor: '#f5f5f5' }}>
-            <p className="font-bold text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: '#1c1c1c' }}>
+          <div className="p-4 mb-5 text-sm bg-brand-hover border border-brand-border">
+            <p className="font-medium text-[11px] tracking-[0.15em] uppercase mb-1 text-brand-text">
               Handed to Courier
             </p>
-            <p className="text-xs" style={{ color: '#363636' }}>
+            <p className="text-xs text-brand-secondary">
               Your order has been picked up by our courier partner and is on its way.
             </p>
           </div>
         ) : (
-          <div className="p-4 mb-5 text-sm" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-            <p className="font-bold text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: '#1c1c1c' }}>
+          <div className="p-4 mb-5 text-sm bg-white border border-brand-border">
+            <p className="font-medium text-[11px] tracking-[0.15em] uppercase mb-1 text-brand-text">
               Preparing Your Order
             </p>
-            <p className="text-xs" style={{ color: '#363636' }}>
+            <p className="text-xs text-brand-secondary">
               We're handpacking your toran with care. Courier will be assigned shortly.
             </p>
           </div>
@@ -127,28 +127,22 @@ export default function OrderSuccessPage(): JSX.Element {
           {orderNumber && (
             <Link
               href={`/track-order?order=${orderNumber}`}
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-              style={{ border: '1px solid #1c1c1c', color: '#1c1c1c', backgroundColor: 'transparent' }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#f5f5f5')}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
+              className="btn-brand-outline flex-1 h-12 inline-flex items-center justify-center gap-2"
             >
               <MapPin size={14} /> Track Order
             </Link>
           )}
           <Link
             href="/shop"
-            className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-            style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#363636')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#1c1c1c')}
+            className="btn-brand flex-1 h-12 inline-flex items-center justify-center gap-2"
           >
             <ShoppingBag size={14} /> Continue Shopping
           </Link>
         </div>
 
-        <p className="text-[10px] mt-5" style={{ color: '#9b9b9b' }}>
+        <p className="text-[10px] mt-5 text-brand-muted">
           Order confirmation sent to your registered email.{' '}
-          <Link href="/contact" className="hover:underline" style={{ color: '#363636' }}>Contact us</Link> with any questions.
+          <Link href="/contact" className="hover:underline text-brand-secondary">Contact us</Link> with any questions.
         </p>
       </div>
     </div>

@@ -10,21 +10,25 @@ interface ReviewsSectionProps {
   productName: string;
 }
 
-// ── Star components ──────────────────────────────────────
 function StarPicker({ value, onChange, size = 24 }: { value: number; onChange?: (v: number) => void; size?: number }) {
   const [hovered, setHovered] = useState(0);
   const display = hovered || value;
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map(s => (
-        <button key={s} type="button"
+        <button
+          key={s}
+          type="button"
           onClick={() => onChange?.(s)}
           onMouseEnter={() => onChange && setHovered(s)}
           onMouseLeave={() => onChange && setHovered(0)}
-          className={onChange ? 'cursor-pointer' : 'cursor-default'}>
-          <Star size={size}
-            style={{ color: s <= display ? '#B68868' : '#EBEBCA' }}
-            fill={s <= display ? '#B68868' : 'none'} />
+          className={onChange ? 'cursor-pointer' : 'cursor-default'}
+        >
+          <Star
+            size={size}
+            className={s <= display ? 'text-brand-text' : 'text-brand-border'}
+            fill={s <= display ? 'currentColor' : 'none'}
+          />
         </button>
       ))}
     </div>
@@ -35,30 +39,32 @@ function Stars({ value, size = 13 }: { value: number; size?: number }) {
   return (
     <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map(s => (
-        <Star key={s} size={size}
-          style={{ color: s <= Math.round(value) ? '#B68868' : '#EBEBCA' }}
-          fill={s <= Math.round(value) ? '#B68868' : 'none'} />
+        <Star
+          key={s}
+          size={size}
+          className={s <= Math.round(value) ? 'text-brand-text' : 'text-brand-border'}
+          fill={s <= Math.round(value) ? 'currentColor' : 'none'}
+        />
       ))}
     </div>
   );
 }
 
-// ── Rating breakdown bar ─────────────────────────────────
 function RatingBar({ label, count, total, onClick, active }: {
   label: string; count: number; total: number; onClick: () => void; active: boolean;
 }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
-    <button onClick={onClick}
-      className="flex items-center gap-2 w-full group"
-      style={{ opacity: active ? 1 : 0.75 }}>
-      <span className="text-xs w-3 flex-shrink-0 text-right font-medium" style={{ color: '#642308' }}>{label}</span>
-      <Star size={10} style={{ color: '#B68868', flexShrink: 0 }} fill="#B68868" />
-      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#EBEBCA' }}>
-        <div className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${pct}%`, backgroundColor: active ? '#642308' : '#B68868' }} />
+    <button onClick={onClick} className="flex items-center gap-2 w-full group" style={{ opacity: active ? 1 : 0.7 }}>
+      <span className="text-xs w-3 flex-shrink-0 text-right font-medium text-brand-text">{label}</span>
+      <Star size={10} className="text-brand-text flex-shrink-0" fill="currentColor" />
+      <div className="flex-1 h-1.5 overflow-hidden bg-brand-border">
+        <div
+          className="h-full transition-all duration-500 bg-brand-text"
+          style={{ width: `${pct}%` }}
+        />
       </div>
-      <span className="text-[10px] w-6 text-right flex-shrink-0" style={{ color: '#B68868' }}>{count}</span>
+      <span className="text-[10px] w-6 text-right flex-shrink-0 text-brand-muted">{count}</span>
     </button>
   );
 }
@@ -90,8 +96,7 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
       const data = res.data;
       let rows   = data.data;
 
-      if (filterRating !== null)
-        rows = rows.filter((r: any) => r.rating === filterRating);
+      if (filterRating !== null) rows = rows.filter((r: any) => r.rating === filterRating);
       if (sortBy === 'highest') rows = [...rows].sort((a: any, b: any) => b.rating - a.rating);
       if (sortBy === 'lowest')  rows = [...rows].sort((a: any, b: any) => a.rating - b.rating);
       if (sortBy === 'newest')  rows = [...rows].sort((a: any, b: any) =>
@@ -157,60 +162,58 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
 
   return (
     <div>
-      {/* ── Section title ── */}
+      {/* Section header */}
       <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
-        <h2 className="text-[11px] font-bold tracking-[0.35em] uppercase" style={{ color: '#642308' }}>
+        <h2 className="text-[11px] font-medium tracking-[0.35em] uppercase text-brand-text">
           Customer Reviews
         </h2>
-        {/* Write review CTA */}
         {user && hasPurchased !== false && !showForm && (
-          <button onClick={() => setShowForm(true)}
-            className="text-[10px] font-bold tracking-[0.2em] uppercase pb-0.5 transition-colors"
-            style={{ color: '#642308', borderBottom: '1px solid #642308' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#903E1D')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#642308')}>
+          <button
+            onClick={() => setShowForm(true)}
+            className="text-[10px] tracking-[0.2em] uppercase underline underline-offset-2 text-brand-muted hover:text-brand-text transition-colors"
+          >
             {myReview ? 'Edit Review' : 'Write a Review'}
           </button>
         )}
         {!user && (
-          <a href="/account/login"
-            className="text-[10px] font-bold tracking-[0.2em] uppercase pb-0.5"
-            style={{ color: '#642308', borderBottom: '1px solid #642308' }}>
-            Write a Review
+          <a
+            href="/account/login"
+            className="text-[10px] tracking-[0.2em] uppercase underline underline-offset-2 text-brand-muted hover:text-brand-text transition-colors"
+          >
+            Sign in to review
           </a>
         )}
         {user && hasPurchased === false && !myReview && (
-          <span className="text-[10px] tracking-widest uppercase" style={{ color: '#B68868' }}>
+          <span className="text-[10px] tracking-widest uppercase text-brand-muted">
             Purchase to review
           </span>
         )}
       </div>
 
-      {/* ── Write / Edit form ── */}
+      {/* Write / edit form */}
       {showForm && (
-        <div className="mb-10 p-6 sm:p-8" style={{ border: '1px solid #EBEBCA', backgroundColor: 'rgba(235,235,202,0.25)' }}>
+        <div className="mb-10 p-6 sm:p-8 border border-brand-border bg-brand-hover">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-[10px] font-bold tracking-[0.3em] uppercase" style={{ color: '#642308' }}>
+            <h3 className="text-[10px] font-medium tracking-[0.3em] uppercase text-brand-text">
               {myReview ? 'Edit Your Review' : 'Share Your Experience'}
             </h3>
-            <button onClick={() => setShowForm(false)}
-              className="text-[10px] tracking-widest uppercase transition-colors"
-              style={{ color: '#B68868' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+            <button
+              onClick={() => setShowForm(false)}
+              className="text-[10px] tracking-widest uppercase text-brand-muted hover:text-brand-text transition-colors"
+            >
               Cancel
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase mb-3" style={{ color: '#B68868' }}>
-                Your Rating <span style={{ color: '#903E1D' }}>*</span>
+              <p className="text-[10px] tracking-[0.25em] uppercase text-brand-muted mb-3">
+                Your Rating <span className="text-brand-text">*</span>
               </p>
               <div className="flex items-center gap-3">
                 <StarPicker value={rating} onChange={setRating} size={26} />
                 {rating > 0 && (
-                  <span className="text-xs font-medium" style={{ color: '#642308' }}>
+                  <span className="text-xs font-medium text-brand-secondary">
                     {['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][rating]}
                   </span>
                 )}
@@ -218,48 +221,48 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
             </div>
 
             <div>
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase mb-2" style={{ color: '#B68868' }}>
+              <p className="text-[10px] tracking-[0.25em] uppercase text-brand-muted mb-2">
                 Review Title
               </p>
-              <input type="text" value={title} onChange={e => setTitle(e.target.value)}
+              <input
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
                 placeholder="Summarise your experience"
-                className="w-full px-4 py-3 text-sm outline-none bg-white"
-                style={{ border: '1px solid #EBEBCA', color: '#642308' }}
-                onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')} />
+                className="w-full px-4 py-3 text-sm border border-brand-border bg-white text-brand-text placeholder:text-brand-muted outline-none focus:border-brand-text transition-colors"
+              />
             </div>
 
             <div>
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase mb-2" style={{ color: '#B68868' }}>
+              <p className="text-[10px] tracking-[0.25em] uppercase text-brand-muted mb-2">
                 Your Review
               </p>
-              <textarea value={comment} onChange={e => setComment(e.target.value)}
+              <textarea
+                value={comment}
+                onChange={e => setComment(e.target.value)}
                 placeholder={`Share your experience with ${productName}…`}
                 rows={4}
-                className="w-full px-4 py-3 text-sm outline-none resize-none bg-white"
-                style={{ border: '1px solid #EBEBCA', color: '#642308' }}
-                onFocus={e => (e.currentTarget.style.borderColor = '#B68868')}
-                onBlur={e => (e.currentTarget.style.borderColor = '#EBEBCA')} />
+                className="w-full px-4 py-3 text-sm border border-brand-border bg-white text-brand-text placeholder:text-brand-muted outline-none focus:border-brand-text transition-colors resize-none"
+              />
             </div>
 
             <div className="flex items-center gap-4 pt-1">
-              <button type="submit" disabled={submitting || rating === 0}
-                className="px-8 h-12 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 transition-all disabled:opacity-40"
-                style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-                onMouseEnter={e => { if (!submitting && rating > 0) (e.currentTarget.style.backgroundColor = '#903E1D'); }}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}>
+              <button
+                type="submit"
+                disabled={submitting || rating === 0}
+                className="btn-brand px-8 h-11"
+              >
                 {submitting && (
-                  <div className="w-3.5 h-3.5 border-2 border-t-transparent rounded-full animate-spin"
-                    style={{ borderColor: 'rgba(250,249,238,0.4)', borderTopColor: '#FAF9EE' }} />
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 )}
                 {myReview ? 'Update Review' : 'Submit Review'}
               </button>
               {myReview && (
-                <button type="button" onClick={handleDelete}
-                  className="flex items-center gap-1.5 text-xs tracking-wide uppercase transition-colors"
-                  style={{ color: '#B68868' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#b91c1c')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="flex items-center gap-1.5 text-xs tracking-wide uppercase text-brand-muted hover:text-red-600 transition-colors"
+                >
                   <Trash2 size={12} /> Delete
                 </button>
               )}
@@ -268,86 +271,88 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
         </div>
       )}
 
-      {/* ── Two-column: summary LEFT + reviews RIGHT ── */}
+      {/* Empty state */}
       {totalReviews === 0 && !myReview ? (
-        <div className="py-16 text-center" style={{ border: '1px solid #EBEBCA' }}>
+        <div className="py-16 text-center border border-brand-border">
           <div className="flex justify-center mb-3">
             {[1,2,3,4,5].map(s => (
-              <Star key={s} size={20} style={{ color: '#EBEBCA' }} fill="#EBEBCA" />
+              <Star key={s} size={20} className="text-brand-border" fill="currentColor" />
             ))}
           </div>
-          <p className="text-xs font-bold tracking-[0.3em] uppercase mb-2" style={{ color: '#642308' }}>
+          <p className="text-xs font-medium tracking-[0.3em] uppercase mb-2 text-brand-text">
             No Reviews Yet
           </p>
-          <p className="text-xs mb-6" style={{ color: '#B68868' }}>Be the first to share your experience</p>
+          <p className="text-xs mb-6 text-brand-muted">Be the first to share your experience</p>
           {user && hasPurchased !== false && !showForm && (
-            <button onClick={() => setShowForm(true)}
-              className="px-8 h-11 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-              style={{ backgroundColor: '#642308', color: '#FAF9EE' }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#903E1D')}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#642308')}>
+            <button
+              onClick={() => setShowForm(true)}
+              className="btn-brand px-8 h-11"
+            >
               Write a Review
             </button>
           )}
         </div>
       ) : (
-        <div className="lg:grid lg:grid-cols-[280px_1fr] gap-10 xl:gap-16">
+        <div className="lg:grid lg:grid-cols-[260px_1fr] gap-10 xl:gap-16">
 
-          {/* ── LEFT: Rating summary ── */}
+          {/* LEFT: Rating summary */}
           <div className="mb-8 lg:mb-0">
             <div className="lg:sticky lg:top-6">
-              {/* Big avg number */}
               <div className="flex items-end gap-3 mb-4">
-                <span className="font-display text-6xl font-normal leading-none" style={{ color: '#642308' }}>
+                <span className="font-display text-6xl font-normal leading-none text-brand-text">
                   {avgRating > 0 ? avgRating.toFixed(1) : '—'}
                 </span>
                 <div className="pb-1">
                   <Stars value={avgRating} size={14} />
-                  <p className="text-xs mt-1" style={{ color: '#B68868' }}>
+                  <p className="text-xs mt-1 text-brand-muted">
                     {totalReviews} review{totalReviews !== 1 ? 's' : ''}
                   </p>
                 </div>
               </div>
 
-              {/* Breakdown bars */}
               <div className="space-y-2 mb-6">
                 {breakdown.map(({ label, count }) => (
-                  <RatingBar key={label} label={label} count={count} total={totalReviews}
+                  <RatingBar
+                    key={label}
+                    label={label}
+                    count={count}
+                    total={totalReviews}
                     active={filterRating === parseInt(label)}
                     onClick={() => {
                       setFilterRating(f => f === parseInt(label) ? null : parseInt(label));
                       setPage(1);
-                    }} />
+                    }}
+                  />
                 ))}
               </div>
 
               {filterRating !== null && (
-                <button onClick={() => { setFilterRating(null); setPage(1); }}
-                  className="text-[10px] tracking-widest uppercase pb-0.5 transition-colors"
-                  style={{ color: '#B68868', borderBottom: '1px solid #EBEBCA' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+                <button
+                  onClick={() => { setFilterRating(null); setPage(1); }}
+                  className="text-[10px] tracking-widest uppercase underline underline-offset-2 text-brand-muted hover:text-brand-text transition-colors"
+                >
                   Clear Filter
                 </button>
               )}
 
               {/* Sort */}
-              <div className="mt-6 pt-5" style={{ borderTop: '1px solid #EBEBCA' }}>
-                <p className="text-[10px] font-bold tracking-[0.25em] uppercase mb-2" style={{ color: '#B68868' }}>Sort By</p>
+              <div className="mt-6 pt-5 border-t border-brand-border">
+                <p className="text-[10px] tracking-[0.25em] uppercase mb-2 text-brand-muted">Sort By</p>
                 <div className="flex flex-col gap-1.5">
                   {[
-                    { v: 'newest',  l: 'Most Recent'    },
-                    { v: 'highest', l: 'Highest Rating'  },
-                    { v: 'lowest',  l: 'Lowest Rating'   },
+                    { v: 'newest',  l: 'Most Recent'   },
+                    { v: 'highest', l: 'Highest Rating' },
+                    { v: 'lowest',  l: 'Lowest Rating'  },
                   ].map(({ v, l }) => (
-                    <button key={v} onClick={() => setSortBy(v)}
+                    <button
+                      key={v}
+                      onClick={() => setSortBy(v)}
                       className="text-left text-xs transition-colors"
                       style={{
-                        color: sortBy === v ? '#642308' : '#B68868',
+                        color: sortBy === v ? '#000' : '#999',
                         fontWeight: sortBy === v ? 600 : 400,
                       }}
-                      onMouseEnter={e => { if (sortBy !== v) (e.currentTarget.style.color = '#642308'); }}
-                      onMouseLeave={e => { if (sortBy !== v) (e.currentTarget.style.color = '#B68868'); }}>
+                    >
                       {sortBy === v ? '→ ' : ''}{l}
                     </button>
                   ))}
@@ -356,48 +361,44 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
             </div>
           </div>
 
-          {/* ── RIGHT: Reviews list ── */}
+          {/* RIGHT: Reviews list */}
           <div>
             {/* My review pinned */}
             {myReview && !showForm && (
-              <div className="mb-6 p-5" style={{ backgroundColor: 'rgba(235,235,202,0.35)', border: '1px solid #EBEBCA' }}>
+              <div className="mb-6 p-5 bg-brand-hover border border-brand-border">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                       <Stars value={myReview.rating} size={13} />
-                      <span className="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5"
-                        style={{ backgroundColor: '#642308', color: '#FAF9EE' }}>
+                      <span className="text-[10px] font-medium tracking-widest uppercase px-2 py-0.5 bg-brand-text text-white">
                         Your Review
                       </span>
                     </div>
                     {myReview.title && (
-                      <p className="text-sm font-semibold mb-1" style={{ color: '#642308' }}>{myReview.title}</p>
+                      <p className="text-sm font-semibold mb-1 text-brand-text">{myReview.title}</p>
                     )}
                     {myReview.comment && (
-                      <p className="text-sm leading-relaxed" style={{ color: '#903E1D', fontFamily: 'Georgia,serif', fontStyle: 'italic' }}>
-                        {myReview.comment}
-                      </p>
+                      <p className="text-sm leading-relaxed text-brand-secondary">{myReview.comment}</p>
                     )}
-                    <p className="text-[10px] mt-2 font-mono" style={{ color: '#B68868' }}>
+                    <p className="text-[10px] mt-2 font-mono text-brand-muted">
                       {new Date(myReview.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
-                  <button onClick={() => setShowForm(true)}
-                    className="flex items-center gap-1 flex-shrink-0 text-xs transition-colors"
-                    style={{ color: '#B68868' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+                  <button
+                    onClick={() => setShowForm(true)}
+                    className="flex items-center gap-1 flex-shrink-0 text-xs text-brand-muted hover:text-brand-text transition-colors"
+                  >
                     <Edit2 size={11} /> Edit
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Reviews */}
+            {/* Reviews list */}
             {loading ? (
               <div className="space-y-0">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="py-7" style={{ borderBottom: '1px solid #EBEBCA' }}>
+                  <div key={i} className="py-7 border-b border-brand-border">
                     <div className="flex gap-2 mb-3">
                       {[1,2,3,4,5].map(s => <div key={s} className="skeleton w-3 h-3 rounded-sm" />)}
                     </div>
@@ -412,43 +413,33 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
                 {reviews
                   .filter(r => !myReview || r.id !== myReview.id)
                   .map((r, idx, arr) => (
-                    <div key={r.id} className="py-7"
-                      style={{ borderBottom: idx < arr.length - 1 ? '1px solid #EBEBCA' : 'none' }}>
-
-                      {/* Top row: stars + date */}
+                    <div
+                      key={r.id}
+                      className="py-7"
+                      style={{ borderBottom: idx < arr.length - 1 ? '1px solid #E0D9D0' : 'none' }}
+                    >
                       <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
                         <Stars value={r.rating} size={13} />
-                        <span className="text-[10px] font-mono" style={{ color: '#B68868' }}>
+                        <span className="text-[10px] font-mono text-brand-muted">
                           {new Date(r.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </span>
                       </div>
 
-                      {/* Title */}
                       {r.title && (
-                        <p className="text-sm font-semibold mb-1.5" style={{ color: '#642308' }}>
-                          {r.title}
-                        </p>
+                        <p className="text-sm font-semibold mb-1.5 text-brand-text">{r.title}</p>
                       )}
-
-                      {/* Comment */}
                       {r.comment && (
-                        <p className="text-sm leading-relaxed mb-3"
-                          style={{ color: '#903E1D', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
-                          {r.comment}
-                        </p>
+                        <p className="text-sm leading-relaxed mb-3 text-brand-secondary">{r.comment}</p>
                       )}
 
-                      {/* Author */}
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0"
-                          style={{ backgroundColor: '#EBEBCA', color: '#642308' }}>
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 bg-brand-border text-brand-text">
                           {r.user_name?.[0]?.toUpperCase()}
                         </div>
-                        <p className="text-xs font-medium" style={{ color: '#642308' }}>
+                        <p className="text-xs font-medium text-brand-text">
                           {r.user_name?.split(' ')[0]} {r.user_name?.split(' ').slice(1).map((n: string) => n[0]).join('')}.
                         </p>
-                        <span className="text-[10px] px-1.5 py-0.5 font-medium tracking-wide"
-                          style={{ backgroundColor: 'rgba(144,62,29,0.1)', color: '#903E1D' }}>
+                        <span className="text-[10px] px-1.5 py-0.5 font-medium tracking-wide bg-brand-hover text-brand-secondary">
                           Verified Buyer
                         </span>
                       </div>
@@ -457,7 +448,7 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
 
                 {reviews.filter(r => !myReview || r.id !== myReview.id).length === 0 && filterRating !== null && (
                   <div className="py-12 text-center">
-                    <p className="text-xs" style={{ color: '#B68868' }}>No {filterRating}-star reviews yet.</p>
+                    <p className="text-xs text-brand-muted">No {filterRating}-star reviews yet.</p>
                   </div>
                 )}
               </div>
@@ -465,12 +456,12 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center gap-1 mt-8 pt-6" style={{ borderTop: '1px solid #EBEBCA' }}>
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                  className="w-8 h-8 flex items-center justify-center transition-colors disabled:opacity-30"
-                  style={{ color: '#B68868' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+              <div className="flex items-center gap-1 mt-8 pt-6 border-t border-brand-border">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="w-8 h-8 flex items-center justify-center text-brand-muted hover:text-brand-text transition-colors disabled:opacity-30"
+                >
                   <ChevronLeft size={15} />
                 </button>
 
@@ -482,36 +473,36 @@ export default function ReviewsSection({ productId, productName }: ReviewsSectio
                   else                             num = page - 2 + i;
                   return num;
                 }).map(num => (
-                  <button key={num} onClick={() => setPage(num)}
+                  <button
+                    key={num}
+                    onClick={() => setPage(num)}
                     className="w-8 h-8 flex items-center justify-center text-sm transition-all"
                     style={{
-                      backgroundColor: page === num ? '#642308' : 'transparent',
-                      color: page === num ? '#FAF9EE' : '#B68868',
+                      backgroundColor: page === num ? '#000' : 'transparent',
+                      color: page === num ? '#fff' : '#999',
                     }}
-                    onMouseEnter={e => { if (page !== num) (e.currentTarget.style.color = '#642308'); }}
-                    onMouseLeave={e => { if (page !== num) (e.currentTarget.style.color = '#B68868'); }}>
+                  >
                     {num}
                   </button>
                 ))}
 
                 {totalPages > 5 && page < totalPages - 2 && (
                   <>
-                    <span style={{ color: '#B68868' }} className="text-sm">…</span>
-                    <button onClick={() => setPage(totalPages)}
-                      className="w-8 h-8 flex items-center justify-center text-sm transition-colors"
-                      style={{ color: '#B68868' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-                      onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+                    <span className="text-sm text-brand-muted">…</span>
+                    <button
+                      onClick={() => setPage(totalPages)}
+                      className="w-8 h-8 flex items-center justify-center text-sm text-brand-muted hover:text-brand-text transition-colors"
+                    >
                       {totalPages}
                     </button>
                   </>
                 )}
 
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                  className="w-8 h-8 flex items-center justify-center transition-colors disabled:opacity-30"
-                  style={{ color: '#B68868' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#642308')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#B68868')}>
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="w-8 h-8 flex items-center justify-center text-brand-muted hover:text-brand-text transition-colors disabled:opacity-30"
+                >
                   <ChevronRight size={15} />
                 </button>
               </div>

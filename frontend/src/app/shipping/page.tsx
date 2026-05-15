@@ -19,19 +19,18 @@ const faqs = [
 
 export default function ShippingPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-brand-bg">
 
       {/* Hero */}
-      <div className="py-14 px-6" style={{ backgroundColor: '#f5f5f5', borderBottom: '1px solid #e1e1e1' }}>
+      <div className="py-14 px-6 bg-brand-hover border-b border-brand-border">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="w-12 h-12 flex items-center justify-center mx-auto mb-5"
-            style={{ backgroundColor: '#ffffff', border: '1px solid #e1e1e1' }}>
-            <Truck size={20} style={{ color: '#1c1c1c' }} strokeWidth={1.5} />
+          <div className="w-12 h-12 flex items-center justify-center mx-auto mb-5 bg-white border border-brand-border">
+            <Truck size={20} className="text-brand-text" strokeWidth={1.5} />
           </div>
-          <h1 className="text-3xl font-bold mb-3" style={{ color: '#1c1c1c' }}>
+          <h1 className="font-display text-3xl font-semibold mb-3 text-brand-text">
             Shipping Policy
           </h1>
-          <p className="text-sm leading-relaxed max-w-xl mx-auto" style={{ color: '#363636' }}>
+          <p className="text-sm leading-relaxed max-w-xl mx-auto text-brand-secondary">
             Every toran is carefully wrapped and shipped with love. Here's everything you need to know.
           </p>
         </div>
@@ -41,25 +40,25 @@ export default function ShippingPage() {
 
         {/* Shipping options table */}
         <section>
-          <h2 className="text-xl font-bold mb-6" style={{ color: '#1c1c1c' }}>
+          <h2 className="text-xl font-semibold mb-6 text-brand-text">
             Shipping Options
           </h2>
-          <div style={{ border: '1px solid #e1e1e1' }}>
-            <div className="grid grid-cols-4 gap-4 px-5 py-3" style={{ backgroundColor: '#f5f5f5' }}>
+          <div className="border border-brand-border">
+            <div className="grid grid-cols-4 gap-4 px-5 py-3 bg-brand-hover">
               {['Method', 'Delivery Time', 'Charge', 'Notes'].map(h => (
-                <p key={h} className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: '#1c1c1c' }}>{h}</p>
+                <p key={h} className="text-[10px] font-medium uppercase tracking-[0.2em] text-brand-text">{h}</p>
               ))}
             </div>
             {shippingOptions.map((opt, idx) => (
-              <div key={opt.name} className="grid grid-cols-4 gap-4 px-5 py-4 items-center"
-                style={{ borderTop: idx > 0 ? '1px solid #e1e1e1' : 'none' }}>
-                <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>{opt.name}</p>
+              <div key={opt.name} className="grid grid-cols-4 gap-4 px-5 py-4 items-center bg-white"
+                style={{ borderTop: idx > 0 ? '1px solid #E0D9D0' : 'none' }}>
+                <p className="text-sm font-semibold text-brand-text">{opt.name}</p>
                 <div className="flex items-center gap-2">
-                  <Clock size={12} style={{ color: '#9b9b9b', flexShrink: 0 }} />
-                  <p className="text-sm" style={{ color: '#363636' }}>{opt.time}</p>
+                  <Clock size={12} className="text-brand-muted flex-shrink-0" />
+                  <p className="text-sm text-brand-secondary">{opt.time}</p>
                 </div>
-                <p className="text-sm font-semibold" style={{ color: '#1c1c1c' }}>{opt.charge}</p>
-                <p className="text-xs" style={{ color: '#9b9b9b' }}>{opt.detail}</p>
+                <p className="text-sm font-semibold text-brand-text">{opt.charge}</p>
+                <p className="text-xs text-brand-muted">{opt.detail}</p>
               </div>
             ))}
           </div>
@@ -72,20 +71,19 @@ export default function ShippingPage() {
             { icon: Package, title: 'Careful Packaging',   desc: 'Torans are wrapped in tissue paper, rolled or folded, and packed in sturdy boxes.' },
             { icon: MapPin,  title: 'Real-time Tracking',  desc: 'Track your order at every step via SMS, email, and our website.' },
           ].map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="p-6 text-center" style={{ border: '1px solid #e1e1e1', backgroundColor: '#ffffff' }}>
-              <div className="w-10 h-10 flex items-center justify-center mx-auto mb-4"
-                style={{ border: '1px solid #e1e1e1' }}>
-                <Icon size={15} style={{ color: '#9b9b9b' }} strokeWidth={1.5} />
+            <div key={title} className="p-6 text-center bg-white border border-brand-border">
+              <div className="w-10 h-10 flex items-center justify-center mx-auto mb-4 border border-brand-border">
+                <Icon size={15} className="text-brand-muted" strokeWidth={1.5} />
               </div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#1c1c1c' }}>{title}</p>
-              <p className="text-xs leading-relaxed" style={{ color: '#363636' }}>{desc}</p>
+              <p className="text-[11px] font-medium uppercase tracking-[0.15em] mb-2 text-brand-text">{title}</p>
+              <p className="text-xs leading-relaxed text-brand-secondary">{desc}</p>
             </div>
           ))}
         </section>
 
         {/* Policy details */}
-        <section className="space-y-6" style={{ borderTop: '1px solid #e1e1e1', paddingTop: '3rem' }}>
-          <h2 className="text-xl font-bold" style={{ color: '#1c1c1c' }}>
+        <section className="space-y-6 border-t border-brand-border pt-12">
+          <h2 className="text-xl font-semibold text-brand-text">
             Shipping Details
           </h2>
           {[
@@ -96,25 +94,25 @@ export default function ShippingPage() {
             { title: 'Failed Delivery',    content: 'If delivery fails due to unavailability, the courier will attempt delivery up to 3 times. After 3 failed attempts, the package is returned to us.' },
           ].map(({ title, content }) => (
             <div key={title} className="flex gap-6">
-              <div className="w-0.5 flex-shrink-0" style={{ backgroundColor: '#e1e1e1' }} />
+              <div className="w-0.5 flex-shrink-0 bg-brand-border" />
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] mb-1.5" style={{ color: '#1c1c1c' }}>{title}</p>
-                <p className="text-sm leading-relaxed" style={{ color: '#363636' }}>{content}</p>
+                <p className="text-[11px] font-medium uppercase tracking-[0.15em] mb-1.5 text-brand-text">{title}</p>
+                <p className="text-sm leading-relaxed text-brand-secondary">{content}</p>
               </div>
             </div>
           ))}
         </section>
 
         {/* FAQs */}
-        <section style={{ borderTop: '1px solid #e1e1e1', paddingTop: '3rem' }}>
-          <h2 className="text-xl font-bold mb-8" style={{ color: '#1c1c1c' }}>
+        <section className="border-t border-brand-border pt-12">
+          <h2 className="text-xl font-semibold mb-8 text-brand-text">
             Frequently Asked Questions
           </h2>
           <div className="space-y-6">
             {faqs.map(({ q, a }) => (
-              <div key={q} className="pb-6" style={{ borderBottom: '1px solid #e1e1e1' }}>
-                <p className="text-sm font-bold mb-2" style={{ color: '#1c1c1c' }}>{q}</p>
-                <p className="text-sm leading-relaxed" style={{ color: '#363636' }}>{a}</p>
+              <div key={q} className="pb-6 border-b border-brand-border">
+                <p className="text-sm font-semibold mb-2 text-brand-text">{q}</p>
+                <p className="text-sm leading-relaxed text-brand-secondary">{a}</p>
               </div>
             ))}
           </div>
@@ -122,13 +120,8 @@ export default function ShippingPage() {
 
         {/* CTA */}
         <div className="text-center pt-2">
-          <p className="text-sm mb-4" style={{ color: '#363636' }}>Questions about your shipment?</p>
-          <Link href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-3.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-            style={{ backgroundColor: '#1c1c1c', color: '#ffffff' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#363636')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.backgroundColor = '#1c1c1c')}
-          >
+          <p className="text-sm mb-4 text-brand-secondary">Questions about your shipment?</p>
+          <Link href="/contact" className="btn-brand h-11 px-8 inline-flex">
             Contact Support <ArrowRight size={13} />
           </Link>
         </div>
